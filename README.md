@@ -1,0 +1,1 @@
+I am a Forex trader and an IB under a Trading Brokerage Company,and a Math & Statistics teacher with strong experience in fundamental analysis, macroeconomic research, and exchange rate modeling. Currently finishing my MBA while expanding my skills in SQL and Tableau for data-driven financial insights.
