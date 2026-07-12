@@ -1,0 +1,414 @@
+[
+  {
+    "activity_id": "G9-A1.1",
+    "module_id": "G9-M1",
+    "order": 1,
+    "week": "Week 1",
+    "title": "How Film Speaks",
+    "competency_code": "G9T1-2",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to see that film has a grammar of shots and cuts, and to name three craft choices in a scene and what each one made you feel.",
+    "before_hook": "Every film you love spoke to you in a language you never studied. A close up that made your chest tight. A cut that made you laugh before you knew why. That was not luck. Someone chose it. Today I want to hand you the grammar behind those choices, because once you see it, you cannot unsee it, and that is the eye every filmmaker needs.",
+    "watch_for": [
+      "What does the camera show you up close, and why that thing and not something else?",
+      "When the shot changes, what changes in how you feel?",
+      "Can you point to one moment where the picture told the story with no words at all?"
+    ],
+    "video_slot": "Film language and shot types, 5 to 15 minutes, English.",
+    "video_candidate": "StudioBinder, The Shot List, Episode 2. This is the compliant episode. The shot sizes episode (12:43) and camera angles episode (13:31) both run longer, so use those only if you want them at the 15 minute cap.",
+    "video_preview_note": "This one is verified free, English, 8:33, and clean. Still give it one look before embedding, since only your eyes confirm it suits your class.",
+    "video_status": "LOCKED. Fully verified by research.",
+    "video_title": "Camera Framing: Shot Composition & Cinematography Techniques Explained [The Shot List, Ep 2]",
+    "video_channel": "StudioBinder",
+    "video_runtime": "8:33, confirmed",
+    "video_url": "https://www.youtube.com/watch?v=qQNiqzuXjoM",
+    "after_bridge": "So film has grammar. Shots are the words. Cuts are the punctuation. Angles and framing are the tone of voice. A filmmaker who cannot see these choices cannot make them on purpose. From today, you are learning to watch like a maker, not just a viewer.",
+    "activity_brief": "I want you to watch any one scene from any film you already like. In 5 to 7 sentences, name three choices the filmmaker made with the camera or the cut, and say what each choice made you feel. Do not summarize the plot. Talk only about the craft. For example, do not tell me the hero escaped. Tell me the low angle made the hero look powerful as he ran.",
+    "submission_type": "Short text",
+    "tool": "None needed. This one is about training your eye, not using a tool.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Names three real craft choices",
+        "points": 4
+      },
+      {
+        "criteria": "Links each choice to a feeling",
+        "points": 3
+      },
+      {
+        "criteria": "Stays on craft, not plot",
+        "points": 3
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G9-A1.2",
+    "module_id": "G9-M1",
+    "order": 2,
+    "week": "Week 2",
+    "title": "Genre in One Pass",
+    "competency_code": "G9T1-1",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to recognize film genres from how a film looks and sounds, not just from its story, so you know the rules you will later break.",
+    "before_hook": "Genre is a promise. When a film opens dark and quiet, you brace for horror. When it opens bright with bouncy music, you expect comedy or romance. You already read these signals without thinking. Today I want to make that skill conscious, because a filmmaker who knows the rules of a genre can play with them, honor them, or break them on purpose.",
+    "watch_for": [
+      "What signals tell you the genre in the first minute?",
+      "What does each genre promise the audience?",
+      "Which genre would you most want to make, and why?"
+    ],
+    "video_slot": "Overview of common film genres, 5 to 15 minutes, English.",
+    "video_candidate": "StudioBinder genre explainer. Strong fit for recognizing genre from look and sound.",
+    "video_preview_note": "Preview before embedding. It uses brief horror and crime clips, for example Scream, as examples. Confirm those clips suit your Grade 9 group and the runtime fits.",
+    "video_status": "SELECTED. Preview to confirm runtime and clips.",
+    "video_title": "Movie Genres Explained, Types of Films and the Art of Subverting Film Genres",
+    "video_channel": "StudioBinder",
+    "video_runtime": "Not confirmed to the second. Confirm it lands in range.",
+    "video_url": "https://www.youtube.com/watch?v=rDVVE8ZHJ3o",
+    "after_bridge": "So genre is a set of rules the audience already knows by heart. You do not need to memorize every genre. You need to recognize the signals, because those signals are tools. When you make your own films, you will reach for them on purpose.",
+    "activity_brief": "I want you to pick three films you know and name the genre of each in one line. Then choose one of them and write 3 to 4 sentences on how you could tell its genre from the way it looked and sounded, not from the story. Talk about color, music, pacing, or mood.",
+    "submission_type": "Short text",
+    "tool": "None needed.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Correctly names three genres",
+        "points": 3
+      },
+      {
+        "criteria": "Explains genre from look and sound",
+        "points": 4
+      },
+      {
+        "criteria": "Clear and specific, not vague",
+        "points": 3
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G9-A1.3",
+    "module_id": "G9-M1",
+    "order": 3,
+    "week": "Week 3",
+    "title": "Seeing Like a Filipino Filmmaker",
+    "competency_code": "G9T1-1",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to study one Filipino film or short and take one technique you can use in your own work, so you build a local reference library instead of memorizing trivia.",
+    "before_hook": "Filipino filmmakers have solved hard problems with small budgets for decades. That is a treasure chest for you. Today I do not want you to memorize names and dates. I want you to watch one Filipino work, see how one moment was built, and steal that technique for yourself. That is how real craft grows.",
+    "watch_for": [
+      "What is one thing this filmmaker did that you could copy?",
+      "How did they use a small space, a real location, or natural light?",
+      "What feeling did they create, and with what tool?"
+    ],
+    "video_slot": "One clip from a Filipino film, 5 to 15 minutes, showing one clear technique.",
+    "video_candidate": "Sagip Pelikula hosts restored films by National Artists for Film, including work by Marilou Diaz-Abaya, Eddie Romero, and Gerry de Leon. Viddsee is a backup source of festival films. Raising the cap to 15 minutes makes strong Filipino shorts usable.",
+    "video_preview_note": "This is the one slot where I hand you the shelf, not the book. These films carry mature themes, so I cannot pre-clear a clip. Choose a scene that shows one clear technique, and preview it closely for your Grade 9 class before embedding.",
+    "video_status": "SOURCE SELECTED. You pick and clear the exact clip.",
+    "video_title": "Choose one 5 to 15 minute scene showing a single copyable technique.",
+    "video_channel": "ABS-CBN Sagip Pelikula on YouTube",
+    "video_runtime": "Your chosen clip, up to 15 minutes.",
+    "video_url": "Pull from the Sagip Pelikula channel. It hosts restored National Artist films legally and free.",
+    "after_bridge": "So you now have one real technique in your pocket, taken from a Filipino filmmaker. That is worth more than a list of titles you would forget by next week. You watched, you saw how it was built, and you made it yours.",
+    "activity_brief": "I want you to name one technique from the film we watched, describe it in 3 to 4 sentences, and say exactly how you would use it in your own future film. Be specific. Do not say the lighting was nice. Say how the filmmaker used a single window as their only light source, and how you would try the same in your own home.",
+    "submission_type": "Short text",
+    "tool": "None needed.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Identifies one real technique",
+        "points": 4
+      },
+      {
+        "criteria": "Describes how it worked",
+        "points": 3
+      },
+      {
+        "criteria": "Plans a personal use for it",
+        "points": 3
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G9-A1.4",
+    "module_id": "G9-M1",
+    "order": 4,
+    "week": "Weeks 4 to 5",
+    "title": "The Critique",
+    "competency_code": "G9T1-3",
+    "is_performance_task": true,
+    "lesson_goal": "I want you to write a real film critique: a clear verdict backed by craft evidence, drafted alone, sharpened against an agent, then revised into your best work.",
+    "before_hook": "This is your first real output. A film critique is not a summary. It is you, using the eye you built over three weeks, judging how a film was made and whether it works. Film schools and employers respect a person who can watch closely and argue clearly. That skill starts here.",
+    "watch_for": [
+      "What is the film trying to do?",
+      "Which craft choices help it, and which hurt it?",
+      "What is my honest verdict, and can I defend it?"
+    ],
+    "video_slot": "Optional model on how to structure a film critique, 5 to 15 minutes, English.",
+    "video_candidate": "Editors of a leading film magazine explain how a review is built. Reputable and clean.",
+    "video_preview_note": "Optional lesson. Preview before embedding to confirm the runtime fits.",
+    "video_status": "SELECTED. Optional. Preview to confirm runtime.",
+    "video_title": "The Sight and Sound team on how to write a film review, BFI Behind the scenes",
+    "video_channel": "BFI, British Film Institute",
+    "video_runtime": "Not confirmed to the second. BFI Behind the scenes clips run short.",
+    "video_url": "https://www.youtube.com/watch?v=3ox8qvfqI-4",
+    "after_bridge": "So a critique is an argument backed by craft evidence. You make a claim about the film, then you prove it with what you saw on screen. That is the same skill a lawyer, a scientist, and a filmmaker all share. You state a position and you back it.",
+    "activity_brief": "I want you to choose one short film or one full length film. Write a critique of 300 to 400 words. Make a clear verdict and back it with at least three craft choices you noticed. First write your own draft with no help at all. Then use a free AI agent as a sparring partner: paste your draft and ask it to attack your weakest argument. Read what it says. Keep what is fair. Reject what is wrong. Then revise. Submit a link to a document that shows both your first draft and your final version, so I can see how your thinking grew.",
+    "submission_type": "Link",
+    "tool": "A free writing tool like Google Docs for the document and the shareable link. A free AI chat agent for the sparring step, run through my teacher account or as a class demo, since these tools have age rules for minors. I will confirm the exact agent and its rules in Research mode.",
+    "ai_note": "You write first, alone. The agent only challenges your draft. You decide what to keep. The argument stays yours. An agent that writes your critique for you has robbed you of the one skill this whole term is building.",
+    "rubric": [
+      {
+        "criteria": "Clear verdict on the film",
+        "points": 5
+      },
+      {
+        "criteria": "Three or more craft choices as evidence",
+        "points": 6
+      },
+      {
+        "criteria": "Argument holds together",
+        "points": 4
+      },
+      {
+        "criteria": "Revision shows real improvement",
+        "points": 3
+      },
+      {
+        "criteria": "Meets length and submits both drafts",
+        "points": 2
+      }
+    ],
+    "rubric_total": 20
+  },
+  {
+    "activity_id": "G10-A1.1",
+    "module_id": "G10-M1",
+    "order": 1,
+    "week": "Week 1",
+    "title": "Story Structure, the Spine",
+    "competency_code": "G10T1-2",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to see the shape under every story, the hook, the rising stakes, and the payoff, and to break a story you know into those three parts.",
+    "before_hook": "Every story you remember has a shape. A beginning that pulls you in. A middle that raises the stakes. An end that pays off. That shape is structure, and it is the spine of every screenplay ever written. Without it, a story just wanders and the audience drifts away. Today I want you to feel that spine, because once you feel it, you can build any story on it.",
+    "watch_for": [
+      "Where does this story hook you?",
+      "How do the stakes rise in the middle?",
+      "How does the ending pay off the beginning?"
+    ],
+    "video_slot": "Basic story structure, the three act shape, 5 to 15 minutes, English.",
+    "video_candidate": "Beginner three act explainer. Note, the StudioBinder three act video is excellent but runs about 26 minutes, too long even at the 15 minute cap, so I did not choose it. If this pick falls outside 5 to 15 minutes, tell me and I will find a mid length replacement.",
+    "video_preview_note": "Preview before embedding. Confirm the runtime fits and it is clear enough for Grade 10.",
+    "video_status": "SELECTED. Preview to confirm runtime.",
+    "video_title": "How To Write A 3 Act Structure For Film",
+    "video_channel": "Confirm on the video page.",
+    "video_runtime": "Not confirmed to the second. Confirm it lands in range.",
+    "video_url": "https://www.youtube.com/watch?v=1EO7aDRuDws",
+    "after_bridge": "So structure is the spine that holds a story upright. Hook, rising stakes, payoff. Beginning, middle, end. It sounds simple, and it is, but almost every weak story fails right here. Master this shape and you are ahead of most beginners.",
+    "activity_brief": "I want you to take any story you know well, a film or a folk tale, and break it into beginning, middle, and end in 5 to 7 sentences. Name the hook that pulls you in, the rising stakes in the middle, and the payoff at the end. Show me you can see the spine.",
+    "submission_type": "Short text",
+    "tool": "None needed.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Three parts clearly named",
+        "points": 4
+      },
+      {
+        "criteria": "Hook and payoff identified",
+        "points": 3
+      },
+      {
+        "criteria": "Rising stakes explained",
+        "points": 3
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G10-A1.2",
+    "module_id": "G10-M1",
+    "order": 2,
+    "week": "Week 2",
+    "title": "Character and Want, the Engine",
+    "competency_code": "G10T1-2",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to build a character the audience cares about by giving them a clear want and a real obstacle.",
+    "before_hook": "A story moves because someone wants something and cannot easily get it. That want is the engine. A character with no clear want is a character no one cares about. Your strongest ideas often come from found stories, real moments from your own life that you reshape into fiction. Today you build a character with a beating heart.",
+    "watch_for": [
+      "What does the main character want?",
+      "What stands in their way?",
+      "How does the want drive every choice they make?"
+    ],
+    "video_slot": "Character want and motivation, 5 to 15 minutes, English.",
+    "video_candidate": "Directly addresses why audiences care about a character through motivation and desire, with film examples. Clean and educational.",
+    "video_preview_note": "Preview before embedding. Confirm the runtime fits.",
+    "video_status": "SELECTED. Preview to confirm runtime.",
+    "video_title": "The Secret to a Great Character, How to Write Character Motivation",
+    "video_channel": "StudioBinder",
+    "video_runtime": "Not confirmed to the second. Confirm it lands in range.",
+    "video_url": "https://www.youtube.com/watch?v=G_7AWxJLBRc",
+    "after_bridge": "So character is the engine and want is the fuel. Give a character a clear want and a real obstacle, and your story almost writes itself, because every scene becomes the character trying to get what they want and hitting a wall. That is drama.",
+    "activity_brief": "I want you to invent one character in 5 to 7 sentences. Name what they want, what blocks them, and why the audience should care. You can base them on a real person you reshape into fiction. Make the want specific. Do not say they want to be happy. Say they want to win the barangay basketball trophy their late father never won.",
+    "submission_type": "Short text",
+    "tool": "None needed.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Clear character want",
+        "points": 4
+      },
+      {
+        "criteria": "Real obstacle named",
+        "points": 3
+      },
+      {
+        "criteria": "Reason to care",
+        "points": 3
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G10-A1.3",
+    "module_id": "G10-M1",
+    "order": 3,
+    "week": "Week 3",
+    "title": "Owning Your Voice",
+    "competency_code": "G10T1-1",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to understand why your own voice is your value, and to set your own honest rule for using an AI agent in your writing.",
+    "before_hook": "Anyone can now generate a script with one click. That is exactly why your own voice is worth more than ever. Originality is not just about honesty. It is your career edge. A writer whose voice is provably their own is the one who gets hired. Plagiarism and lazy agent use throw that edge away. Today you decide what kind of writer you will be.",
+    "watch_for": [
+      "What makes a writer's voice their own?",
+      "Where is the line between inspiration and copying?",
+      "How can an agent help you without stealing your voice?"
+    ],
+    "video_slot": "Originality, plagiarism, and honest AI use in writing, 5 to 15 minutes, English.",
+    "video_candidate": "Defines several types of plagiarism, including AI plagiarism and patchwriting, and argues for doing your own writing. Made by an academic library, so it is educational and not a sales pitch for any AI tool. Exactly right for this lesson.",
+    "video_preview_note": "Preview before embedding. Confirm the runtime fits.",
+    "video_status": "SELECTED. Preview to confirm runtime.",
+    "video_title": "Plagiarism, AI, and Writing it Yourself: No Brain, No Gain!",
+    "video_channel": "Montgomery Library, Campbellsville University",
+    "video_runtime": "Not confirmed to the second. Confirm it lands in range.",
+    "video_url": "https://www.youtube.com/watch?v=WlIo2TGS26I",
+    "after_bridge": "So your voice is your value. Use an agent as a tool that serves your voice, never as a replacement for it. The writer who owns their voice owns their future. The one who lets a machine write for them has nothing to sell that a machine cannot already give away for free.",
+    "activity_brief": "I want you to write 5 to 7 sentences on what makes your writing voice yours. Think about how you see the world, the stories only you could tell, the way you use words. Then state one clear rule you will follow for using an AI agent honestly in your own screenwriting this term.",
+    "submission_type": "Short text",
+    "tool": "None needed. This lesson is about AI ethics itself, so you write it in your own words with no agent.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Describes own voice",
+        "points": 4
+      },
+      {
+        "criteria": "States an honest AI rule",
+        "points": 4
+      },
+      {
+        "criteria": "Thoughtful and personal",
+        "points": 2
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G10-A1.4",
+    "module_id": "G10-M1",
+    "order": 4,
+    "week": "Week 4",
+    "title": "Format and Tool",
+    "competency_code": "G10T1-2",
+    "is_performance_task": false,
+    "lesson_goal": "I want you to write one short scene in correct screenplay format using a free tool, so your story looks professional to any reader.",
+    "before_hook": "A brilliant story in the wrong format gets thrown out unread in the real world. Screenplay format is a professional standard, and following it signals that you are serious. The good news is that free tools handle the formatting for you, so you can focus on the story while the tool handles the margins and the capital letters. Today you learn the uniform of a professional writer.",
+    "watch_for": [
+      "What does a proper screenplay page look like?",
+      "How are scene headings, action, and dialogue laid out?",
+      "How does a free tool handle the format for you automatically?"
+    ],
+    "video_slot": "Screenplay format basics, 5 to 15 minutes, English, ideally naming a free tool.",
+    "video_candidate": "StudioBinder format videos name their own free screenwriting tool and now fit at the 15 minute cap. Pick the one focused on the basic elements of format. WriterDuet free or Celtx free also work as the tool students use.",
+    "video_preview_note": "Preview before embedding. Confirm it teaches format clearly, names a free tool, and fits the time window.",
+    "video_status": "SOURCE SELECTED. Confirm the specific episode.",
+    "video_title": "A StudioBinder screenplay formatting explainer.",
+    "video_channel": "StudioBinder",
+    "video_runtime": "Raising the cap to 15 minutes makes StudioBinder's format videos usable.",
+    "video_url": "Choose a StudioBinder screenplay format video that names a free tool and fits 5 to 15 minutes.",
+    "after_bridge": "So format is the uniform of a professional writer. A free tool puts it on for you. Now nothing stands between your story and a reader. They open your pages, they see a real screenplay, and they take you seriously before they read a single line.",
+    "activity_brief": "I want you to write one short scene, about half a page, in correct screenplay format using a free screenwriting tool. Include a scene heading, action lines, and at least two lines of dialogue. Do not worry about a perfect story here. Worry about clean, correct format. Submit it as a link.",
+    "submission_type": "Link",
+    "tool": "A free screenwriting tool, confirmed in Research mode. Google Docs can also hold the shareable link. Your Google Docs skills, like page breaks and headings, fold in here naturally.",
+    "ai_note": null,
+    "rubric": [
+      {
+        "criteria": "Correct scene heading",
+        "points": 3
+      },
+      {
+        "criteria": "Proper action and dialogue format",
+        "points": 4
+      },
+      {
+        "criteria": "Clean and readable",
+        "points": 3
+      }
+    ],
+    "rubric_total": 10
+  },
+  {
+    "activity_id": "G10-A1.5",
+    "module_id": "G10-M1",
+    "order": 5,
+    "week": "Weeks 5 to 6",
+    "title": "The Screenplay",
+    "competency_code": "G10T1-2",
+    "is_performance_task": true,
+    "lesson_goal": "I want you to write a short screenplay in correct format, built on a clear structure and a wanting character, then test its dialogue against an agent and revise it into a portfolio piece.",
+    "before_hook": "This is your output for the term. You will write a short screenplay using everything you learned: structure, character, format, and your own voice. A short, tight, well formatted screenplay that you wrote yourself is a real portfolio piece. You could submit it to a workshop, a contest, or a school. Let us make it something you are proud of.",
+    "watch_for": [
+      "Does my story have a clear spine?",
+      "Does my character want something real?",
+      "Does my dialogue sound like a person actually talking?"
+    ],
+    "video_slot": "Optional model of a well written short screenplay, 5 to 15 minutes, English.",
+    "video_candidate": "Search filmmaker education channels for a short script breakdown, 5 to 15 minutes, English, and apply the same rules.",
+    "video_preview_note": "Optional and currently open. The screenplay task does not depend on it.",
+    "video_status": "OPEN. Left unfilled on purpose.",
+    "video_title": "Not selected yet.",
+    "video_channel": "To be chosen.",
+    "video_runtime": "n/a",
+    "video_url": "No confirmed pick. This slot is optional, so I would rather ship the term without it than force a weak choice. We can add a short script breakdown later.",
+    "after_bridge": "So you wrote a real screenplay, structured and formatted, in your own voice. That is a piece you can show the world. Most people your age have never finished one. You just did. That is what competitive looks like.",
+    "activity_brief": "I want you to write a short screenplay of 2 to 4 pages in correct format using a free tool. Build it on a clear structure and a character with a real want. First write your own draft. Then use a free AI agent to test one thing only: does your dialogue sound performable when read aloud. Keep the notes that help. Reject the rest. Then revise. Submit a link showing your outline, your first draft, and your final version.",
+    "submission_type": "Link",
+    "tool": "A free screenwriting tool plus a free AI chat agent for the dialogue test, run through my teacher account or as a class demo due to age rules. I will confirm both in Research mode.",
+    "ai_note": "You outline and write alone. The agent only tests whether the dialogue sounds performable. You decide what to change. The screenplay stays yours. Follow the honest rule you wrote in Week 3.",
+    "rubric": [
+      {
+        "criteria": "Clear structure",
+        "points": 5
+      },
+      {
+        "criteria": "Character with a real want",
+        "points": 4
+      },
+      {
+        "criteria": "Correct format",
+        "points": 4
+      },
+      {
+        "criteria": "Performable dialogue",
+        "points": 4
+      },
+      {
+        "criteria": "Revision and full submission",
+        "points": 3
+      }
+    ],
+    "rubric_total": 20
+  }
+]

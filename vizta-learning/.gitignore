@@ -1,0 +1,17 @@
+# dependencies
+/node_modules
+
+# env — never commit real secrets
+.env
+.env.local
+.env*.local
+
+# next.js (added in Step 2)
+/.next
+/out
+/build
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*

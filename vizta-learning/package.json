@@ -1,0 +1,16 @@
+{
+  "name": "vizta-learning",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vizta Learning — self-paced Media Arts e-learning platform (Term 1)",
+  "type": "module",
+  "scripts": {
+    "seed": "node --env-file=.env scripts/seed.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "engines": {
+    "node": ">=20.6.0"
+  }
+}
