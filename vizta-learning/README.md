@@ -3,10 +3,11 @@
 A self-paced Media Arts e-learning platform for Grade 9 and Grade 10 students,
 hosted at **learn.viztasystems.com**. Built to the Term 1 build brief.
 
-This README grows as the build progresses. Right now it covers **Steps 1–2 of
-the build order: the database schema, the seed script, and the student login.**
-Later steps (dashboard, lesson page, submissions, quizzes, certificate, teacher
-panel, n8n export) will add their own sections.
+This README grows as the build progresses. Right now it covers **Steps 1–3 of
+the build order: the database schema, the seed script, the student login, and
+the dashboard + lesson page reading real data.** Later steps (submission + quiz
+saving, sequential-unlock polish, certificate, teacher panel, n8n export) will
+add their own sections.
 
 ## Golden rules (fixed — do not work around)
 
@@ -106,7 +107,35 @@ The front end is a Next.js (App Router) app in this folder.
 3. `npm run dev`, then open http://localhost:3000
 
 Pages so far: `/` (landing, pick grade), `/login` (class code + student number),
-`/dashboard` (stub — proves login works; the real dashboard is Step 3).
+`/dashboard` (module, lessons, progress, locks), `/lesson/[activityId]` (the full
+lesson). To see real data, seed the content and add a test student (below).
+
+## Dashboard and lesson page (Step 3)
+
+Both read real Supabase data server-side, scoped to the signed-in student.
+
+- **Dashboard** shows the student's module, the term output as the goal, a
+  progress percentage, each lesson with a status badge (Not started / Submitted /
+  Graded / Complete), and **sequential locks**: the first lesson is open; each
+  later lesson unlocks only when the one before it is complete. Locked lessons are
+  visible but not clickable, and "Up next" points to the next open lesson.
+- **Lesson page** renders the master template in order: goal → *Before you watch*
+  (hook + watch-for questions) → the embedded video → *After you watch* → the
+  activity brief with its submission type → the rubric as a points table → the
+  quiz. Rows without a final video URL (`G9-A1.3`, `G10-A1.4`, `G10-A1.5`) show a
+  friendly "your teacher will add the video" placeholder instead of a broken embed.
+
+**Definition of complete** (per the brief): a lesson is complete when the student
+has **both** submitted its activity **and** taken its quiz. Progress % = complete
+lessons ÷ total lessons in the module.
+
+**What's not wired yet:** the activity submission box and the quiz on the lesson
+page currently *render* but don't save — a note on the page says so. Saving and
+auto-grading are Step 4.
+
+**Student privacy on the lesson page:** the DepEd **competency code is never shown
+to students** (it's kept server-side for the teacher's export), and none of the
+teacher-facing video notes (candidate, preview note, status) are rendered.
 
 ## Student login (class code + student number)
 
@@ -152,7 +181,7 @@ handled gracefully on the lesson page (built in Step 3).
 
 - [x] **Step 1 — Schema + seed script**
 - [x] **Step 2 — Student login** (class code + student number, teacher-adds-first)
-- [ ] Step 3 — Dashboard + lesson page (reading real data)
+- [x] **Step 3 — Dashboard + lesson page** (reading real data, sequential locks)
 - [ ] Step 4 — Submission + quiz saving
 - [ ] Step 5 — Sequential unlocking + progress
 - [ ] Step 6 — Certificate

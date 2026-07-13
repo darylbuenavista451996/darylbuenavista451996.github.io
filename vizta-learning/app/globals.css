@@ -135,3 +135,87 @@ input:focus { border-color: var(--mint); }
 .muted-link { display: inline-block; margin-top: 18px; color: var(--muted); font-size: 15px; }
 .footer { margin-top: 26px; color: var(--muted); font-size: 13px; text-align: center; }
 .stack > * + * { margin-top: 10px; }
+
+/* Wide layout for dashboard + lesson ------------------------------------- */
+.page-wide { justify-content: flex-start; padding-top: 22px; }
+.card-wide { max-width: 760px; padding: 24px 22px 30px; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.topbar .brand { margin-bottom: 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.who { font-size: 14px; color: var(--muted); font-weight: 600; }
+.btn-sm { width: auto; padding: 8px 14px; font-size: 14px; }
+
+.eyebrow { display: block; text-transform: uppercase; letter-spacing: 0.6px; font-size: 12px; font-weight: 700; color: var(--mint-dark); margin-bottom: 4px; }
+.module-head { margin-bottom: 18px; }
+.goal { color: var(--navy); background: var(--mint-tint); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; }
+
+/* Progress --------------------------------------------------------------- */
+.progress-wrap { margin: 18px 0 8px; }
+.progress-row { display: flex; justify-content: space-between; align-items: baseline; }
+.progress-label { font-weight: 700; color: var(--navy); }
+.progress-pct { font-weight: 800; color: var(--mint-dark); font-size: 20px; }
+.progress-track { height: 12px; background: var(--navy-tint); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--mint), var(--mint-dark)); border-radius: 999px; transition: width 0.4s ease; min-width: 2px; }
+.progress-sub { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+
+/* Banners ---------------------------------------------------------------- */
+.banner { background: var(--navy-tint); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 18px 0; font-size: 15px; }
+.banner-success { background: var(--mint-tint); border-color: #bfe6d6; color: var(--navy); }
+
+/* Badges ----------------------------------------------------------------- */
+.badge-done { background: var(--mint); color: #fff; }
+.badge-graded { background: var(--navy); color: #fff; }
+.badge-submitted { background: #e6ecf7; color: var(--navy-light); }
+.badge-muted { background: #eef0f4; color: var(--muted); }
+
+/* Lesson list ------------------------------------------------------------ */
+.lesson-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.lesson { border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.lesson-link, .lesson-locked { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-decoration: none; color: inherit; }
+.lesson-link:hover { border-radius: 12px; background: var(--mint-tint); }
+.lesson-locked { opacity: 0.6; cursor: not-allowed; }
+.lesson-num { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+.lesson-locked .lesson-num { background: var(--muted); }
+.lesson-main { flex: 1; min-width: 0; }
+.lesson-title { display: block; font-weight: 700; color: var(--navy); }
+.lesson-meta { display: block; font-size: 13px; color: var(--muted); }
+.lesson-right { flex: none; }
+.lock { font-size: 18px; }
+
+/* Lesson sections -------------------------------------------------------- */
+.lesson-section { margin-top: 24px; }
+.lesson-section h2 { font-size: 18px; color: var(--navy); margin: 0 0 8px; padding-bottom: 6px; border-bottom: 2px solid var(--mint-tint); }
+.lesson-section p { margin: 0 0 10px; }
+.watch-lead { font-weight: 600; margin-bottom: 6px; }
+.watch-for { margin: 0; padding-left: 20px; }
+.watch-for li { margin-bottom: 6px; }
+.tool-note, .ai-note { background: var(--navy-tint); border-radius: 10px; padding: 10px 12px; font-size: 15px; }
+.ai-note { background: #fff6e9; }
+
+/* Video ------------------------------------------------------------------ */
+.video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-placeholder { display: flex; flex-direction: column; gap: 4px; justify-content: center; text-align: center; aspect-ratio: 16 / 9; background: var(--navy-tint); border: 2px dashed var(--border); border-radius: 12px; color: var(--muted); padding: 16px; }
+.video-placeholder strong { color: var(--navy); }
+.video-cap { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+/* Submission box --------------------------------------------------------- */
+.submit-box { margin-top: 12px; }
+.submit-box textarea, .submit-box input[type="text"] { width: 100%; padding: 13px 14px; font-size: 16px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; background: #fbfcfe; }
+.submit-box textarea:disabled, .submit-box input:disabled { color: var(--muted); }
+
+/* Rubric ----------------------------------------------------------------- */
+.rubric { width: 100%; border-collapse: collapse; font-size: 15px; }
+.rubric th, .rubric td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.rubric th { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.4px; }
+.rubric .pts { text-align: right; font-weight: 700; color: var(--navy); white-space: nowrap; }
+.rubric tfoot td { font-weight: 800; color: var(--navy); border-bottom: none; }
+
+/* Quiz ------------------------------------------------------------------- */
+.quiz { margin: 0; padding-left: 20px; display: grid; gap: 16px; }
+.quiz-item { }
+.quiz-q { font-weight: 600; margin-bottom: 8px; }
+.quiz-opts { display: grid; gap: 8px; }
+.quiz-opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; font-weight: 400; }
+.quiz-opt input { margin-top: 4px; }
