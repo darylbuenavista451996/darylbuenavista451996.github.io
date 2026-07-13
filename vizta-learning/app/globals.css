@@ -1,0 +1,137 @@
+/* Vizta Learning — global styles and brand tokens.
+   Change the palette in one place here. Mint and navy are the brand. */
+
+:root {
+  --mint: #3eb489;
+  --mint-dark: #2f9270;
+  --mint-tint: #e7f5ef;
+  --navy: #1b2a4a;
+  --navy-light: #2c4270;
+  --navy-tint: #eef1f7;
+
+  --ink: #1b2a4a; /* body text = navy for calm, high contrast */
+  --muted: #5b6577;
+  --bg: #f7f9fc;
+  --card: #ffffff;
+  --border: #dfe4ec;
+  --danger: #b23b3b;
+  --danger-tint: #fbeaea;
+
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(27, 42, 74, 0.06), 0 8px 24px rgba(27, 42, 74, 0.08);
+  --maxw: 460px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--mint-dark); }
+
+/* Layout ------------------------------------------------------------------ */
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px calc(24px + env(safe-area-inset-bottom));
+}
+
+.card {
+  width: 100%;
+  max-width: var(--maxw);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.brand-mark {
+  width: 40px; height: 40px; border-radius: 10px; flex: none;
+  background: linear-gradient(135deg, var(--mint), var(--navy));
+}
+.brand-name { font-weight: 800; letter-spacing: 0.2px; color: var(--navy); }
+.brand-name small { display: block; font-weight: 600; color: var(--muted); font-size: 13px; letter-spacing: 0; }
+
+h1 { font-size: 24px; line-height: 1.25; margin: 0 0 8px; color: var(--navy); }
+.lede { color: var(--muted); margin: 0 0 22px; }
+
+/* Buttons ----------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 17px; font-weight: 700;
+  border-radius: 10px; border: 2px solid transparent;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--mint); color: #fff; }
+.btn-primary:hover { background: var(--mint-dark); }
+.btn-navy { background: var(--navy); color: #fff; }
+.btn-navy:hover { background: var(--navy-light); }
+.btn-ghost { background: #fff; color: var(--navy); border-color: var(--border); }
+.btn-ghost:hover { border-color: var(--mint); }
+
+.choice-grid { display: grid; gap: 12px; }
+
+/* Forms ------------------------------------------------------------------- */
+.field { margin-bottom: 16px; }
+label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--navy); }
+.hint { color: var(--muted); font-size: 14px; margin-top: 4px; }
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 13px 14px;
+  font-size: 17px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+}
+input::placeholder { color: #9aa3b2; }
+
+/* Visible focus everywhere (accessibility) */
+a:focus-visible, button:focus-visible, input:focus-visible, .btn:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+input:focus { border-color: var(--mint); }
+
+/* Messages ---------------------------------------------------------------- */
+.error {
+  background: var(--danger-tint);
+  border: 1px solid #eecccc;
+  color: var(--danger);
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+.badge {
+  display: inline-block; font-size: 12px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--mint-tint); color: var(--mint-dark);
+}
+
+.muted-link { display: inline-block; margin-top: 18px; color: var(--muted); font-size: 15px; }
+.footer { margin-top: 26px; color: var(--muted); font-size: 13px; text-align: center; }
+.stack > * + * { margin-top: 10px; }
