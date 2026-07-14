@@ -1,0 +1,149 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { getSession } from '@/lib/session';
+import { supabaseServer } from '@/lib/supabase';
+import {
+  getLessonForStudent,
+  getSubmission,
+  getQuizKey,
+  submissionKind,
+} from '@/lib/data';
+
+export type SubmitState = {
+  ok?: boolean;
+  error?: string;
+  savedAt?: string;
+};
+
+function isHttpUrl(v: string): boolean {
+  try {
+    const u = new URL(v);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+// Save an activity submission. Text, link, or image URL only — never a file.
+export async function submitActivity(
+  activityId: string,
+  _prev: SubmitState,
+  formData: FormData
+): Promise<SubmitState> {
+  const session = getSession();
+  if (!session) return { error: 'Your session ended. Please sign in again.' };
+
+  const result = await getLessonForStudent(session.sid, session.class, activityId);
+  if (!result) return { error: 'We could not find that lesson.' };
+  if (result.lesson.locked)
+    return { error: 'Finish the earlier lessons first — this one is locked.' };
+
+  // Can't edit after a teacher has graded it.
+  const existing = await getSubmission(session.sid, activityId);
+  if (existing?.status === 'Graded')
+    return { error: 'This has already been graded, so it can no longer be changed.' };
+
+  const kind = submissionKind(result.lesson.activity.submission_type);
+  const content = String(formData.get('content') ?? '').trim();
+
+  if (!content) {
+    return {
+      error:
+        kind === 'text'
+          ? 'Please write your answer before submitting.'
+          : 'Please paste your link before submitting.',
+    };
+  }
+  if ((kind === 'link' || kind === 'image') && !isHttpUrl(content)) {
+    return {
+      error:
+        "That doesn't look like a valid link. It should start with http:// or https://.",
+    };
+  }
+  if (kind === 'text' && content.length > 8000) {
+    return { error: 'That answer is very long. Please keep it under 8000 characters.' };
+  }
+
+  try {
+    const supabase = supabaseServer();
+    const { error } = await supabase.from('submissions').upsert(
+      {
+        student_id: session.sid,
+        activity_id: activityId,
+        content,
+        status: 'Submitted',
+        submitted_at: new Date().toISOString(),
+      },
+      { onConflict: 'student_id,activity_id' }
+    );
+    if (error) throw error;
+  } catch {
+    return { error: 'We could not save your submission. Please try again in a moment.' };
+  }
+
+  revalidatePath('/dashboard');
+  revalidatePath(`/lesson/${activityId}`);
+  return { ok: true, savedAt: new Date().toISOString() };
+}
+
+export type QuizState = {
+  scored?: boolean;
+  error?: string;
+  score?: number;
+  total?: number;
+  // per question: the correct letter and what the student chose
+  review?: Array<{ quiz_id: string; correct: string; chosen: string | null; isCorrect: boolean }>;
+};
+
+// Auto-grade a quiz attempt server-side and save a QuizResults row.
+export async function submitQuiz(
+  activityId: string,
+  _prev: QuizState,
+  formData: FormData
+): Promise<QuizState> {
+  const session = getSession();
+  if (!session) return { error: 'Your session ended. Please sign in again.' };
+
+  const result = await getLessonForStudent(session.sid, session.class, activityId);
+  if (!result) return { error: 'We could not find that lesson.' };
+  if (result.lesson.locked)
+    return { error: 'Finish the earlier lessons first — this one is locked.' };
+
+  const key = await getQuizKey(activityId);
+  if (key.length === 0) return { error: 'This lesson has no quiz.' };
+
+  // Every question must be answered.
+  const review = key.map((k) => {
+    const chosen = formData.get(k.quiz_id);
+    const chosenStr = chosen == null ? null : String(chosen);
+    return {
+      quiz_id: k.quiz_id,
+      correct: k.correct,
+      chosen: chosenStr,
+      isCorrect: chosenStr === k.correct,
+    };
+  });
+  if (review.some((r) => !r.chosen)) {
+    return { error: 'Please answer every question before submitting.', total: key.length };
+  }
+
+  const score = review.filter((r) => r.isCorrect).length;
+
+  try {
+    const supabase = supabaseServer();
+    const { error } = await supabase.from('quiz_results').insert({
+      student_id: session.sid,
+      activity_id: activityId,
+      score,
+      date: new Date().toISOString(),
+    });
+    if (error) throw error;
+  } catch {
+    return { error: 'We could not save your quiz. Please try again in a moment.' };
+  }
+
+  revalidatePath('/dashboard');
+  revalidatePath(`/lesson/${activityId}`);
+  return { scored: true, score, total: key.length, review };
+}

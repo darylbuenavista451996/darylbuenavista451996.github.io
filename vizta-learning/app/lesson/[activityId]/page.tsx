@@ -13,9 +13,13 @@ import { getSession } from '@/lib/session';
 import {
   getLessonForStudent,
   getQuizItems,
+  getSubmission,
+  getLatestQuizResult,
   youtubeEmbed,
   submissionKind,
 } from '@/lib/data';
+import ActivitySubmit from './ActivitySubmit';
+import QuizRunner from './QuizRunner';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +42,11 @@ export default async function LessonPage({
   const a = lesson.activity;
   const embed = youtubeEmbed(a.video_url);
   const kind = submissionKind(a.submission_type);
-  const quiz = await getQuizItems(a.activity_id);
+  const [quiz, existingSubmission, priorQuiz] = await Promise.all([
+    getQuizItems(a.activity_id),
+    getSubmission(session.sid, a.activity_id),
+    getLatestQuizResult(session.sid, a.activity_id),
+  ]);
 
   return (
     <main className="page page-wide">
@@ -111,25 +119,7 @@ export default async function LessonPage({
           {a.tool ? <p className="tool-note"><strong>Tool:</strong> {a.tool}</p> : null}
           {a.ai_note ? <p className="ai-note"><strong>On using an AI agent:</strong> {a.ai_note}</p> : null}
 
-          <div className="submit-box" aria-disabled="true">
-            {kind === 'text' ? (
-              <>
-                <label htmlFor="answer">Your answer</label>
-                <textarea id="answer" rows={6} placeholder="Write your answer here…" disabled />
-              </>
-            ) : kind === 'link' ? (
-              <>
-                <label htmlFor="answer">Paste your link</label>
-                <input id="answer" type="text" placeholder="https://…" disabled />
-              </>
-            ) : (
-              <>
-                <label htmlFor="answer">Paste your image link</label>
-                <input id="answer" type="text" placeholder="https://… (an image URL)" disabled />
-              </>
-            )}
-            <p className="hint">Submissions are text, a link, or an image link — never a file upload.</p>
-          </div>
+          <ActivitySubmit activityId={a.activity_id} kind={kind} existing={existingSubmission} />
         </section>
 
         {/* Rubric */}
@@ -156,32 +146,13 @@ export default async function LessonPage({
         {quiz.length > 0 ? (
           <section className="lesson-section">
             <h2>Quick quiz</h2>
-            <ol className="quiz">
-              {quiz.map((q) => (
-                <li key={q.quiz_id} className="quiz-item">
-                  <p className="quiz-q">{q.question}</p>
-                  <div className="quiz-opts">
-                    {(['A', 'B', 'C', 'D'] as const).map((letter) => {
-                      const text = (q as any)[`option_${letter.toLowerCase()}`] as string | null;
-                      if (!text) return null;
-                      return (
-                        <label key={letter} className="quiz-opt">
-                          <input type="radio" name={q.quiz_id} value={letter} disabled />
-                          <span><b>{letter}.</b> {text}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <QuizRunner
+              activityId={a.activity_id}
+              items={quiz}
+              priorScore={priorQuiz?.score ?? null}
+            />
           </section>
         ) : null}
-
-        <div className="banner" role="note">
-          You can read everything here now. Submitting your activity and taking the
-          quiz for a score turn on in the next update.
-        </div>
       </div>
     </main>
   );

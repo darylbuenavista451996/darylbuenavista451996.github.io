@@ -217,5 +217,10 @@ input:focus { border-color: var(--mint); }
 .quiz-item { }
 .quiz-q { font-weight: 600; margin-bottom: 8px; }
 .quiz-opts { display: grid; gap: 8px; }
-.quiz-opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; font-weight: 400; }
+.quiz-opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; font-weight: 400; cursor: pointer; }
 .quiz-opt input { margin-top: 4px; }
+.opt-correct { background: var(--mint-tint); border-color: var(--mint); }
+.opt-wrong { background: var(--danger-tint); border-color: #eecccc; }
+.tick { color: var(--mint-dark); font-weight: 800; margin-left: auto; }
+.feedback { margin-top: 6px; font-style: italic; color: var(--navy); }
+.submit-box .btn { margin-top: 12px; }

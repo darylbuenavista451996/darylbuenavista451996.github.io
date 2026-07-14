@@ -3,10 +3,10 @@
 A self-paced Media Arts e-learning platform for Grade 9 and Grade 10 students,
 hosted at **learn.viztasystems.com**. Built to the Term 1 build brief.
 
-This README grows as the build progresses. Right now it covers **Steps 1–3 of
-the build order: the database schema, the seed script, the student login, and
-the dashboard + lesson page reading real data.** Later steps (submission + quiz
-saving, sequential-unlock polish, certificate, teacher panel, n8n export) will
+This README grows as the build progresses. Right now it covers **Steps 1–5 of
+the build order: the database schema, the seed script, the student login, the
+dashboard + lesson page reading real data, and saving submissions + quizzes with
+sequential unlocking.** Later steps (certificate, teacher panel, n8n export) will
 add their own sections.
 
 ## Golden rules (fixed — do not work around)
@@ -129,13 +129,27 @@ Both read real Supabase data server-side, scoped to the signed-in student.
 has **both** submitted its activity **and** taken its quiz. Progress % = complete
 lessons ÷ total lessons in the module.
 
-**What's not wired yet:** the activity submission box and the quiz on the lesson
-page currently *render* but don't save — a note on the page says so. Saving and
-auto-grading are Step 4.
-
 **Student privacy on the lesson page:** the DepEd **competency code is never shown
 to students** (it's kept server-side for the teacher's export), and none of the
 teacher-facing video notes (candidate, preview note, status) are rendered.
+
+## Submissions and quizzes (Steps 4–5)
+
+The lesson page now saves work and the module unlocks as the student progresses.
+
+- **Activity submission** writes a `submissions` row (`status = 'Submitted'`, a
+  timestamp). The `submission_type` is enforced: text must be non-empty; link and
+  image must be a valid `http(s)` URL. **Never a file upload.** It upserts on
+  `(student_id, activity_id)`, so a student can revise and resubmit until it's
+  graded; once a teacher grades it, the box locks and shows the grade + feedback.
+- **Quiz** is **auto-graded on the server**: the answer key (`correct`) is read
+  server-side and never sent to the browser. A `quiz_results` row is saved with
+  the score and date. The student immediately sees their score and which answers
+  were right, and can retake it (each attempt is its own row, per the brief).
+- **Sequential unlocking + progress** are now live end to end: completing a lesson
+  (submission **and** quiz) marks it Complete, advances the progress percentage,
+  and unlocks the next lesson. When every lesson is complete the dashboard shows a
+  completion state (the printable certificate is the next step).
 
 ## Student login (class code + student number)
 
@@ -182,8 +196,8 @@ handled gracefully on the lesson page (built in Step 3).
 - [x] **Step 1 — Schema + seed script**
 - [x] **Step 2 — Student login** (class code + student number, teacher-adds-first)
 - [x] **Step 3 — Dashboard + lesson page** (reading real data, sequential locks)
-- [ ] Step 4 — Submission + quiz saving
-- [ ] Step 5 — Sequential unlocking + progress
+- [x] **Step 4 — Submission + quiz saving** (text/link/image; server-side auto-grade)
+- [x] **Step 5 — Sequential unlocking + progress** (live: complete → unlock next)
 - [ ] Step 6 — Certificate
 - [ ] Step 7 — Teacher admin panel
 - [ ] Step 8 — n8n grade export

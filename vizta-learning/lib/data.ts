@@ -209,6 +209,63 @@ export async function getQuizItems(activityId: string): Promise<QuizItem[]> {
   return (data ?? []) as QuizItem[];
 }
 
+export type SubmissionRow = {
+  content: string | null;
+  status: LessonStatus;
+  grade: number | null;
+  feedback: string | null;
+};
+
+// The student's current submission for an activity (if any).
+export async function getSubmission(
+  studentId: string,
+  activityId: string
+): Promise<SubmissionRow | null> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('submissions')
+    .select('content, status, grade, feedback')
+    .eq('student_id', studentId)
+    .eq('activity_id', activityId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as SubmissionRow) ?? null;
+}
+
+export type QuizResultRow = { score: number; date: string };
+
+// The student's most recent quiz attempt for an activity (if any).
+export async function getLatestQuizResult(
+  studentId: string,
+  activityId: string
+): Promise<QuizResultRow | null> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('quiz_results')
+    .select('score, date')
+    .eq('student_id', studentId)
+    .eq('activity_id', activityId)
+    .order('date', { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  return (data?.[0] as QuizResultRow) ?? null;
+}
+
+// Answer key for an activity's quiz — SERVER ONLY. Used to score a quiz attempt.
+// Never call this from client code; it exposes the `correct` column.
+export async function getQuizKey(
+  activityId: string
+): Promise<Array<{ quiz_id: string; correct: string }>> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('quizzes')
+    .select('quiz_id, correct')
+    .eq('activity_id', activityId)
+    .order('order', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as Array<{ quiz_id: string; correct: string }>;
+}
+
 // Turn a YouTube watch/short URL into an embeddable URL. Returns null when the
 // value isn't a real video link (some rows carry a teacher instruction instead
 // of a final URL) so the page can show a friendly placeholder.
