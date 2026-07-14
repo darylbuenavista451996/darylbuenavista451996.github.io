@@ -150,7 +150,9 @@ export async function getDashboard(
   let prevComplete = true; // first lesson is always open
   for (const activity of activities) {
     const sub = subs.get(activity.activity_id);
-    const hasSubmission = !!sub;
+    // The activity counts as submitted only when its status says so — a row can
+    // exist for a reflection alone (status "Not started"), which must not count.
+    const hasSubmission = sub?.status === 'Submitted' || sub?.status === 'Graded';
     const hasQuiz = quizzes.has(activity.activity_id);
     const complete = hasSubmission && hasQuiz;
     const locked = !prevComplete;
@@ -242,6 +244,32 @@ export async function getSubmission(
     .maybeSingle();
   if (error) throw error;
   return (data as SubmissionRow) ?? null;
+}
+
+// A reflection counts as complete when it's a genuine response: at least this
+// many words. Pure app logic — no AI, no external service.
+export const REFLECTION_MIN_WORDS = 15;
+export function reflectionDone(text: string | null | undefined): boolean {
+  if (!text) return false;
+  return text.trim().split(/\s+/).filter(Boolean).length >= REFLECTION_MIN_WORDS;
+}
+
+// The student's saved reflection for an activity. Error-tolerant: if the
+// reflection column doesn't exist yet (migration not run), returns null instead
+// of throwing, so the rest of the app keeps working.
+export async function getReflection(
+  studentId: string,
+  activityId: string
+): Promise<string | null> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('submissions')
+    .select('reflection')
+    .eq('student_id', studentId)
+    .eq('activity_id', activityId)
+    .maybeSingle();
+  if (error) return null;
+  return (data?.reflection as string) ?? null;
 }
 
 export type QuizResultRow = { score: number; date: string };

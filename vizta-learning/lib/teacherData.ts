@@ -76,6 +76,7 @@ export type GradeQueueItem = {
   grade: number | null;
   feedback: string | null;
   submitted_at: string | null;
+  reflection: string | null;
 };
 
 // Submissions for the teacher to review (default: not yet graded).
@@ -95,6 +96,16 @@ export async function getGradeQueue(includeGraded = false): Promise<GradeQueueIt
 
   const nameById = new Map((students.data ?? []).map((s) => [s.student_id, s.name]));
   const actById = new Map((acts.data ?? []).map((a) => [a.activity_id, a]));
+
+  // Reflections, fetched separately and error-tolerantly (the column may not
+  // exist yet). Keyed by student+activity.
+  const reflByKey = new Map<string, string | null>();
+  const refl = await supabase.from('submissions').select('student_id, activity_id, reflection');
+  if (!refl.error) {
+    for (const r of refl.data ?? [])
+      reflByKey.set(`${r.student_id}|${r.activity_id}`, (r as { reflection?: string | null }).reflection ?? null);
+  }
+
   return (subs.data ?? []).map((s) => {
     const a = actById.get(s.activity_id);
     return {
@@ -109,6 +120,7 @@ export async function getGradeQueue(includeGraded = false): Promise<GradeQueueIt
       grade: s.grade,
       feedback: s.feedback,
       submitted_at: s.submitted_at,
+      reflection: reflByKey.get(`${s.student_id}|${s.activity_id}`) ?? null,
     };
   });
 }

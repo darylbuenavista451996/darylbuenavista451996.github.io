@@ -336,6 +336,15 @@ input:focus { border-color: var(--mint); }
 .section-body { white-space: pre-line; color: var(--ink); }
 .section .video-frame { margin-top: 4px; }
 
+/* Reflection box (in a reflect section) */
+.reflection-box { margin-top: 12px; }
+.reflection-box label { display: block; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.reflection-box textarea { width: 100%; padding: 12px 14px; font-size: 16px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; background: #fff; }
+.reflection-box .btn { margin-top: 10px; }
+.reflection-read { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; background: #fbfcfe; }
+.reflection-read summary { cursor: pointer; font-weight: 600; color: var(--mint-dark); }
+.reflection-read .grade-text { margin-top: 8px; }
+
 /* Print: show only the certificate, nice and clean */
 @media print {
   body { background: #fff; }

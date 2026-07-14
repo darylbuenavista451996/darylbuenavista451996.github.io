@@ -43,6 +43,13 @@ export default function GradeForm({ item }: { item: GradeQueueItem }) {
         )}
       </div>
 
+      {item.reflection ? (
+        <details className="reflection-read">
+          <summary>Student reflection ✓</summary>
+          <p className="grade-text">{item.reflection}</p>
+        </details>
+      ) : null}
+
       <form action={action} className="grade-form">
         <input type="hidden" name="student_id" value={item.student_id} />
         <input type="hidden" name="activity_id" value={item.activity_id} />

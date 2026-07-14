@@ -8,6 +8,7 @@ import {
   getSubmission,
   getQuizKey,
   submissionKind,
+  REFLECTION_MIN_WORDS,
 } from '@/lib/data';
 
 export type SubmitState = {
@@ -85,6 +86,67 @@ export async function submitActivity(
   revalidatePath('/dashboard');
   revalidatePath(`/lesson/${activityId}`);
   return { ok: true, savedAt: new Date().toISOString() };
+}
+
+export type ReflectionState = { ok?: boolean; error?: string; done?: boolean };
+
+// Save a student's reflection and auto-credit it when it's a genuine response
+// (at least REFLECTION_MIN_WORDS words). No AI — just a length check in code.
+export async function saveReflection(
+  activityId: string,
+  _prev: ReflectionState,
+  formData: FormData
+): Promise<ReflectionState> {
+  const session = getSession();
+  if (!session) return { error: 'Your session ended. Please sign in again.' };
+
+  const result = await getLessonForStudent(session.sid, session.class, activityId);
+  if (!result) return { error: 'We could not find that lesson.' };
+  if (result.lesson.locked) return { error: 'This lesson is locked.' };
+
+  const text = String(formData.get('reflection') ?? '').trim();
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  if (words < REFLECTION_MIN_WORDS) {
+    return {
+      error: `Write a little more — at least ${REFLECTION_MIN_WORDS} words (you have ${words}).`,
+    };
+  }
+
+  try {
+    const supabase = supabaseServer();
+    const { data: existing } = await supabase
+      .from('submissions')
+      .select('submission_id')
+      .eq('student_id', session.sid)
+      .eq('activity_id', activityId)
+      .maybeSingle();
+
+    const res = existing
+      ? await supabase
+          .from('submissions')
+          .update({ reflection: text })
+          .eq('student_id', session.sid)
+          .eq('activity_id', activityId)
+      : await supabase.from('submissions').insert({
+          student_id: session.sid,
+          activity_id: activityId,
+          reflection: text,
+          status: 'Not started', // reflection alone does not submit the activity
+        });
+    if (res.error) {
+      // Most likely the reflection column isn't added yet.
+      if (res.error.code === '42703' || /reflection/i.test(res.error.message)) {
+        return { error: 'Reflections are not switched on yet — please ask your teacher.' };
+      }
+      throw res.error;
+    }
+  } catch {
+    return { error: 'We could not save your reflection. Please try again.' };
+  }
+
+  revalidatePath('/dashboard');
+  revalidatePath(`/lesson/${activityId}`);
+  return { ok: true, done: true };
 }
 
 export type QuizState = {

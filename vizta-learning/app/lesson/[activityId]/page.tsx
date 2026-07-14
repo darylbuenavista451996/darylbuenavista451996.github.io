@@ -15,11 +15,14 @@ import {
   getQuizItems,
   getSubmission,
   getLatestQuizResult,
+  getReflection,
+  reflectionDone,
   youtubeEmbed,
   submissionKind,
 } from '@/lib/data';
 import ActivitySubmit from './ActivitySubmit';
 import QuizRunner from './QuizRunner';
+import ReflectionBox from './ReflectionBox';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,10 +45,11 @@ export default async function LessonPage({
   const a = lesson.activity;
   const embed = youtubeEmbed(a.video_url);
   const kind = submissionKind(a.submission_type);
-  const [quiz, existingSubmission, priorQuiz] = await Promise.all([
+  const [quiz, existingSubmission, priorQuiz, reflection] = await Promise.all([
     getQuizItems(a.activity_id),
     getSubmission(session.sid, a.activity_id),
     getLatestQuizResult(session.sid, a.activity_id),
+    getReflection(session.sid, a.activity_id),
   ]);
 
   const sections = a.sections ?? [];
@@ -150,6 +154,13 @@ export default async function LessonPage({
                     )
                   ) : s.body ? (
                     <div className="section-body">{s.body}</div>
+                  ) : null}
+                  {s.type === 'reflect' ? (
+                    <ReflectionBox
+                      activityId={a.activity_id}
+                      existing={reflection}
+                      initiallyDone={reflectionDone(reflection)}
+                    />
                   ) : null}
                 </li>
               ))}
