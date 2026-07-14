@@ -245,6 +245,68 @@ input:focus { border-color: var(--mint); }
 .cert-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .cert-actions .btn { width: auto; }
 
+/* Teacher panel ---------------------------------------------------------- */
+.card-wide.card-wide { }
+.teacher-topbar { align-items: flex-start; }
+.teacher-nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.tnav { padding: 7px 12px; border-radius: 8px; text-decoration: none; color: var(--navy); font-weight: 600; font-size: 14px; }
+.tnav:hover { background: var(--navy-tint); }
+.tnav-on { background: var(--navy); color: #fff; }
+
+.stat-grid { display: flex; gap: 12px; margin: 8px 0 20px; flex-wrap: wrap; }
+.stat { background: var(--navy-tint); border-radius: 12px; padding: 14px 20px; min-width: 130px; }
+.stat-num { display: block; font-size: 28px; font-weight: 800; color: var(--navy); }
+.stat-lbl { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.tcard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.tcard { display: block; padding: 16px; border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--navy); background: #fff; }
+.tcard:hover { border-color: var(--mint); background: var(--mint-tint); }
+.tcard strong { display: block; margin-bottom: 4px; }
+.tcard span { font-size: 14px; color: var(--muted); }
+
+/* Tables */
+.table-scroll { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 520px; }
+.data-table th, .data-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.data-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.mini-progress { display: flex; align-items: center; gap: 8px; }
+.mini-track { width: 90px; height: 8px; background: var(--navy-tint); border-radius: 999px; overflow: hidden; }
+.mini-fill { height: 100%; background: var(--mint); }
+.mini-lbl { font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+/* Add student */
+.add-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.add-row input, .add-row select { padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; }
+.add-row input { flex: 1; min-width: 140px; }
+
+/* Grading */
+.grade-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.grade-item { border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.grade-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.grade-sub { display: block; font-size: 13px; color: var(--muted); }
+.grade-content { background: var(--navy-tint); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; word-break: break-word; }
+.grade-text { margin: 0; white-space: pre-wrap; }
+.grade-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.grade-grade { width: 90px; }
+.grade-fb { flex: 1; min-width: 200px; }
+.grade-form label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.grade-form input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; margin-top: 4px; }
+.inline-error { padding: 6px 10px; }
+
+/* Modules */
+.mod-toggle { display: flex; align-items: center; gap: 10px; }
+.pill { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.pill-on { background: var(--mint-tint); color: var(--mint-dark); }
+.pill-off { background: #eef0f4; color: var(--muted); }
+
+/* Content video edit */
+.video-edit-list { display: grid; gap: 14px; }
+.video-edit { border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
+.video-edit-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.video-edit label { font-size: 13px; color: var(--muted); font-weight: 600; display: grid; gap: 4px; }
+.video-edit input { padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; }
+.video-edit .btn { justify-self: start; }
+
 /* Print: show only the certificate, nice and clean */
 @media print {
   body { background: #fff; }

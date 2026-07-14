@@ -3,11 +3,11 @@
 A self-paced Media Arts e-learning platform for Grade 9 and Grade 10 students,
 hosted at **learn.viztasystems.com**. Built to the Term 1 build brief.
 
-This README grows as the build progresses. Right now it covers **Steps 1–6 of
-the build order: the database schema, the seed script, the student login, the
+This README grows as the build progresses. Right now it covers **Steps 1–7 of
+the build order**: the database schema, the seed script, the student login, the
 dashboard + lesson page, saving submissions + quizzes with sequential unlocking,
-and the certificate of completion.** Later steps (teacher panel, n8n export) will
-add their own sections.
+the certificate, and the teacher admin panel. The last step (n8n grade export)
+adds its own section.
 
 ## Golden rules (fixed — do not work around)
 
@@ -101,14 +101,24 @@ The front end is a Next.js (App Router) app in this folder.
 
 1. `npm install`
 2. Copy `.env.example` to `.env` and fill in:
-   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (as for seeding)
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (as for seeding) — **server only**
+   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — used by the
+     teacher login in the browser (the anon key is safe to expose)
    - `SESSION_SECRET` — any long random string (signs the student session cookie)
    - `CLASS_CODES` — the class-code → grade mapping (default `MEDIA9:G9,MEDIA10:G10`)
 3. `npm run dev`, then open http://localhost:3000
 
-Pages so far: `/` (landing, pick grade), `/login` (class code + student number),
+> **Build-time vars:** the `NEXT_PUBLIC_*` values are baked into the browser
+> bundle **when you build**, not at runtime. On your host (e.g. Vercel) set them
+> as environment variables *before* the build, or the teacher login won't know
+> where Supabase is. The server-only keys (`SUPABASE_SERVICE_ROLE_KEY`,
+> `SESSION_SECRET`) are read at runtime and must never be `NEXT_PUBLIC_`.
+
+Student pages: `/` (landing, pick grade), `/login` (class code + student number),
 `/dashboard` (module, lessons, progress, locks), `/lesson/[activityId]` (the full
-lesson). To see real data, seed the content and add a test student (below).
+lesson), `/certificate`. Teacher pages: `/teacher/login` and the `/teacher` panel.
+To see real data, seed the content and add a test student (via the teacher panel,
+or directly in the Supabase table editor).
 
 ## Dashboard and lesson page (Step 3)
 
@@ -198,6 +208,45 @@ The small cost — you add students up front — is handled in the teacher panel
 > the Supabase Table editor: a row in `students` with `class` = `G9`, a
 > `student_number`, and a `name`. Then log in with `MEDIA9` + that number.
 
+## Teacher admin panel (Step 7)
+
+Behind a separate teacher login using **Supabase Auth** (email + password —
+adults only, entirely separate from student login). Pages live under `/teacher`.
+
+**Set up a teacher account** (one-time), in the Supabase dashboard:
+Authentication → Users → **Add user** → enter the teacher's email and a password
+(tick "Auto Confirm" so no confirmation email is needed). Then sign in at
+`/teacher/login`.
+
+What the panel does:
+
+- **Overview** — counts of students and work awaiting grading.
+- **Students & progress** — the full roster with each student's completion, and an
+  **Add student** form (name + number + class). This is how you enroll students
+  for the teacher-adds-first login model.
+- **Grade submissions** — review each submission, set a grade and feedback. Saving
+  flips the row to `Graded`, which locks the student's box and shows them the grade.
+  Ungraded work shows by default; "show all" includes already-graded.
+- **Modules** — unlock or lock a module for a class (toggles the `unlocked` flag).
+- **Content & videos** — confirm or replace each lesson's video link. Lesson text
+  still comes from the seed files; this is for the one thing that needs your eyes,
+  the video, per the preview reminder below.
+
+Security model: teacher pages verify the Supabase Auth session server-side, then
+perform DB writes with the service-role key on the server. The service-role key
+never reaches the browser.
+
+## Row Level Security
+
+`supabase/migrations/0002_rls.sql` enables RLS on all six tables with **no
+policies**, which denies all direct access via the public anon key while the
+server's service-role key bypasses RLS as normal. Because every read and write in
+this app goes through the server, this simply shuts the front door on anyone who
+gets the anon key — important for a platform used by minors. Run it after the
+initial migration (same ways: SQL editor or `supabase db push`). If you later
+give n8n a limited key instead of the service role, add explicit read-only
+policies at that point.
+
 ## Video preview reminder
 
 The lesson videos still need your eyes. The app embeds whatever `video_url` is
@@ -215,5 +264,6 @@ handled gracefully on the lesson page (built in Step 3).
 - [x] **Step 4 — Submission + quiz saving** (text/link/image; server-side auto-grade)
 - [x] **Step 5 — Sequential unlocking + progress** (live: complete → unlock next)
 - [x] **Step 6 — Certificate** (printable, completion-gated)
+- [x] **Step 7 — Teacher admin panel** (Supabase Auth; grading, roster, unlock, content)
 - [ ] Step 7 — Teacher admin panel
 - [ ] Step 8 — n8n grade export
