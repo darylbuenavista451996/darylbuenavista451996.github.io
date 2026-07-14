@@ -3,11 +3,10 @@
 A self-paced Media Arts e-learning platform for Grade 9 and Grade 10 students,
 hosted at **learn.viztasystems.com**. Built to the Term 1 build brief.
 
-This README grows as the build progresses. Right now it covers **Steps 1–7 of
-the build order**: the database schema, the seed script, the student login, the
-dashboard + lesson page, saving submissions + quizzes with sequential unlocking,
-the certificate, and the teacher admin panel. The last step (n8n grade export)
-adds its own section.
+This README covers the **complete Term 1 build (Steps 1–8)**: the database
+schema, the seed script, the student login, the dashboard + lesson page, saving
+submissions + quizzes with sequential unlocking, the certificate, the teacher
+admin panel, and the n8n grade export.
 
 ## Golden rules (fixed — do not work around)
 
@@ -247,6 +246,49 @@ initial migration (same ways: SQL editor or `supabase db push`). If you later
 give n8n a limited key instead of the service role, add explicit read-only
 policies at that point.
 
+## Grade export and n8n (Step 8)
+
+Grade export for DepEd records is done by **n8n on your Hostinger VPS**, not
+inside this app. The app exposes one secured, read-only endpoint that n8n reads.
+
+### The endpoint
+
+```
+GET /api/export/grades            → JSON  { generated_at, count, rows[] }
+GET /api/export/grades?format=csv → CSV
+Header:  Authorization: Bearer <EXPORT_API_TOKEN>
+```
+
+- Returns **one row per student per activity** — a complete gradebook — including
+  each activity's **competency code** (needed for DepEd, never shown to students),
+  the grade, rubric total, quiz score, feedback, and submission time.
+- Without a valid token it returns `401`; if `EXPORT_API_TOKEN` is unset, `500`.
+- Set `EXPORT_API_TOKEN` to a long random string (server-side only).
+
+### Wiring n8n (on the Hostinger VPS)
+
+1. In n8n, create a workflow with a **Schedule** trigger (e.g. nightly) or a
+   **Manual/Webhook** trigger.
+2. Add an **HTTP Request** node:
+   - Method `GET`, URL `https://learn.viztasystems.com/api/export/grades`
+   - Header `Authorization` = `Bearer <your EXPORT_API_TOKEN>`
+   - Response format: JSON (use `?format=csv` instead if a node prefers CSV).
+3. Add a **Google Sheets** node → *Append or update rows*, mapping the fields
+   from `rows[]` (map on `student_number` + `activity_id` to update in place).
+4. Save and activate. Test with the schedule's "execute now".
+
+### On-demand trigger from the panel (optional)
+
+If you set `N8N_EXPORT_WEBHOOK_URL` to your workflow's **Webhook** URL, the
+teacher panel's **Export now** button (Overview) POSTs to it to run the export on
+demand. Leave it blank to hide the button and rely on n8n's schedule.
+
+### Why an endpoint (not a Supabase key)
+
+The brief allows either a secured endpoint or a limited Supabase key. The
+endpoint is used because it works cleanly with the RLS we enabled (the anon key
+can't read the tables directly), and it controls exactly what leaves the app.
+
 ## Video preview reminder
 
 The lesson videos still need your eyes. The app embeds whatever `video_url` is
@@ -265,5 +307,21 @@ handled gracefully on the lesson page (built in Step 3).
 - [x] **Step 5 — Sequential unlocking + progress** (live: complete → unlock next)
 - [x] **Step 6 — Certificate** (printable, completion-gated)
 - [x] **Step 7 — Teacher admin panel** (Supabase Auth; grading, roster, unlock, content)
-- [ ] Step 7 — Teacher admin panel
-- [ ] Step 8 — n8n grade export
+- [x] **Step 8 — n8n grade export** (secured read-only endpoint + on-demand trigger)
+
+**Term 1 is complete.** Everything is data-driven, so Terms 2–6 load by adding
+seed rows — no code changes.
+
+## Deploying to learn.viztasystems.com
+
+1. Push this repo (or the `vizta-learning/` subfolder) to a free Next.js host —
+   **Vercel** or **Netlify** both have free tiers that support the App Router.
+2. Set the environment variables from `.env.example` in the host's project
+   settings **before building** (the `NEXT_PUBLIC_*` ones are baked in at build).
+3. Run the two SQL migrations and the seed script against your Supabase project.
+4. In the host, add the custom domain `learn.viztasystems.com`; the host shows a
+   CNAME (or A) record to add at your DNS provider. Point the `learn` subdomain
+   there and wait for the certificate to issue.
+
+Everything above stays within free tiers: Supabase free tier, a free Next.js
+host, and your existing Hostinger VPS for n8n. No paid services are introduced.

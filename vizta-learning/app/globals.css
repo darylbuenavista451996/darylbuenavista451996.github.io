@@ -307,6 +307,9 @@ input:focus { border-color: var(--mint); }
 .video-edit input { padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; }
 .video-edit .btn { justify-self: start; }
 
+.export-row { margin-top: 12px; }
+.export-btn .btn { width: auto; }
+
 /* Print: show only the certificate, nice and clean */
 @media print {
   body { background: #fff; }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import TeacherNav from './TeacherNav';
+import ExportButton from './ExportButton';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getRoster, getGradeQueue } from '@/lib/teacherData';
 
@@ -47,8 +48,10 @@ export default async function TeacherHome() {
 
         <div className="banner" role="note">
           <strong>Grade export to a spreadsheet</strong> is handled by n8n on your
-          Hostinger VPS, not inside this app — see the README for how to wire it up.
-          The export includes each activity&apos;s competency code for DepEd records.
+          Hostinger VPS, not inside this app. The export includes each activity&apos;s
+          competency code for DepEd records. Use the button below to trigger it, or
+          run it on a schedule in n8n — see the README to wire it up.
+          <div className="export-row"><ExportButton /></div>
         </div>
       </div>
     </main>

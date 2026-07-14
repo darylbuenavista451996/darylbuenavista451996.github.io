@@ -82,6 +82,26 @@ export async function toggleModule(
   return { ok: true, message: unlocked ? 'Module unlocked.' : 'Module locked.' };
 }
 
+// Ping the n8n webhook to run the grade export on demand. The actual export
+// pipeline (fetch endpoint -> Google Sheets) lives in n8n on the Hostinger VPS.
+export async function triggerExport(_prev: ActionState): Promise<ActionState> {
+  await requireTeacher();
+  const webhook = process.env.N8N_EXPORT_WEBHOOK_URL;
+  if (!webhook) {
+    return {
+      error:
+        'No export webhook is configured yet. Add N8N_EXPORT_WEBHOOK_URL and set up the n8n workflow — see the README.',
+    };
+  }
+  try {
+    const res = await fetch(webhook, { method: 'POST', cache: 'no-store' });
+    if (!res.ok) throw new Error(String(res.status));
+  } catch {
+    return { error: 'Could not reach the export workflow. Please try again.' };
+  }
+  return { ok: true, message: 'Export started. Check your Google Sheet in a moment.' };
+}
+
 export async function updateVideo(
   _prev: ActionState,
   formData: FormData
