@@ -267,6 +267,14 @@ Header:  Authorization: Bearer <EXPORT_API_TOKEN>
 
 ### Wiring n8n (on the Hostinger VPS)
 
+> A ready-to-import starter workflow is at
+> [`n8n/vizta-grade-export.workflow.json`](n8n/vizta-grade-export.workflow.json).
+> Import it into n8n, then fill three placeholders in the UI: the `Authorization`
+> bearer token on **Get grades** (your `EXPORT_API_TOKEN`), and the Google Sheet
+> ID + Google credentials on the **Google Sheets** node. It includes both a
+> Webhook trigger (for the panel's *Export now* button) and an optional nightly
+> Schedule. The manual steps below are the same thing, done from scratch.
+
 1. In n8n, create a workflow with a **Schedule** trigger (e.g. nightly) or a
    **Manual/Webhook** trigger.
 2. Add an **HTTP Request** node:
