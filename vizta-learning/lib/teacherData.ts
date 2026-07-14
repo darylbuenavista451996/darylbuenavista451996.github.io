@@ -166,6 +166,76 @@ export async function updateActivityVideo(
   if (error) throw error;
 }
 
+export type QuizCell = { score: number; total: number } | null;
+export type QuizScoresView = {
+  byClass: Array<{
+    cls: string;
+    tasks: Array<{ activity_id: string; order: number; title: string; total: number }>;
+    rows: Array<{
+      student_id: string;
+      name: string;
+      student_number: string;
+      cells: QuizCell[];
+    }>;
+  }>;
+};
+
+// Per-student quiz scores, grouped by class, one column per task.
+export async function getQuizScores(): Promise<QuizScoresView> {
+  const supabase = supabaseServer();
+  const [students, modules, activities, quizzes, results] = await Promise.all([
+    supabase.from('students').select('student_id, name, student_number, class').order('class').order('student_number'),
+    supabase.from('modules').select('module_id, title, grade_class, "order"'),
+    supabase.from('activities').select('activity_id, module_id, "order", title'),
+    supabase.from('quizzes').select('activity_id'),
+    supabase.from('quiz_results').select('student_id, activity_id, score, date'),
+  ]);
+  for (const r of [students, modules, activities, quizzes, results]) if (r.error) throw r.error;
+
+  const moduleByClass = new Map<string, string>();
+  for (const m of (modules.data ?? []).slice().sort((a, b) => (a.order as number) - (b.order as number))) {
+    if (!moduleByClass.has(m.grade_class)) moduleByClass.set(m.grade_class, m.module_id);
+  }
+  const tasksByModule = new Map<string, Array<{ activity_id: string; order: number; title: string }>>();
+  for (const a of activities.data ?? []) {
+    if (!tasksByModule.has(a.module_id)) tasksByModule.set(a.module_id, []);
+    tasksByModule.get(a.module_id)!.push({ activity_id: a.activity_id, order: a.order as number, title: a.title });
+  }
+  for (const list of tasksByModule.values()) list.sort((x, y) => x.order - y.order);
+
+  const totals = new Map<string, number>();
+  for (const q of quizzes.data ?? []) totals.set(q.activity_id, (totals.get(q.activity_id) ?? 0) + 1);
+
+  // latest score per student+activity
+  const latest = new Map<string, { score: number; date: string }>();
+  for (const r of results.data ?? []) {
+    const key = `${r.student_id}|${r.activity_id}`;
+    const prev = latest.get(key);
+    if (!prev || String(r.date) > prev.date) latest.set(key, { score: r.score, date: String(r.date) });
+  }
+
+  const byClass: QuizScoresView['byClass'] = [];
+  for (const [cls, moduleId] of moduleByClass) {
+    const tasks = (tasksByModule.get(moduleId) ?? []).map((t) => ({
+      ...t,
+      total: totals.get(t.activity_id) ?? 0,
+    }));
+    const rows = (students.data ?? [])
+      .filter((s) => s.class === cls)
+      .map((s) => ({
+        student_id: s.student_id,
+        name: s.name,
+        student_number: s.student_number,
+        cells: tasks.map((t) => {
+          const hit = latest.get(`${s.student_id}|${t.activity_id}`);
+          return hit ? { score: hit.score, total: t.total } : null;
+        }),
+      }));
+    byClass.push({ cls, tasks, rows });
+  }
+  return { byClass };
+}
+
 export async function getModules(): Promise<Module[]> {
   const supabase = supabaseServer();
   const { data, error } = await supabase.from('modules').select('*').order('grade_class').order('order');
