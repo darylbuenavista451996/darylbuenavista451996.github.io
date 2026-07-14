@@ -3,10 +3,10 @@
 A self-paced Media Arts e-learning platform for Grade 9 and Grade 10 students,
 hosted at **learn.viztasystems.com**. Built to the Term 1 build brief.
 
-This README grows as the build progresses. Right now it covers **Steps 1–5 of
+This README grows as the build progresses. Right now it covers **Steps 1–6 of
 the build order: the database schema, the seed script, the student login, the
-dashboard + lesson page reading real data, and saving submissions + quizzes with
-sequential unlocking.** Later steps (certificate, teacher panel, n8n export) will
+dashboard + lesson page, saving submissions + quizzes with sequential unlocking,
+and the certificate of completion.** Later steps (teacher panel, n8n export) will
 add their own sections.
 
 ## Golden rules (fixed — do not work around)
@@ -149,7 +149,23 @@ The lesson page now saves work and the module unlocks as the student progresses.
 - **Sequential unlocking + progress** are now live end to end: completing a lesson
   (submission **and** quiz) marks it Complete, advances the progress percentage,
   and unlocks the next lesson. When every lesson is complete the dashboard shows a
-  completion state (the printable certificate is the next step).
+  completion state with a link to the certificate.
+
+## Certificate of completion (Step 6)
+
+When a student completes every lesson in their module, the dashboard shows a
+"View your certificate" button leading to `/certificate`.
+
+- The page **re-checks completion server-side** and redirects to the dashboard if
+  the student isn't actually finished — the certificate can't be reached early by
+  typing the URL.
+- It's a clean, branded (mint/navy) page showing the **student name, class, course
+  title** (from the module — nothing hard-coded to Term 1), and the **date**, with
+  a **Print / Save as PDF** button and print-specific CSS so it prints or saves as
+  a PDF nicely on a phone or a cheap printer.
+- The date shown is the day the certificate is viewed/printed (we don't store a
+  per-module completion timestamp — that would need an extra column and isn't
+  required for a print-time date).
 
 ## Student login (class code + student number)
 
@@ -198,6 +214,6 @@ handled gracefully on the lesson page (built in Step 3).
 - [x] **Step 3 — Dashboard + lesson page** (reading real data, sequential locks)
 - [x] **Step 4 — Submission + quiz saving** (text/link/image; server-side auto-grade)
 - [x] **Step 5 — Sequential unlocking + progress** (live: complete → unlock next)
-- [ ] Step 6 — Certificate
+- [x] **Step 6 — Certificate** (printable, completion-gated)
 - [ ] Step 7 — Teacher admin panel
 - [ ] Step 8 — n8n grade export

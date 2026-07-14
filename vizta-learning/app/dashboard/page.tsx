@@ -93,8 +93,12 @@ export default async function DashboardPage() {
 
         {allComplete ? (
           <div className="banner banner-success" role="status">
-            🎉 You finished every lesson in this module! Your certificate is coming
-            in a later step.
+            <strong>🎉 You finished every lesson in this module!</strong>
+            <div className="cert-cta">
+              <Link className="btn btn-primary btn-sm" href="/certificate">
+                View your certificate
+              </Link>
+            </div>
           </div>
         ) : dueNext ? (
           <div className="banner" role="status">
