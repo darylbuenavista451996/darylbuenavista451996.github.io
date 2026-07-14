@@ -6,6 +6,17 @@ import type { ClassName } from './classCodes';
 
 export type RubricRow = { criteria: string; points: number };
 
+// A block within a lesson's self-paced flow. Optional per activity.
+export type LessonSection = {
+  type: 'read' | 'watch' | 'do' | 'reflect';
+  title: string;
+  minutes?: number;
+  body?: string;
+  video_url?: string;
+  video_title?: string;
+  video_note?: string;
+};
+
 export type Activity = {
   activity_id: string;
   module_id: string;
@@ -27,6 +38,7 @@ export type Activity = {
   ai_note: string | null;
   rubric: RubricRow[] | null;
   rubric_total: number | null;
+  sections: LessonSection[] | null;
 };
 
 export type Module = {

@@ -41,7 +41,47 @@
         "points": 3
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": [
+      {
+        "type": "read",
+        "title": "Warm up: what your eyes already do",
+        "minutes": 10,
+        "body": "You already read film language every day without noticing. When a video makes you feel tense, excited, or sad, a filmmaker put that feeling there on purpose. It was a choice, not an accident.\n\nBefore we go deeper, take five minutes. Think of one scene from any film or show that stuck with you. Do not worry yet about why. Just hold it in your mind. By the end of this task you will be able to take it apart like a maker, not just a viewer."
+      },
+      {
+        "type": "read",
+        "title": "The grammar of shots: a closer look",
+        "minutes": 25,
+        "body": "Film has a grammar. Shots are the words, cuts are the punctuation, and angles and movement are the tone of voice. Here are the pieces you will use for the rest of your life as a filmmaker.\n\nSHOT SIZES. A wide shot (or establishing shot) shows a whole place, so we know where and when we are. A medium shot shows a person from about the waist up, good for conversation. A close-up fills the frame with a face or a small detail, so we feel an emotion. An extreme close-up pushes even closer, to an eye or a trembling hand, for maximum tension.\n\nCAMERA ANGLES. Eye-level feels natural and honest. A high angle looks down on a subject and tends to make them feel small or vulnerable. A low angle looks up and tends to make them feel powerful or threatening. A tilted frame (a Dutch angle) makes a moment feel wrong or uneasy.\n\nCAMERA MOVEMENT. A still camera feels calm and controlled. A pan (swivel left or right) or tilt (swivel up or down) follows the action. A dolly or tracking shot glides the whole camera through space and feels smooth and cinematic. A handheld camera shakes slightly and makes a scene feel raw, urgent, or real.\n\nCUTS. A cut is the join between two shots, the punctuation of film. Most cuts are invisible on purpose so the story flows. A cut on action hides the edit by cutting in the middle of a movement. Cross-cutting jumps between two places at once to build suspense. When you notice a cut, ask what it did to your feeling.\n\nYou do not need to memorize these like a test. You need to recognize them, because once you can name a choice, you can make it on purpose."
+      },
+      {
+        "type": "watch",
+        "title": "Second look: camera angles in action",
+        "minutes": 12,
+        "video_url": "",
+        "video_title": "",
+        "video_note": "Teacher: add one short clip (about 5 to 12 minutes) focused on camera angles, for example search 'StudioBinder camera angles explained'. Preview it before adding, as our video rule requires. Until you add a link, students see this note."
+      },
+      {
+        "type": "do",
+        "title": "Guided practice: the freeze-frame hunt",
+        "minutes": 30,
+        "body": "Time to try it before the real activity. Open any film or show you can watch legally at home.\n\n1. Pause on three different frames that catch your eye.\n2. For each one, write down the shot size (wide, medium, close-up, or extreme close-up), the angle (eye-level, high, or low), and whether the camera was still or moving.\n3. In one sentence per frame, say what that choice made you feel.\n\nThis is practice, so it is not graded and you do not submit it. It warms up the exact muscle you will use in the activity below."
+      },
+      {
+        "type": "read",
+        "title": "Worked example: how to read one scene",
+        "minutes": 20,
+        "body": "Here is the method in action, so you can copy the shape of the thinking. This is a model, not a film you must watch.\n\nImagine a chase scene. A student is running from something down a narrow alley. Watch how three craft choices work together:\n\nFIRST, the shots get shorter and shorter. Early cuts held for a few seconds; now they last less than a second. That rising cut speed makes your own heartbeat climb. CHOICE: fast cutting. EFFECT: panic.\n\nSECOND, the camera is handheld and shaky, right behind the runner. We are not watching from a calm distance, we are inside the fear. CHOICE: handheld camera. EFFECT: we feel unsafe too.\n\nTHIRD, at the dead end, the camera drops to a low angle looking up at the wall. The wall towers over the runner and over us. CHOICE: low angle. EFFECT: the obstacle feels impossible.\n\nNotice the shape: name the choice, then name the feeling. Never just say 'the scene was exciting.' Say WHAT the filmmaker did and WHAT it did to you. That is a critique."
+      },
+      {
+        "type": "reflect",
+        "title": "Reflection before your activity",
+        "minutes": 10,
+        "body": "Take a breath and answer these for yourself before you write your activity below. You do not submit these, they just sharpen your eye.\n\n- Which of the three tools (shot size, angle, movement, or cuts) do you notice most easily now?\n- Which one do you still find hard to spot?\n- In the scene you thought about at the start, can you now name one craft choice and the feeling it created?"
+      }
+    ]
   },
   {
     "activity_id": "G9-A1.2",
@@ -85,7 +125,8 @@
         "points": 3
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": null
   },
   {
     "activity_id": "G9-A1.3",
@@ -129,7 +170,8 @@
         "points": 3
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": null
   },
   {
     "activity_id": "G9-A1.4",
@@ -181,7 +223,8 @@
         "points": 2
       }
     ],
-    "rubric_total": 20
+    "rubric_total": 20,
+    "sections": null
   },
   {
     "activity_id": "G10-A1.1",
@@ -225,7 +268,8 @@
         "points": 3
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": null
   },
   {
     "activity_id": "G10-A1.2",
@@ -269,7 +313,8 @@
         "points": 3
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": null
   },
   {
     "activity_id": "G10-A1.3",
@@ -313,7 +358,8 @@
         "points": 2
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": null
   },
   {
     "activity_id": "G10-A1.4",
@@ -357,7 +403,8 @@
         "points": 3
       }
     ],
-    "rubric_total": 10
+    "rubric_total": 10,
+    "sections": null
   },
   {
     "activity_id": "G10-A1.5",
@@ -409,6 +456,7 @@
         "points": 3
       }
     ],
-    "rubric_total": 20
+    "rubric_total": 20,
+    "sections": null
   }
 ]

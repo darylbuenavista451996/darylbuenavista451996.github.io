@@ -310,6 +310,26 @@ input:focus { border-color: var(--mint); }
 .export-row { margin-top: 12px; }
 .export-btn .btn { width: auto; }
 
+/* Student greeting */
+.greeting { margin-bottom: 6px; }
+.greeting h2 { font-size: 22px; color: var(--navy); margin: 0; }
+.greeting p { color: var(--muted); margin: 2px 0 0; }
+
+/* Lesson deep-dive sections */
+.sections { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: sec; }
+.section { border: 1px solid var(--border); border-left: 4px solid var(--mint); border-radius: 12px; padding: 16px; background: #fff; }
+.section-do { border-left-color: var(--navy); }
+.section-reflect { border-left-color: #c9a227; }
+.section-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.section-kind { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.7px; color: #fff; background: var(--mint-dark); padding: 3px 8px; border-radius: 6px; }
+.section-do .section-kind { background: var(--navy); }
+.section-reflect .section-kind { background: #b7920f; }
+.section-watch .section-kind { background: #b23b3b; }
+.section-title { font-weight: 700; color: var(--navy); font-size: 17px; }
+.section-min { margin-left: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.section-body { white-space: pre-line; color: var(--ink); }
+.section .video-frame { margin-top: 4px; }
+
 /* Print: show only the certificate, nice and clean */
 @media print {
   body { background: #fff; }

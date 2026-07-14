@@ -48,6 +48,12 @@ export default async function LessonPage({
     getLatestQuizResult(session.sid, a.activity_id),
   ]);
 
+  const sections = a.sections ?? [];
+  const sectionMinutes = sections.reduce((sum, s) => sum + (s.minutes ?? 0), 0);
+  // rough estimate = extra sections + main video + activity + quiz
+  const totalMinutes = sectionMinutes + 12 + 40 + Math.round(quiz.length * 1.5);
+  const estimate = formatEstimate(totalMinutes);
+
   return (
     <main className="page page-wide">
       <div className="card card-wide">
@@ -58,7 +64,8 @@ export default async function LessonPage({
 
         <div className="module-head">
           <span className="eyebrow">
-            {a.week ?? ''}{a.is_performance_task ? ' · Performance task' : ''}
+            Task {a.order}{a.is_performance_task ? ' · Performance task' : ''}
+            {sections.length > 0 ? <> · ⏱ {estimate}</> : null}
           </span>
           <h1>{a.title}</h1>
           {a.lesson_goal ? <p className="goal">{a.lesson_goal}</p> : null}
@@ -112,6 +119,44 @@ export default async function LessonPage({
           </section>
         ) : null}
 
+        {/* Deeper self-paced sections */}
+        {sections.length > 0 ? (
+          <section className="lesson-section">
+            <h2>Work through this</h2>
+            <ol className="sections">
+              {sections.map((s, i) => (
+                <li key={i} className={`section section-${s.type}`}>
+                  <div className="section-head">
+                    <span className="section-kind">{sectionLabel(s.type)}</span>
+                    <span className="section-title">{s.title}</span>
+                    {s.minutes ? <span className="section-min">~{s.minutes} min</span> : null}
+                  </div>
+                  {s.type === 'watch' ? (
+                    youtubeEmbed(s.video_url ?? null) ? (
+                      <div className="video-frame">
+                        <iframe
+                          src={youtubeEmbed(s.video_url ?? null) as string}
+                          title={s.video_title ?? 'Lesson video'}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : (
+                      <div className="video-placeholder" role="note">
+                        <strong>Your teacher will add this video.</strong>
+                        {s.video_note ? <span>{s.video_note}</span> : null}
+                      </div>
+                    )
+                  ) : s.body ? (
+                    <div className="section-body">{s.body}</div>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+
         {/* Activity */}
         <section className="lesson-section">
           <h2>Your activity</h2>
@@ -156,4 +201,19 @@ export default async function LessonPage({
       </div>
     </main>
   );
+}
+
+function sectionLabel(type: string): string {
+  switch (type) {
+    case 'watch': return 'Watch';
+    case 'do': return 'Practice';
+    case 'reflect': return 'Reflect';
+    default: return 'Read';
+  }
+}
+
+function formatEstimate(mins: number): string {
+  if (mins < 60) return `${mins} min`;
+  const half = Math.round(mins / 30) / 2; // nearest half hour
+  return `About ${half} ${half === 1 ? 'hour' : 'hours'}`;
 }

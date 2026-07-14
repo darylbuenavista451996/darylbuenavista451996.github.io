@@ -538,5 +538,65 @@
     "option_c": "Hidden",
     "option_d": "Left blank",
     "correct": "B"
+  },
+  {
+    "quiz_id": "G9-A1.1-Q6",
+    "activity_id": "G9-A1.1",
+    "module_id": "G9-M1",
+    "order": 6,
+    "question": "A close-up shot mainly shows:",
+    "option_a": "A character's face or a small detail up close",
+    "option_b": "A whole landscape",
+    "option_c": "The entire room",
+    "option_d": "The end credits",
+    "correct": "A"
+  },
+  {
+    "quiz_id": "G9-A1.1-Q7",
+    "activity_id": "G9-A1.1",
+    "module_id": "G9-M1",
+    "order": 7,
+    "question": "A high-angle shot looking down on a character tends to make them feel:",
+    "option_a": "Powerful and tall",
+    "option_b": "Small or vulnerable",
+    "option_c": "Funnier",
+    "option_d": "Faster",
+    "correct": "B"
+  },
+  {
+    "quiz_id": "G9-A1.1-Q8",
+    "activity_id": "G9-A1.1",
+    "module_id": "G9-M1",
+    "order": 8,
+    "question": "An establishing shot usually tells the audience:",
+    "option_a": "Where and when the scene happens",
+    "option_b": "The film's budget",
+    "option_c": "The actor's real name",
+    "option_d": "Nothing at all",
+    "correct": "A"
+  },
+  {
+    "quiz_id": "G9-A1.1-Q9",
+    "activity_id": "G9-A1.1",
+    "module_id": "G9-M1",
+    "order": 9,
+    "question": "'Cutting on action' means the editor cuts:",
+    "option_a": "During a long, still pause",
+    "option_b": "In the middle of a movement",
+    "option_c": "Only at the very end",
+    "option_d": "At completely random moments",
+    "correct": "B"
+  },
+  {
+    "quiz_id": "G9-A1.1-Q10",
+    "activity_id": "G9-A1.1",
+    "module_id": "G9-M1",
+    "order": 10,
+    "question": "A shaky handheld camera often makes a moment feel:",
+    "option_a": "Calm and formal",
+    "option_b": "Raw, urgent, or real",
+    "option_c": "Slower and sleepy",
+    "option_d": "Brighter",
+    "correct": "B"
   }
 ]

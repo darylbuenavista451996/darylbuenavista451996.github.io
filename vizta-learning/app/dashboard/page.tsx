@@ -72,8 +72,13 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        <div className="greeting">
+          <h2>Hi, {session.name} 👋</h2>
+          <p>Welcome back — here is your course.</p>
+        </div>
+
         <div className="module-head">
-          <span className="eyebrow">{module.term} · {module.weeks ? `${module.weeks} weeks` : ''}</span>
+          <span className="eyebrow">{module.term} · {total} {total === 1 ? 'task' : 'tasks'}</span>
           <h1>{module.title}</h1>
           {module.output ? (
             <p className="goal"><strong>Your goal this term:</strong> {module.output}</p>
@@ -88,12 +93,12 @@ export default async function DashboardPage() {
           <div className="progress-track">
             <div className="progress-fill" style={{ width: `${progressPct}%` }} />
           </div>
-          <p className="progress-sub">{completeCount} of {total} lessons complete</p>
+          <p className="progress-sub">{completeCount} of {total} tasks complete</p>
         </div>
 
         {allComplete ? (
           <div className="banner banner-success" role="status">
-            <strong>🎉 You finished every lesson in this module!</strong>
+            <strong>🎉 You finished every task in this module!</strong>
             <div className="cert-cta">
               <Link className="btn btn-primary btn-sm" href="/certificate">
                 View your certificate
@@ -102,8 +107,7 @@ export default async function DashboardPage() {
           </div>
         ) : dueNext ? (
           <div className="banner" role="status">
-            <strong>Up next:</strong> {dueNext.activity.week ? `${dueNext.activity.week} — ` : ''}
-            {dueNext.activity.title}
+            <strong>Up next:</strong> Task {dueNext.activity.order} — {dueNext.activity.title}
           </div>
         ) : null}
 
@@ -116,7 +120,7 @@ export default async function DashboardPage() {
                 <span className="lesson-main">
                   <span className="lesson-title">{a.title}</span>
                   <span className="lesson-meta">
-                    {a.week ?? ''}
+                    Task {a.order}
                     {a.is_performance_task ? ' · Performance task' : ''}
                   </span>
                 </span>
