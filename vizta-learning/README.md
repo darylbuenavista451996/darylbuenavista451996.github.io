@@ -74,6 +74,11 @@ Matching CSVs (`modules.csv`, `activities.csv`, `quizzes.csv`) are kept alongsid
 
 ## Seeding
 
+**No-tooling option (browser only):** after running the two migrations, paste
+`supabase/seed.sql` into the Supabase SQL editor and run it. It upserts all Term 1
+content (2 modules, 9 activities, 45 quizzes) and is safe to re-run. Use this if
+you don't want to install Node. The steps below are the Node equivalent.
+
 1. Install deps: `npm install`
 2. Copy `.env.example` to `.env` and fill in `SUPABASE_URL` and
    `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Project Settings → API).
