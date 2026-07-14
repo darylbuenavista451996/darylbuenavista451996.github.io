@@ -46,13 +46,23 @@ export default async function TeacherHome() {
           </Link>
         </div>
 
-        <div className="banner" role="note">
-          <strong>Grade export to a spreadsheet</strong> is handled by n8n on your
-          Hostinger VPS, not inside this app. The export includes each activity&apos;s
-          competency code for DepEd records. Use the button below to trigger it, or
-          run it on a schedule in n8n — see the README to wire it up.
-          <div className="export-row"><ExportButton /></div>
+        <div className="banner banner-success" role="note">
+          <strong>Export grades for your records</strong> — one click, opens in Excel
+          or Google Sheets, and includes each activity&apos;s competency code for DepEd.
+          <div className="export-row">
+            <a className="btn btn-primary btn-sm" href="/teacher/export">Download grades (CSV)</a>
+          </div>
         </div>
+
+        <details className="advanced-note">
+          <summary>Advanced: automatic export with n8n (optional)</summary>
+          <p className="hint">
+            If you ever run n8n (for example on a server), you can have it pull grades
+            automatically on a schedule — see the README. This is entirely optional; the
+            download button above needs no setup.
+          </p>
+          <div className="export-row"><ExportButton /></div>
+        </details>
       </div>
     </main>
   );

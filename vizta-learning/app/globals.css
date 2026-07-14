@@ -315,6 +315,9 @@ input:focus { border-color: var(--mint); }
 
 .export-row { margin-top: 12px; }
 .export-btn .btn { width: auto; }
+.export-row .btn { width: auto; }
+.advanced-note { margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+.advanced-note summary { cursor: pointer; font-weight: 600; color: var(--muted); }
 
 /* Student greeting */
 .greeting { margin-bottom: 6px; }
