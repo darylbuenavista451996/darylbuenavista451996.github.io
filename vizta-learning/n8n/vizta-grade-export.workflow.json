@@ -1,0 +1,108 @@
+{
+  "name": "Vizta Learning — Grade export to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vizta-grade-export",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "b1a1e001-0000-4000-8000-000000000001",
+      "name": "Webhook (Export now)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "webhookId": "vizta-grade-export"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "0 22 * * *" }
+          ]
+        }
+      },
+      "id": "b1a1e001-0000-4000-8000-000000000002",
+      "name": "Schedule (nightly, optional)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 480]
+    },
+    {
+      "parameters": {
+        "url": "https://learn.viztasystems.com/api/export/grades",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_EXPORT_API_TOKEN"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1a1e001-0000-4000-8000-000000000003",
+      "name": "Get grades",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 380]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rows",
+        "options": {}
+      },
+      "id": "b1a1e001-0000-4000-8000-000000000004",
+      "name": "Split into rows",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [760, 380]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Grades",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": ["student_number", "activity_id"]
+        },
+        "options": {}
+      },
+      "id": "b1a1e001-0000-4000-8000-000000000005",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1000, 380],
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Webhook (Export now)": {
+      "main": [[{ "node": "Get grades", "type": "main", "index": 0 }]]
+    },
+    "Schedule (nightly, optional)": {
+      "main": [[{ "node": "Get grades", "type": "main", "index": 0 }]]
+    },
+    "Get grades": {
+      "main": [[{ "node": "Split into rows", "type": "main", "index": 0 }]]
+    },
+    "Split into rows": {
+      "main": [[{ "node": "Google Sheets", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "meta": {
+    "templateNote": "Starter template — import into n8n, then finish the three placeholders in the UI: (1) the Authorization Bearer token on 'Get grades' (your EXPORT_API_TOKEN), (2) the Google Sheet ID + Google credentials on the 'Google Sheets' node, (3) point learn.viztasystems.com at your deployed app. Node versions may differ slightly by n8n release; adjust if a node needs re-selecting."
+  }
+}

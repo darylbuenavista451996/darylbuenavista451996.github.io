@@ -1,0 +1,26 @@
+[
+  {
+    "module_id": "G9-M1",
+    "title": "Introduction to Film and Cinema",
+    "grade_class": "G9",
+    "term": "Term 1",
+    "order": 1,
+    "weeks": 8,
+    "output": "A film critique of one short or full length film.",
+    "content_standard": "The learners understand film history, its genres, and the elements of film criticism, and recognize cinema's contribution to culture and society.",
+    "performance_standard": "The learners produce a film review or critical essay on a commercial or short film.",
+    "unlocked": true
+  },
+  {
+    "module_id": "G10-M1",
+    "title": "Conceptualizing and Writing the Short Film",
+    "grade_class": "G10",
+    "term": "Term 1",
+    "order": 1,
+    "weeks": 8,
+    "output": "A short screenplay.",
+    "content_standard": "The learners understand narrative structure and the ethics of fiction film writing, to produce narratives that reflect their vision and view of society and the human condition.",
+    "performance_standard": "The learners produce a short screenplay built on storytelling, character development, and the technical skills to write for the screen.",
+    "unlocked": true
+  }
+]

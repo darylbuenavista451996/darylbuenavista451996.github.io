@@ -1,0 +1,187 @@
+// Teacher-side data operations (service-role, server only). These are the raw DB
+// operations; the Server Actions that call them verify the teacher session first.
+
+import { supabaseServer } from './supabase';
+import type { ClassName } from './classCodes';
+import type { Module } from './data';
+
+export type RosterEntry = {
+  student_id: string;
+  name: string;
+  student_number: string;
+  class: string;
+  moduleTitle: string | null;
+  complete: number;
+  total: number;
+  pct: number;
+};
+
+// All students with their progress in their class's module.
+export async function getRoster(): Promise<RosterEntry[]> {
+  const supabase = supabaseServer();
+  const [students, modules, activities, submissions, quizResults] = await Promise.all([
+    supabase.from('students').select('student_id, name, student_number, class').order('class').order('student_number'),
+    supabase.from('modules').select('module_id, title, grade_class, "order"'),
+    supabase.from('activities').select('activity_id, module_id'),
+    supabase.from('submissions').select('student_id, activity_id'),
+    supabase.from('quiz_results').select('student_id, activity_id'),
+  ]);
+  for (const r of [students, modules, activities, submissions, quizResults]) {
+    if (r.error) throw r.error;
+  }
+
+  // First module per class (matches the student dashboard's choice).
+  const moduleByClass = new Map<string, { module_id: string; title: string }>();
+  for (const m of (modules.data ?? []).slice().sort((a, b) => (a.order as number) - (b.order as number))) {
+    if (!moduleByClass.has(m.grade_class)) moduleByClass.set(m.grade_class, { module_id: m.module_id, title: m.title });
+  }
+  const actsByModule = new Map<string, Set<string>>();
+  for (const a of activities.data ?? []) {
+    if (!actsByModule.has(a.module_id)) actsByModule.set(a.module_id, new Set());
+    actsByModule.get(a.module_id)!.add(a.activity_id);
+  }
+  const subSet = new Set((submissions.data ?? []).map((s) => `${s.student_id}|${s.activity_id}`));
+  const quizSet = new Set((quizResults.data ?? []).map((q) => `${q.student_id}|${q.activity_id}`));
+
+  return (students.data ?? []).map((s) => {
+    const mod = moduleByClass.get(s.class);
+    const acts = mod ? actsByModule.get(mod.module_id) ?? new Set<string>() : new Set<string>();
+    const total = acts.size;
+    let complete = 0;
+    for (const aid of acts) {
+      if (subSet.has(`${s.student_id}|${aid}`) && quizSet.has(`${s.student_id}|${aid}`)) complete++;
+    }
+    return {
+      student_id: s.student_id,
+      name: s.name,
+      student_number: s.student_number,
+      class: s.class,
+      moduleTitle: mod?.title ?? null,
+      complete,
+      total,
+      pct: total === 0 ? 0 : Math.round((complete / total) * 100),
+    };
+  });
+}
+
+export type GradeQueueItem = {
+  student_id: string;
+  student_name: string;
+  activity_id: string;
+  activity_title: string;
+  rubric_total: number | null;
+  content: string | null;
+  submission_type: string | null;
+  status: string;
+  grade: number | null;
+  feedback: string | null;
+  submitted_at: string | null;
+};
+
+// Submissions for the teacher to review (default: not yet graded).
+export async function getGradeQueue(includeGraded = false): Promise<GradeQueueItem[]> {
+  const supabase = supabaseServer();
+  let q = supabase
+    .from('submissions')
+    .select('student_id, activity_id, content, status, grade, feedback, submitted_at')
+    .order('submitted_at', { ascending: true });
+  if (!includeGraded) q = q.eq('status', 'Submitted');
+  const [subs, students, acts] = await Promise.all([
+    q,
+    supabase.from('students').select('student_id, name'),
+    supabase.from('activities').select('activity_id, title, rubric_total, submission_type'),
+  ]);
+  for (const r of [subs, students, acts]) if (r.error) throw r.error;
+
+  const nameById = new Map((students.data ?? []).map((s) => [s.student_id, s.name]));
+  const actById = new Map((acts.data ?? []).map((a) => [a.activity_id, a]));
+  return (subs.data ?? []).map((s) => {
+    const a = actById.get(s.activity_id);
+    return {
+      student_id: s.student_id,
+      student_name: nameById.get(s.student_id) ?? s.student_id,
+      activity_id: s.activity_id,
+      activity_title: a?.title ?? s.activity_id,
+      rubric_total: a?.rubric_total ?? null,
+      content: s.content,
+      submission_type: a?.submission_type ?? null,
+      status: s.status,
+      grade: s.grade,
+      feedback: s.feedback,
+      submitted_at: s.submitted_at,
+    };
+  });
+}
+
+export async function setGrade(
+  studentId: string,
+  activityId: string,
+  grade: number,
+  feedback: string | null
+): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase
+    .from('submissions')
+    .update({ status: 'Graded', grade, feedback })
+    .eq('student_id', studentId)
+    .eq('activity_id', activityId);
+  if (error) throw error;
+}
+
+export async function addStudent(input: {
+  name: string;
+  student_number: string;
+  class: ClassName;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = supabaseServer();
+  const { error } = await supabase.from('students').insert({
+    name: input.name,
+    student_number: input.student_number,
+    class: input.class,
+  });
+  if (error) {
+    if (error.code === '23505')
+      return { ok: false, error: 'A student with that number already exists in this class.' };
+    return { ok: false, error: 'Could not add the student. Please try again.' };
+  }
+  return { ok: true };
+}
+
+export async function setModuleUnlocked(moduleId: string, unlocked: boolean): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase.from('modules').update({ unlocked }).eq('module_id', moduleId);
+  if (error) throw error;
+}
+
+export async function updateActivityVideo(
+  activityId: string,
+  video_url: string,
+  video_title: string
+): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase
+    .from('activities')
+    .update({ video_url, video_title })
+    .eq('activity_id', activityId);
+  if (error) throw error;
+}
+
+export async function getModules(): Promise<Module[]> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase.from('modules').select('*').order('grade_class').order('order');
+  if (error) throw error;
+  return (data ?? []) as Module[];
+}
+
+export async function getActivitiesBrief(): Promise<
+  Array<{ activity_id: string; title: string; module_id: string; video_url: string | null; video_title: string | null }>
+> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('activities')
+    .select('activity_id, title, module_id, video_url, video_title')
+    .order('module_id')
+    .order('order');
+  if (error) throw error;
+  return data ?? [];
+}

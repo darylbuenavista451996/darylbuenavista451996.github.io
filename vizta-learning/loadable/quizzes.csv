@@ -1,0 +1,46 @@
+quiz_id,activity_id,module_id,order,question,option_a,option_b,option_c,option_d,correct
+G9-A1.1-Q1,G9-A1.1,G9-M1,1,A close up shot is mostly used to:,Show a wide landscape,Bring us near a detail or emotion,Speed up the story,Save money,B
+G9-A1.1-Q2,G9-A1.1,G9-M1,2,A cut is best described as:,A type of camera,The join between two shots,A kind of lighting,An actor's line,B
+G9-A1.1-Q3,G9-A1.1,G9-M1,3,Film language means:,The subtitles,The way shots and cuts make meaning,The script only,The country the film is from,B
+G9-A1.1-Q4,G9-A1.1,G9-M1,4,A low angle on a character tends to make them feel:,Weak and small,Powerful or threatening,Funny,Invisible,B
+G9-A1.1-Q5,G9-A1.1,G9-M1,5,The best critique of a scene talks about:,Only the plot,The craft choices and their effect,The actor's personal life,The ticket price,B
+G9-A1.2-Q1,G9-A1.2,G9-M1,1,Genre in film mainly means:,The film's length,A category with shared traits and mood,The director's age,The cinema location,B
+G9-A1.2-Q2,G9-A1.2,G9-M1,2,Horror films often signal genre through:,Bright colors and fast jokes,"Dark tone, quiet, then shock",Wedding scenes,Cooking demos,B
+G9-A1.2-Q3,G9-A1.2,G9-M1,3,Knowing genre rules helps a filmmaker:,Copy exactly forever,Play with or break expectations on purpose,Avoid making films,Raise ticket prices,B
+G9-A1.2-Q4,G9-A1.2,G9-M1,4,A romantic comedy usually promises:,Fear and dread,A light tone and a love story,A crime investigation,A history lecture,B
+G9-A1.2-Q5,G9-A1.2,G9-M1,5,Genre is best recognized from:,"The look, sound, and mood",The film's budget only,The number of actors,The release year only,A
+G9-A1.3-Q1,G9-A1.3,G9-M1,1,A craft study is about:,Memorizing dates,Learning a technique you can reuse,Rating the actors,Counting awards,B
+G9-A1.3-Q2,G9-A1.3,G9-M1,2,Studying Filipino films gives a young filmmaker:,Nothing useful,A local reference library of techniques,Only history facts,A ticket discount,B
+G9-A1.3-Q3,G9-A1.3,G9-M1,3,Natural light is valuable because it is:,Expensive,Free and often beautiful,Always harsh,Illegal to use,B
+G9-A1.3-Q4,G9-A1.3,G9-M1,4,The goal of watching a master's work is to:,Copy the whole film,Take one technique and make it yours,Ignore it,Memorize the credits,B
+G9-A1.3-Q5,G9-A1.3,G9-M1,5,A real location can help a small production by:,Raising the budget,Giving a true look at low cost,Slowing everything down,Removing the story,B
+G9-A1.4-Q1,G9-A1.4,G9-M1,1,A film critique is:,A plot summary,An argued verdict backed by craft evidence,A list of actors,A ticket receipt,B
+G9-A1.4-Q2,G9-A1.4,G9-M1,2,The AI sparring step is meant to:,Write the critique for you,Challenge your draft so you improve it,Grade your work,Pick the film,B
+G9-A1.4-Q3,G9-A1.4,G9-M1,3,Good critique evidence comes from:,Guesses,Specific craft choices on screen,The actor's salary,The release date,B
+G9-A1.4-Q4,G9-A1.4,G9-M1,4,Submitting both drafts lets the teacher see:,Nothing,How your thinking grew,The film's budget,Your typing speed,B
+G9-A1.4-Q5,G9-A1.4,G9-M1,5,Your critique verdict should be:,Hidden,Clear and defendable,Copied from an agent,Left out,B
+G10-A1.1-Q1,G10-A1.1,G10-M1,1,Story structure is:,The film's budget,The shape of a story,The cast list,The poster,B
+G10-A1.1-Q2,G10-A1.1,G10-M1,2,A hook is meant to:,End the story,Pull the audience in,List the credits,Set the price,B
+G10-A1.1-Q3,G10-A1.1,G10-M1,3,The middle of a story should:,Repeat the start,Raise the stakes,Do nothing,Show credits,B
+G10-A1.1-Q4,G10-A1.1,G10-M1,4,A payoff is:,The opening,The satisfying end result,The budget,The title,B
+G10-A1.1-Q5,G10-A1.1,G10-M1,5,Without structure a story:,Gets stronger,Wanders,Wins awards,Saves money,B
+G10-A1.2-Q1,G10-A1.2,G10-M1,1,A story's engine is:,The poster,A character who wants something,The budget,The runtime,B
+G10-A1.2-Q2,G10-A1.2,G10-M1,2,A clear want gives a character:,Nothing,Drive and direction,A costume,A genre,B
+G10-A1.2-Q3,G10-A1.2,G10-M1,3,An obstacle is:,What blocks the want,The ending credits,The camera,The price,A
+G10-A1.2-Q4,G10-A1.2,G10-M1,4,A found story is:,A stolen script,Real life reshaped into fiction,A budget sheet,A poster,B
+G10-A1.2-Q5,G10-A1.2,G10-M1,5,Audiences care about a character when:,They have no want,They want something and struggle for it,They do nothing,They stay off screen,B
+G10-A1.3-Q1,G10-A1.3,G10-M1,1,A writer's voice is:,Their budget,Their own style and perspective,The font,The runtime,B
+G10-A1.3-Q2,G10-A1.3,G10-M1,2,Plagiarism means:,Writing your own work,Passing off others' work as yours,Editing,Casting,B
+G10-A1.3-Q3,G10-A1.3,G10-M1,3,"In an age of AI scripts, an original voice is:",Worthless,A career edge,Illegal,Optional casting,B
+G10-A1.3-Q4,G10-A1.3,G10-M1,4,Ethical AI use means the agent is:,The author,A tool that serves your voice,Banned always,The grader,B
+G10-A1.3-Q5,G10-A1.3,G10-M1,5,Cultural appropriation is a risk when you:,Write your own culture,Take from a culture without care or credit,Use a camera,Edit sound,B
+G10-A1.4-Q1,G10-A1.4,G10-M1,1,Wrong screenplay format often gets a script:,Praised,Thrown out unread,Funded,Filmed instantly,B
+G10-A1.4-Q2,G10-A1.4,G10-M1,2,A scene heading tells the reader:,The budget,Where and when the scene is,The cast pay,The genre,B
+G10-A1.4-Q3,G10-A1.4,G10-M1,3,Screenplay format is:,A personal choice,A professional standard,A camera brand,A color,B
+G10-A1.4-Q4,G10-A1.4,G10-M1,4,Free screenwriting tools mainly help by:,Writing the story for you,Handling the formatting,Casting actors,Selling tickets,B
+G10-A1.4-Q5,G10-A1.4,G10-M1,5,Dialogue in a screenplay sits:,Centered under the character name,In the budget,On the poster,In the credits only,A
+G10-A1.5-Q1,G10-A1.5,G10-M1,1,The screenplay must be in:,Any format,Correct screenplay format,A spreadsheet,A slideshow,B
+G10-A1.5-Q2,G10-A1.5,G10-M1,2,The AI test checks only:,Your grammar grade,Whether dialogue sounds performable,The budget,The genre,B
+G10-A1.5-Q3,G10-A1.5,G10-M1,3,A good short screenplay has:,No structure,A clear spine and a wanting character,Only images,Only music,B
+G10-A1.5-Q4,G10-A1.5,G10-M1,4,You submit:,One file only,"Outline, first draft, and final version",Nothing,A poster,B
+G10-A1.5-Q5,G10-A1.5,G10-M1,5,The screenplay's voice should be:,Copied from an agent,Your own,Hidden,Left blank,B
