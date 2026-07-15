@@ -19,7 +19,16 @@ export default function TeacherLoginForm() {
       const supabase = teacherBrowserClient();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        setError('Email or password is incorrect.');
+        const msg = (error.message || '').toLowerCase();
+        if (error.code === 'email_not_confirmed' || msg.includes('not confirmed')) {
+          setError(
+            "This account's email isn't confirmed yet. In Supabase → Authentication → Users, delete it and re-add with “Auto Confirm User” ticked."
+          );
+        } else if (error.code === 'invalid_credentials' || msg.includes('invalid login')) {
+          setError('Email or password is incorrect.');
+        } else {
+          setError(error.message || 'Could not sign in. Please try again.');
+        }
         setPending(false);
         return;
       }
