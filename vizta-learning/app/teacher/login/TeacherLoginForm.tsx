@@ -16,6 +16,21 @@ export default function TeacherLoginForm() {
     setError(null);
     setPending(true);
     try {
+      // Guard against misconfigured/placeholder env values (baked in at build).
+      const cfgUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const cfgKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+      if (
+        !cfgUrl.startsWith('https://') ||
+        cfgUrl.includes('aBcDe') ||
+        cfgKey.length < 30 ||
+        cfgKey.includes('aBcDe')
+      ) {
+        setError(
+          'This site is not fully set up yet. In Vercel, make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are your real Supabase values, then Redeploy with "Use existing Build Cache" turned OFF.'
+        );
+        setPending(false);
+        return;
+      }
       const supabase = teacherBrowserClient();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
