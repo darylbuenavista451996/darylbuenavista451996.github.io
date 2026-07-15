@@ -135,6 +135,9 @@ input:focus { border-color: var(--mint); }
 
 .muted-link { display: inline-block; margin-top: 18px; color: var(--muted); font-size: 15px; }
 .footer { margin-top: 26px; color: var(--muted); font-size: 13px; text-align: center; }
+.footer-sep { margin: 0 8px; opacity: 0.6; }
+.teacher-link { color: var(--muted); text-decoration: underline; }
+.teacher-link:hover { color: var(--mint-dark); }
 .stack > * + * { margin-top: 10px; }
 
 /* Wide layout for dashboard + lesson ------------------------------------- */

@@ -28,7 +28,11 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        <p className="footer">learn.viztasystems.com</p>
+        <p className="footer">
+          learn.viztasystems.com
+          <span className="footer-sep">·</span>
+          <Link className="teacher-link" href="/teacher/login">Teacher sign in</Link>
+        </p>
       </div>
     </main>
   );
