@@ -272,6 +272,43 @@ export async function getReflection(
   return (data?.reflection as string) ?? null;
 }
 
+// Guided practice is auto-graded on completion (no AI): 10 points for doing it
+// (a real attempt) + 10 points for enough detail. Total 20.
+export const PRACTICE_TOTAL = 20;
+export const PRACTICE_MIN_WORDS = 15;
+export const PRACTICE_THOROUGH_WORDS = 50;
+export function gradePractice(text: string | null | undefined): {
+  words: number;
+  completed: boolean;
+  thorough: boolean;
+  score: number;
+} {
+  const words = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+  const completed = words >= PRACTICE_MIN_WORDS;
+  const thorough = words >= PRACTICE_THOROUGH_WORDS;
+  return { words, completed, thorough, score: (completed ? 10 : 0) + (thorough ? 10 : 0) };
+}
+
+// The student's saved practice + its auto-score. Error-tolerant (columns may
+// not exist yet).
+export async function getPractice(
+  studentId: string,
+  activityId: string
+): Promise<{ text: string | null; score: number | null }> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('submissions')
+    .select('practice, practice_score')
+    .eq('student_id', studentId)
+    .eq('activity_id', activityId)
+    .maybeSingle();
+  if (error) return { text: null, score: null };
+  return {
+    text: (data?.practice as string) ?? null,
+    score: (data?.practice_score as number) ?? null,
+  };
+}
+
 export type QuizResultRow = { score: number; date: string };
 
 // The student's most recent quiz attempt for an activity (if any).

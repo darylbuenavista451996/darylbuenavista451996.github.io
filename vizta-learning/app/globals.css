@@ -351,6 +351,16 @@ input:focus { border-color: var(--mint); }
 .reflection-read summary { cursor: pointer; font-weight: 600; color: var(--mint-dark); }
 .reflection-read .grade-text { margin-top: 8px; }
 
+/* Practice box */
+.practice-box { margin-top: 12px; }
+.practice-box label { display: block; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.practice-box textarea { width: 100%; padding: 12px 14px; font-size: 16px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; background: #fff; }
+.practice-box .btn { margin-top: 10px; width: auto; }
+.crit-list { list-style: none; margin: 8px 0 0; padding: 0; font-size: 14px; }
+.crit-list li { margin: 2px 0; }
+.crit-hit { color: var(--mint-dark); font-weight: 600; }
+.crit-miss { color: var(--muted); }
+
 /* Print: show only the certificate, nice and clean */
 @media print {
   body { background: #fff; }

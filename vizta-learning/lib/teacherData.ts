@@ -77,6 +77,8 @@ export type GradeQueueItem = {
   feedback: string | null;
   submitted_at: string | null;
   reflection: string | null;
+  practice: string | null;
+  practice_score: number | null;
 };
 
 // Submissions for the teacher to review (default: not yet graded).
@@ -97,13 +99,22 @@ export async function getGradeQueue(includeGraded = false): Promise<GradeQueueIt
   const nameById = new Map((students.data ?? []).map((s) => [s.student_id, s.name]));
   const actById = new Map((acts.data ?? []).map((a) => [a.activity_id, a]));
 
-  // Reflections, fetched separately and error-tolerantly (the column may not
-  // exist yet). Keyed by student+activity.
+  // Reflections + practice, fetched separately and error-tolerantly (columns
+  // may not exist yet). Keyed by student+activity.
   const reflByKey = new Map<string, string | null>();
   const refl = await supabase.from('submissions').select('student_id, activity_id, reflection');
   if (!refl.error) {
     for (const r of refl.data ?? [])
       reflByKey.set(`${r.student_id}|${r.activity_id}`, (r as { reflection?: string | null }).reflection ?? null);
+  }
+  const pracByKey = new Map<string, { text: string | null; score: number | null }>();
+  const prac = await supabase.from('submissions').select('student_id, activity_id, practice, practice_score');
+  if (!prac.error) {
+    for (const r of prac.data ?? [])
+      pracByKey.set(`${r.student_id}|${r.activity_id}`, {
+        text: (r as { practice?: string | null }).practice ?? null,
+        score: (r as { practice_score?: number | null }).practice_score ?? null,
+      });
   }
 
   return (subs.data ?? []).map((s) => {
@@ -121,6 +132,8 @@ export async function getGradeQueue(includeGraded = false): Promise<GradeQueueIt
       feedback: s.feedback,
       submitted_at: s.submitted_at,
       reflection: reflByKey.get(`${s.student_id}|${s.activity_id}`) ?? null,
+      practice: pracByKey.get(`${s.student_id}|${s.activity_id}`)?.text ?? null,
+      practice_score: pracByKey.get(`${s.student_id}|${s.activity_id}`)?.score ?? null,
     };
   });
 }

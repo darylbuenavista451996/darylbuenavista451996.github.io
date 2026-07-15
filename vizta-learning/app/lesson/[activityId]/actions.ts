@@ -9,6 +9,9 @@ import {
   getQuizKey,
   submissionKind,
   REFLECTION_MIN_WORDS,
+  gradePractice,
+  PRACTICE_TOTAL,
+  PRACTICE_MIN_WORDS,
 } from '@/lib/data';
 
 export type SubmitState = {
@@ -147,6 +150,79 @@ export async function saveReflection(
   revalidatePath('/dashboard');
   revalidatePath(`/lesson/${activityId}`);
   return { ok: true, done: true };
+}
+
+export type PracticeState = {
+  ok?: boolean;
+  error?: string;
+  score?: number;
+  total?: number;
+  completed?: boolean;
+  thorough?: boolean;
+};
+
+// Save the guided-practice response and auto-grade it on completion (no AI).
+export async function savePractice(
+  activityId: string,
+  _prev: PracticeState,
+  formData: FormData
+): Promise<PracticeState> {
+  const session = getSession();
+  if (!session) return { error: 'Your session ended. Please sign in again.' };
+
+  const result = await getLessonForStudent(session.sid, session.class, activityId);
+  if (!result) return { error: 'We could not find that lesson.' };
+  if (result.lesson.locked) return { error: 'This lesson is locked.' };
+
+  const text = String(formData.get('practice') ?? '').trim();
+  const graded = gradePractice(text);
+  if (!graded.completed) {
+    return {
+      error: `Write a little more to complete the practice — at least ${PRACTICE_MIN_WORDS} words (you have ${graded.words}).`,
+    };
+  }
+
+  try {
+    const supabase = supabaseServer();
+    const { data: existing } = await supabase
+      .from('submissions')
+      .select('submission_id')
+      .eq('student_id', session.sid)
+      .eq('activity_id', activityId)
+      .maybeSingle();
+
+    const payload = { practice: text, practice_score: graded.score };
+    const res = existing
+      ? await supabase
+          .from('submissions')
+          .update(payload)
+          .eq('student_id', session.sid)
+          .eq('activity_id', activityId)
+      : await supabase.from('submissions').insert({
+          student_id: session.sid,
+          activity_id: activityId,
+          status: 'Not started',
+          ...payload,
+        });
+    if (res.error) {
+      if (res.error.code === '42703' || /practice/i.test(res.error.message)) {
+        return { error: 'Graded practice is not switched on yet — please ask your teacher.' };
+      }
+      throw res.error;
+    }
+  } catch {
+    return { error: 'We could not save your practice. Please try again.' };
+  }
+
+  revalidatePath('/dashboard');
+  revalidatePath(`/lesson/${activityId}`);
+  return {
+    ok: true,
+    score: graded.score,
+    total: PRACTICE_TOTAL,
+    completed: graded.completed,
+    thorough: graded.thorough,
+  };
 }
 
 export type QuizState = {

@@ -43,6 +43,13 @@ export default function GradeForm({ item }: { item: GradeQueueItem }) {
         )}
       </div>
 
+      {item.practice ? (
+        <details className="reflection-read">
+          <summary>Practice{item.practice_score != null ? ` — auto-scored ${item.practice_score}/20` : ''}</summary>
+          <p className="grade-text">{item.practice}</p>
+        </details>
+      ) : null}
+
       {item.reflection ? (
         <details className="reflection-read">
           <summary>Student reflection ✓</summary>

@@ -19,6 +19,7 @@ export type ExportRow = {
   grade: number | null;
   rubric_total: number | null;
   quiz_score: number | null; // latest attempt
+  practice_score: number | null; // auto, out of 20
   feedback: string | null;
   submitted_at: string | null;
 };
@@ -50,6 +51,13 @@ export async function getGradeExport(): Promise<ExportRow[]> {
   const subByKey = new Map(
     (submissions.data ?? []).map((s) => [`${s.student_id}|${s.activity_id}`, s])
   );
+  // practice score per student+activity — error-tolerant (column may not exist)
+  const practiceByKey = new Map<string, number | null>();
+  const prac = await supabase.from('submissions').select('student_id, activity_id, practice_score');
+  if (!prac.error) {
+    for (const r of prac.data ?? [])
+      practiceByKey.set(`${r.student_id}|${r.activity_id}`, (r as { practice_score?: number | null }).practice_score ?? null);
+  }
   // latest quiz score per student+activity
   const quizByKey = new Map<string, number>();
   for (const q of (quizResults.data ?? []).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)))) {
@@ -77,6 +85,7 @@ export async function getGradeExport(): Promise<ExportRow[]> {
         grade: sub?.grade ?? null,
         rubric_total: a.rubric_total ?? null,
         quiz_score: quizByKey.get(`${s.student_id}|${a.activity_id}`) ?? null,
+        practice_score: practiceByKey.get(`${s.student_id}|${a.activity_id}`) ?? null,
         feedback: sub?.feedback ?? null,
         submitted_at: sub?.submitted_at ?? null,
       });
@@ -90,7 +99,7 @@ export function toCsv(rows: ExportRow[]): string {
   const cols: (keyof ExportRow)[] = [
     'class', 'student_number', 'student_name', 'module_id', 'module_title',
     'activity_id', 'activity_title', 'week', 'competency_code', 'is_performance_task',
-    'submission_status', 'grade', 'rubric_total', 'quiz_score', 'feedback', 'submitted_at',
+    'submission_status', 'grade', 'rubric_total', 'quiz_score', 'practice_score', 'feedback', 'submitted_at',
   ];
   const esc = (v: unknown) => {
     if (v == null) return '';

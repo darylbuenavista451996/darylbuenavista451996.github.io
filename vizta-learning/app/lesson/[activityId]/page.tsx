@@ -17,12 +17,16 @@ import {
   getLatestQuizResult,
   getReflection,
   reflectionDone,
+  getPractice,
+  gradePractice,
+  PRACTICE_TOTAL,
   youtubeEmbed,
   submissionKind,
 } from '@/lib/data';
 import ActivitySubmit from './ActivitySubmit';
 import QuizRunner from './QuizRunner';
 import ReflectionBox from './ReflectionBox';
+import PracticeBox from './PracticeBox';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,12 +49,14 @@ export default async function LessonPage({
   const a = lesson.activity;
   const embed = youtubeEmbed(a.video_url);
   const kind = submissionKind(a.submission_type);
-  const [quiz, existingSubmission, priorQuiz, reflection] = await Promise.all([
+  const [quiz, existingSubmission, priorQuiz, reflection, practice] = await Promise.all([
     getQuizItems(a.activity_id),
     getSubmission(session.sid, a.activity_id),
     getLatestQuizResult(session.sid, a.activity_id),
     getReflection(session.sid, a.activity_id),
+    getPractice(session.sid, a.activity_id),
   ]);
+  const practiceGrade = gradePractice(practice.text);
 
   const sections = a.sections ?? [];
   const sectionMinutes = sections.reduce((sum, s) => sum + (s.minutes ?? 0), 0);
@@ -154,6 +160,16 @@ export default async function LessonPage({
                     )
                   ) : s.body ? (
                     <div className="section-body">{s.body}</div>
+                  ) : null}
+                  {s.type === 'do' ? (
+                    <PracticeBox
+                      activityId={a.activity_id}
+                      total={PRACTICE_TOTAL}
+                      existing={practice.text}
+                      existingScore={practice.score}
+                      completedInitially={practiceGrade.completed}
+                      thoroughInitially={practiceGrade.thorough}
+                    />
                   ) : null}
                   {s.type === 'reflect' ? (
                     <ReflectionBox

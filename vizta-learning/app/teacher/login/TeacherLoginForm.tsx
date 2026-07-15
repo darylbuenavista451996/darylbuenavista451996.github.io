@@ -19,8 +19,10 @@ export default function TeacherLoginForm() {
       // Guard against misconfigured/placeholder env values (baked in at build).
       const cfgUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
       const cfgKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+      const urlOk =
+        /^https:\/\//.test(cfgUrl) || /^http:\/\/(localhost|127\.0\.0\.1)/.test(cfgUrl);
       if (
-        !cfgUrl.startsWith('https://') ||
+        !urlOk ||
         cfgUrl.includes('aBcDe') ||
         cfgKey.length < 30 ||
         cfgKey.includes('aBcDe')
