@@ -360,6 +360,8 @@ input:focus { border-color: var(--mint); }
 .crit-list li { margin: 2px 0; }
 .crit-hit { color: var(--mint-dark); font-weight: 600; }
 .crit-miss { color: var(--muted); }
+.practice-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+.practice-total { font-weight: 700; color: var(--navy); }
 
 /* Print: show only the certificate, nice and clean */
 @media print {

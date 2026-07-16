@@ -167,7 +167,6 @@ export default async function LessonPage({
                       total={PRACTICE_TOTAL}
                       existing={practice.text}
                       existingScore={practice.score}
-                      completedInitially={practiceGrade.completed}
                       thoroughInitially={practiceGrade.thorough}
                     />
                   ) : null}
@@ -233,7 +232,7 @@ export default async function LessonPage({
 function sectionLabel(type: string): string {
   switch (type) {
     case 'watch': return 'Watch';
-    case 'do': return 'Practice';
+    case 'do': return 'Activity';
     case 'reflect': return 'Reflect';
     default: return 'Read';
   }
