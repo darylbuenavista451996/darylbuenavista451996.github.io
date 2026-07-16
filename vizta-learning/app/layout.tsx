@@ -4,6 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Vizta Learning',
   description: 'Self-paced Media Arts learning for Grade 9 and Grade 10.',
+  icons: { icon: '/logo.png', apple: '/logo.png' },
 };
 
 export const viewport: Viewport = {
