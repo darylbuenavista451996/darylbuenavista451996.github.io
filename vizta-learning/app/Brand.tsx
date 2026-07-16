@@ -1,10 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
-// Small shared brand header. Uses /logo.png if present; the gradient background
-// shows through if the logo file hasn't been added yet, so it never looks broken.
+// Small shared brand header. The mark is a CSS background: it shows /logo.png if
+// present and falls back to the gradient silently (no broken-image icon) if not.
 export default function Brand() {
   return (
     <div className="brand">
-      <img className="brand-mark" src="/logo.png" alt="" aria-hidden="true" width={40} height={40} />
+      <span className="brand-mark" aria-hidden="true" />
       <span className="brand-name">
         Vizta Learning
         <small>Media Arts · Grade 9 &amp; 10</small>

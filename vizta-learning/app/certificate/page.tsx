@@ -33,8 +33,7 @@ export default async function CertificatePage() {
     <main className="page cert-page">
       <div className="cert" role="region" aria-label="Certificate of completion">
         <div className="cert-inner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="brand-mark cert-mark" src="/logo.png" alt="" aria-hidden="true" width={56} height={56} />
+          <span className="brand-mark cert-mark" aria-hidden="true" />
           <p className="cert-kicker">Vizta Learning · Media Arts</p>
           <h1 className="cert-title">Certificate of Completion</h1>
 
