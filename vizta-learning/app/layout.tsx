@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Vizta Learning',
   description: 'Self-paced Media Arts learning for Grade 9 and Grade 10.',
-  icons: { icon: '/logo.png', apple: '/logo.png' },
+  // Favicon is provided by app/icon.png (Next.js file convention).
 };
 
 export const viewport: Viewport = {
