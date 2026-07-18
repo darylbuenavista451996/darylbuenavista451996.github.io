@@ -64,6 +64,63 @@ export async function getRoster(): Promise<RosterEntry[]> {
   });
 }
 
+export type ClassInsight = {
+  cls: string;
+  moduleTitle: string | null;
+  students: number;
+  avgProgress: number; // mean % across students
+  notStarted: number; // 0% complete
+  finished: number; // 100% complete
+  avgQuizPct: number | null; // mean of latest quiz scores, null if no quizzes taken
+};
+
+// A quick per-class pulse for the overview: class size, average progress, how
+// many haven't started, how many finished, and the average quiz score.
+export async function getClassInsights(): Promise<ClassInsight[]> {
+  const [roster, quiz] = await Promise.all([getRoster(), getQuizScores()]);
+
+  // Average quiz percentage per class from the quiz-scores matrix.
+  const quizPctByClass = new Map<string, number | null>();
+  for (const c of quiz.byClass) {
+    let sum = 0;
+    let n = 0;
+    for (const row of c.rows) {
+      for (const cell of row.cells) {
+        if (cell && cell.total > 0) {
+          sum += (cell.score / cell.total) * 100;
+          n++;
+        }
+      }
+    }
+    quizPctByClass.set(c.cls, n === 0 ? null : Math.round(sum / n));
+  }
+
+  const byClass = new Map<string, RosterEntry[]>();
+  for (const s of roster) {
+    if (!byClass.has(s.class)) byClass.set(s.class, []);
+    byClass.get(s.class)!.push(s);
+  }
+
+  const out: ClassInsight[] = [];
+  for (const [cls, students] of byClass) {
+    const n = students.length;
+    const avgProgress = n === 0 ? 0 : Math.round(students.reduce((a, s) => a + s.pct, 0) / n);
+    const notStarted = students.filter((s) => s.complete === 0).length;
+    const finished = students.filter((s) => s.total > 0 && s.complete === s.total).length;
+    out.push({
+      cls,
+      moduleTitle: students[0]?.moduleTitle ?? null,
+      students: n,
+      avgProgress,
+      notStarted,
+      finished,
+      avgQuizPct: quizPctByClass.get(cls) ?? null,
+    });
+  }
+  out.sort((a, b) => a.cls.localeCompare(b.cls));
+  return out;
+}
+
 export type GradeQueueItem = {
   student_id: string;
   student_name: string;
