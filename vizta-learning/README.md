@@ -323,7 +323,59 @@ handled gracefully on the lesson page (built in Step 3).
 - [x] **Step 8 — n8n grade export** (secured read-only endpoint + on-demand trigger)
 
 **Term 1 is complete.** Everything is data-driven, so Terms 2–6 load by adding
-seed rows — no code changes.
+seed rows — no code changes. See **[Adding Term 2 and beyond](#adding-term-2-and-beyond)**.
+
+### Later additions (post-Step 8)
+
+- [x] **Teacher self sign-up** (gated by a private code) + **forgot / reset password**
+- [x] **Bulk student import** from CSV on the roster page
+- [x] **Class insights** on the teacher overview (average progress, quiz, finished/not-started)
+- [x] **Student "My grades" page** + **"Continue where I left off"** on the dashboard
+- [x] **Login rate limiting** (student login + teacher sign-up code)
+- [x] **In-app lesson text editing** for teachers (title, goal, hook, brief, closing)
+- [x] **Security headers** (HSTS, nosniff, frame-deny, referrer + permissions policy)
+- [x] **Multi-term progression** (terms unlock in order as the class finishes them)
+
+## Teacher accounts: sign-up, forgot & reset password
+
+Teachers create their own account at **`/teacher/signup`**, gated by a private
+code so the public site can't grant teacher access:
+
+1. Set **`TEACHER_SIGNUP_CODE`** to a long private string in your host's env
+   vars (Vercel → Settings → Environment Variables) and **redeploy**. Share the
+   code only with your teachers.
+2. A teacher visits `/teacher/signup`, enters their email, a password, and the
+   code. The account is created already-confirmed (no email step).
+
+**Forgot password** (`/teacher/forgot` → email link → `/teacher/reset`) needs a
+one-time Supabase setup so the reset email points at your live site:
+
+1. Supabase dashboard → **Authentication → URL Configuration**.
+2. Set **Site URL** to your live URL, e.g. `https://learn.viztasystems.com`.
+3. Under **Redirect URLs**, add `https://learn.viztasystems.com/teacher/reset`.
+4. Make sure **email** is enabled under Authentication → Providers → Email.
+
+The free Supabase built-in email sender is rate-limited but fine for a handful
+of teachers. Students never have emails or passwords — this is teachers only.
+
+## Adding Term 2 and beyond
+
+The app walks a class through **every** module you seed, in `order`. A term
+opens for students once **both** are true: the teacher has unlocked it, and the
+previous term is fully complete. To add a term:
+
+1. **Seed the module row** for the class with the next `order` (Term 1 is
+   `order = 1`, so Term 2 is `order = 2`), e.g. `G9-M2`. Set `unlocked = true`
+   when you're ready for students to reach it (or leave it locked and flip it
+   later from the teacher **Modules** page).
+2. **Seed its activities** (tasks) with `module_id` pointing at the new module,
+   each with its own `order` within the module, plus quizzes as usual.
+3. That's it — no code changes. Students who finish Term 1 auto-advance; the
+   dashboard shows a **term strip** so they can move between finished terms, and
+   the certificate now means the **whole course** is done.
+
+Seeding is the same flow as Term 1 (SQL editor or the seed script); just point
+the new rows at the new `module_id`.
 
 ## Deploying to learn.viztasystems.com
 
