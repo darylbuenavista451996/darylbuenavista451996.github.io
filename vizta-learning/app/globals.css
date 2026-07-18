@@ -185,6 +185,16 @@ input:focus { border-color: var(--mint); }
 .badge-submitted { background: #e6ecf7; color: var(--navy-light); }
 .badge-muted { background: #eef0f4; color: var(--muted); }
 
+/* Term strip (multi-term progression) ------------------------------------ */
+.term-strip { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 18px; }
+.term-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); font-size: 14px; text-decoration: none; color: var(--navy); background: #fff; }
+.term-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 700; background: var(--navy-tint); color: var(--navy); }
+.term-current { border-color: var(--mint); background: var(--mint-tint); font-weight: 700; }
+.term-current .term-dot { background: var(--mint); color: #fff; }
+.term-done .term-dot { background: var(--mint); color: #fff; }
+a.term-pill:hover { border-color: var(--mint); }
+.term-locked { color: var(--muted); background: #f6f7f9; }
+
 /* Lesson list ------------------------------------------------------------ */
 .lesson-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
 .lesson { border: 1px solid var(--border); border-radius: 12px; background: #fff; }

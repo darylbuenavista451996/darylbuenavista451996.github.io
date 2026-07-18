@@ -66,6 +66,19 @@ export type LessonView = {
   grade: number | null;
 };
 
+// One item in the term strip: a module and where the student stands in it.
+export type ModuleStripItem = {
+  module_id: string;
+  title: string;
+  term: string;
+  order: number;
+  total: number;
+  completeCount: number;
+  complete: boolean;
+  available: boolean; // teacher-unlocked AND earlier terms finished
+  isCurrent: boolean; // the module the dashboard is showing
+};
+
 export type DashboardView = {
   module: Module;
   lessons: LessonView[];
@@ -73,21 +86,29 @@ export type DashboardView = {
   completeCount: number;
   progressPct: number;
   dueNext: LessonView | null;
-  allComplete: boolean;
+  moduleComplete: boolean; // the shown module is fully done
+  moduleAvailable: boolean; // the shown module is open to the student
+  allComplete: boolean; // EVERY module for the class is done (course complete)
+  modules: ModuleStripItem[]; // the term strip, in order
+  nextModuleId: string | null; // next term to move into once this one is done
 };
 
-// The module shown for a class. Term 1 has one module per class; picking the
-// first by order keeps this correct as later terms add more.
-export async function getModuleForClass(cls: ClassName): Promise<Module | null> {
+// All modules for a class, in term order.
+export async function getModulesForClass(cls: ClassName): Promise<Module[]> {
   const supabase = supabaseServer();
   const { data, error } = await supabase
     .from('modules')
     .select('*')
     .eq('grade_class', cls)
-    .order('order', { ascending: true })
-    .limit(1);
+    .order('order', { ascending: true });
   if (error) throw error;
-  return (data?.[0] as Module) ?? null;
+  return (data ?? []) as Module[];
+}
+
+// The first module for a class (kept for callers that only need one module).
+export async function getModuleForClass(cls: ClassName): Promise<Module | null> {
+  const mods = await getModulesForClass(cls);
+  return mods[0] ?? null;
 }
 
 async function getActivities(moduleId: string): Promise<Activity[]> {
@@ -132,30 +153,81 @@ async function getProgressMaps(studentId: string, activityIds: string[]) {
   return { subs, quizzes };
 }
 
-// Assemble the full dashboard view for a student, including sequential locks.
+// Assemble the dashboard view for a student across all their class's modules.
+// Terms unlock in order: a module opens once the teacher has unlocked it AND the
+// previous term is fully complete. By default the view shows the student's
+// current term (the first open, unfinished module); pass `moduleId` to view a
+// specific term (e.g. to revisit a finished one).
 export async function getDashboard(
   studentId: string,
-  cls: ClassName
+  cls: ClassName,
+  moduleId?: string
 ): Promise<DashboardView | null> {
-  const module = await getModuleForClass(cls);
-  if (!module) return null;
+  const modules = await getModulesForClass(cls);
+  if (modules.length === 0) return null;
 
-  const activities = await getActivities(module.module_id);
+  // Fetch every activity across all the class's modules, and the student's
+  // progress against them, in as few queries as possible.
+  const supabase = supabaseServer();
+  const { data: allActs, error: actErr } = await supabase
+    .from('activities')
+    .select('*')
+    .in('module_id', modules.map((m) => m.module_id))
+    .order('order', { ascending: true });
+  if (actErr) throw actErr;
+  const activities = (allActs ?? []) as Activity[];
   const { subs, quizzes } = await getProgressMaps(
     studentId,
     activities.map((a) => a.activity_id)
   );
 
+  const actsByModule = new Map<string, Activity[]>();
+  for (const a of activities) {
+    if (!actsByModule.has(a.module_id)) actsByModule.set(a.module_id, []);
+    actsByModule.get(a.module_id)!.push(a);
+  }
+
+  const isComplete = (a: Activity) => {
+    const sub = subs.get(a.activity_id);
+    const hasSubmission = sub?.status === 'Submitted' || sub?.status === 'Graded';
+    return hasSubmission && quizzes.has(a.activity_id);
+  };
+
+  // Per-module totals + sequential term availability.
+  type ModInfo = { module: Module; total: number; completeCount: number; complete: boolean; available: boolean };
+  const info: ModInfo[] = [];
+  let chainOpen: boolean = true; // earlier terms all complete so far
+  for (const m of modules) {
+    const acts = actsByModule.get(m.module_id) ?? [];
+    const total = acts.length;
+    const completeCount = acts.filter(isComplete).length;
+    const complete = total > 0 && completeCount === total;
+    const available: boolean = m.unlocked && chainOpen;
+    info.push({ module: m, total, completeCount, complete, available });
+    chainOpen = available && complete; // next term only opens when this one is done
+  }
+
+  // Current term: first available, unfinished module; else the last available;
+  // else the very first (shown locked).
+  const current =
+    info.find((i) => i.available && !i.complete) ??
+    [...info].reverse().find((i) => i.available) ??
+    info[0];
+
+  const target = (moduleId && info.find((i) => i.module.module_id === moduleId)) || current;
+  const targetActs = actsByModule.get(target.module.module_id) ?? [];
+
   const lessons: LessonView[] = [];
-  let prevComplete = true; // first lesson is always open
-  for (const activity of activities) {
+  let prevComplete = true; // first lesson of an open module is always open
+  for (const activity of targetActs) {
     const sub = subs.get(activity.activity_id);
     // The activity counts as submitted only when its status says so — a row can
     // exist for a reflection alone (status "Not started"), which must not count.
     const hasSubmission = sub?.status === 'Submitted' || sub?.status === 'Graded';
     const hasQuiz = quizzes.has(activity.activity_id);
     const complete = hasSubmission && hasQuiz;
-    const locked = !prevComplete;
+    // If the whole module is closed to the student, every lesson is locked.
+    const locked = !target.available || !prevComplete;
     lessons.push({
       activity,
       status: sub?.status ?? 'Not started',
@@ -172,15 +244,33 @@ export async function getDashboard(
   const completeCount = lessons.filter((l) => l.complete).length;
   const progressPct = total === 0 ? 0 : Math.round((completeCount / total) * 100);
   const dueNext = lessons.find((l) => !l.locked && !l.complete) ?? null;
+  const targetIdx = info.findIndex((i) => i.module.module_id === target.module.module_id);
+  const nextModuleId = info[targetIdx + 1]?.module.module_id ?? null;
+
+  const strip: ModuleStripItem[] = info.map((i) => ({
+    module_id: i.module.module_id,
+    title: i.module.title,
+    term: i.module.term,
+    order: i.module.order,
+    total: i.total,
+    completeCount: i.completeCount,
+    complete: i.complete,
+    available: i.available,
+    isCurrent: i.module.module_id === target.module.module_id,
+  }));
 
   return {
-    module,
+    module: target.module,
     lessons,
     total,
     completeCount,
     progressPct,
     dueNext,
-    allComplete: total > 0 && completeCount === total,
+    moduleComplete: target.complete,
+    moduleAvailable: target.available,
+    allComplete: info.every((i) => i.complete),
+    modules: strip,
+    nextModuleId,
   };
 }
 
@@ -290,14 +380,23 @@ export async function getStudentGrades(
 }
 
 // The single lesson view for a student, with the same lock logic applied so a
-// student can't jump ahead by editing the URL. Returns null if not found or
-// not part of the student's class module.
+// student can't jump ahead by editing the URL. Works across every term, and
+// keeps a lesson locked if its module (or an earlier one) isn't finished yet.
 export async function getLessonForStudent(
   studentId: string,
   cls: ClassName,
   activityId: string
 ): Promise<{ lesson: LessonView; module: Module } | null> {
-  const dash = await getDashboard(studentId, cls);
+  const supabase = supabaseServer();
+  const { data: act, error } = await supabase
+    .from('activities')
+    .select('module_id')
+    .eq('activity_id', activityId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!act) return null;
+
+  const dash = await getDashboard(studentId, cls, act.module_id);
   if (!dash) return null;
   const lesson = dash.lessons.find((l) => l.activity.activity_id === activityId);
   if (!lesson) return null;

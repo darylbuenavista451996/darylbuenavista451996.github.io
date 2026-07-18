@@ -18,13 +18,17 @@ function StatusBadge({ lesson }: { lesson: LessonView }) {
   return <span className="badge badge-muted">Not started</span>;
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { module?: string };
+}) {
   const session = getSession();
   if (!session) redirect('/login');
 
   let dash;
   try {
-    dash = await getDashboard(session.sid, session.class);
+    dash = await getDashboard(session.sid, session.class, searchParams.module);
   } catch {
     return (
       <main className="page">
@@ -57,7 +61,20 @@ export default async function DashboardPage() {
     );
   }
 
-  const { module, lessons, progressPct, completeCount, total, dueNext, allComplete } = dash;
+  const {
+    module,
+    lessons,
+    progressPct,
+    completeCount,
+    total,
+    dueNext,
+    allComplete,
+    moduleComplete,
+    moduleAvailable,
+    modules,
+    nextModuleId,
+  } = dash;
+  const showTerms = modules.length > 1;
 
   return (
     <main className="page page-wide">
@@ -77,6 +94,32 @@ export default async function DashboardPage() {
           <h2>Hi, {session.name} 👋</h2>
           <p>Welcome back — here is your course.</p>
         </div>
+
+        {showTerms ? (
+          <nav className="term-strip" aria-label="Terms">
+            {modules.map((m) => {
+              const label = `${m.term}`;
+              const state = m.complete ? 'done' : m.isCurrent ? 'current' : m.available ? 'open' : 'locked';
+              const inner = (
+                <>
+                  <span className="term-dot" aria-hidden="true">
+                    {m.complete ? '✓' : m.available ? m.order : '🔒'}
+                  </span>
+                  <span className="term-label">{label}</span>
+                </>
+              );
+              return m.available && !m.isCurrent ? (
+                <Link key={m.module_id} className={`term-pill term-${state}`} href={`/dashboard?module=${m.module_id}`}>
+                  {inner}
+                </Link>
+              ) : (
+                <span key={m.module_id} className={`term-pill term-${state}`} aria-current={m.isCurrent ? 'true' : undefined}>
+                  {inner}
+                </span>
+              );
+            })}
+          </nav>
+        ) : null}
 
         <div className="module-head">
           <span className="eyebrow">{module.term} · {total} {total === 1 ? 'task' : 'tasks'}</span>
@@ -99,12 +142,26 @@ export default async function DashboardPage() {
 
         {allComplete ? (
           <div className="banner banner-success" role="status">
-            <strong>🎉 You finished every task in this module!</strong>
+            <strong>🎉 You finished every task in the whole course!</strong>
             <div className="cert-cta">
               <Link className="btn btn-primary btn-sm" href="/certificate">
                 View your certificate
               </Link>
             </div>
+          </div>
+        ) : moduleComplete && nextModuleId ? (
+          <div className="banner banner-success banner-cta" role="status">
+            <div>
+              <strong>🎉 You finished this term!</strong> The next term is now open.
+            </div>
+            <Link className="btn btn-primary btn-sm" href={`/dashboard?module=${nextModuleId}`}>
+              Start the next term
+            </Link>
+          </div>
+        ) : !moduleAvailable ? (
+          <div className="banner" role="status">
+            <strong>This term isn&apos;t open yet.</strong> Finish the term before it, or
+            wait for your teacher to unlock it.
           </div>
         ) : dueNext ? (
           <div className="banner banner-cta" role="status">
