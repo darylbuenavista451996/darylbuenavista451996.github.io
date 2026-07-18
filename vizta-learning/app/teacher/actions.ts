@@ -6,6 +6,7 @@ import { requireTeacher, teacherServerClient } from '@/lib/teacherAuth';
 import {
   setGrade,
   addStudent as addStudentDb,
+  bulkAddStudents,
   setModuleUnlocked,
   updateActivityVideo,
 } from '@/lib/teacherData';
@@ -63,6 +64,79 @@ export async function addStudent(
   if (!res.ok) return { error: res.error };
   revalidatePath('/teacher/students');
   return { ok: true, message: `Added ${name}.` };
+}
+
+// Parse one CSV line into fields, honouring double-quoted fields (so a name
+// like "Dela Cruz, Juan" survives). Minimal but correct for our roster format.
+function parseCsvLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (line[i + 1] === '"') { cur += '"'; i++; } else inQuotes = false;
+      } else cur += ch;
+    } else if (ch === '"') inQuotes = true;
+    else if (ch === ',') { out.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out.map((s) => s.trim());
+}
+
+// Normalise a class value from the CSV into 'G9' | 'G10' | null.
+function normClass(raw: string): ClassName | null {
+  const v = raw.trim().toUpperCase().replace(/\s+/g, '');
+  if (v === 'G9' || v === 'GRADE9' || v === '9') return 'G9';
+  if (v === 'G10' || v === 'GRADE10' || v === '10') return 'G10';
+  return null;
+}
+
+export async function importStudents(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const text = String(formData.get('csv') ?? '').replace(/\r\n?/g, '\n').trim();
+  if (!text) return { error: 'Paste some rows first, or upload a CSV file.' };
+
+  const lines = text.split('\n').filter((l) => l.trim() !== '');
+  const rows: Array<{ name: string; student_number: string; class: ClassName }> = [];
+  const problems: string[] = [];
+
+  lines.forEach((line, idx) => {
+    const cols = parseCsvLine(line);
+    const name = cols[0] ?? '';
+    const number = cols[1] ?? '';
+    const clsRaw = cols[2] ?? '';
+    // Skip an optional header row (first line that clearly names the columns).
+    if (idx === 0 && /^name$/i.test(name) && /number/i.test(number)) return;
+    if (!name && !number && !clsRaw) return;
+    if (!name || !number || !clsRaw) {
+      problems.push(`Row ${idx + 1}: needs name, number and class.`);
+      return;
+    }
+    const cls = normClass(clsRaw);
+    if (!cls) {
+      problems.push(`Row ${idx + 1}: class "${clsRaw}" should be G9 or G10.`);
+      return;
+    }
+    rows.push({ name, student_number: number, class: cls });
+  });
+
+  if (rows.length === 0)
+    return { error: problems[0] ?? 'No valid rows found. Use: name, number, class (G9 or G10).' };
+
+  const res = await bulkAddStudents(rows);
+  if (!res.ok) return { error: res.error };
+
+  revalidatePath('/teacher/students');
+  const parts = [`Imported ${res.added} student${res.added === 1 ? '' : 's'}.`];
+  if (res.skipped > 0) parts.push(`${res.skipped} already existed (skipped).`);
+  if (problems.length > 0) parts.push(`${problems.length} row(s) had errors: ${problems.slice(0, 3).join(' ')}`);
+  return { ok: true, message: parts.join(' ') };
 }
 
 export async function toggleModule(

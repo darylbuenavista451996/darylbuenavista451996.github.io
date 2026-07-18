@@ -1,5 +1,6 @@
 import TeacherNav from '../TeacherNav';
 import AddStudentForm from './AddStudentForm';
+import BulkImportForm from './BulkImportForm';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getRoster } from '@/lib/teacherData';
 
@@ -25,6 +26,7 @@ export default async function StudentsPage() {
             them here first — that keeps your roster the source of truth.
           </p>
           <AddStudentForm />
+          <BulkImportForm />
         </section>
 
         <section className="lesson-section">

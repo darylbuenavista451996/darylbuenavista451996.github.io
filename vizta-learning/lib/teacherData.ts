@@ -172,6 +172,23 @@ export async function addStudent(input: {
   return { ok: true };
 }
 
+// Insert many students at once. Duplicates (same student number within a class)
+// are skipped, not errored, so re-running an import is safe. Returns how many
+// rows were newly added and how many were skipped as already-present.
+export async function bulkAddStudents(
+  rows: Array<{ name: string; student_number: string; class: ClassName }>
+): Promise<{ ok: true; added: number; skipped: number } | { ok: false; error: string }> {
+  if (rows.length === 0) return { ok: true, added: 0, skipped: 0 };
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('students')
+    .upsert(rows, { onConflict: 'class,student_number', ignoreDuplicates: true })
+    .select('student_id');
+  if (error) return { ok: false, error: 'Could not import the roster. Please try again.' };
+  const added = data?.length ?? 0;
+  return { ok: true, added, skipped: rows.length - added };
+}
+
 export async function setModuleUnlocked(moduleId: string, unlocked: boolean): Promise<void> {
   const supabase = supabaseServer();
   const { error } = await supabase.from('modules').update({ unlocked }).eq('module_id', moduleId);
