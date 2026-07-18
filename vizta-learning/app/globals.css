@@ -136,6 +136,8 @@ input:focus { border-color: var(--mint); }
 }
 
 .muted-link { display: inline-block; margin-top: 18px; color: var(--muted); font-size: 15px; }
+.auth-links { margin-top: 16px; font-size: 14px; }
+.auth-links a { color: var(--mint-dark); }
 .footer { margin-top: 26px; color: var(--muted); font-size: 13px; text-align: center; }
 .footer-sep { margin: 0 8px; opacity: 0.6; }
 .teacher-link { color: var(--muted); text-decoration: underline; }

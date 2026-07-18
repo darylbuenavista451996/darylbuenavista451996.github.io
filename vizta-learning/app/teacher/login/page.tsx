@@ -18,6 +18,11 @@ export default async function TeacherLoginPage() {
           Vizta Learning teacher account.
         </p>
         <TeacherLoginForm />
+        <div className="auth-links">
+          <Link href="/teacher/forgot">Forgot password?</Link>
+          <span className="footer-sep">·</span>
+          <Link href="/teacher/signup">Create a teacher account</Link>
+        </div>
         <Link className="muted-link" href="/">← Back to the student site</Link>
       </div>
     </main>
