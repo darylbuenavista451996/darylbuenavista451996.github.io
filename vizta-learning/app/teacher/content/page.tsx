@@ -17,9 +17,9 @@ export default async function ContentPage() {
           <span className="eyebrow">Teacher panel</span>
           <h1>Content &amp; videos</h1>
           <p className="lede">
-            Lesson text comes from the seed files. Here you can confirm or replace
-            each lesson&apos;s video link — the one thing that needs your eyes before
-            students watch. Paste a YouTube link you have previewed and cleared.
+            Set or replace each lesson&apos;s video link — paste a YouTube link you
+            have previewed and cleared — and use <em>Edit lesson text</em> to reword
+            a lesson&apos;s goal, hook, activity brief or closing for your class.
           </p>
         </div>
 

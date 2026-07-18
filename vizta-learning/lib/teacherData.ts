@@ -265,6 +265,48 @@ export async function updateActivityVideo(
   if (error) throw error;
 }
 
+export type ActivityEdit = {
+  activity_id: string;
+  title: string;
+  lesson_goal: string | null;
+  before_hook: string | null;
+  activity_brief: string | null;
+  after_bridge: string | null;
+};
+
+// The editable student-facing text of one lesson.
+export async function getActivityForEdit(activityId: string): Promise<ActivityEdit | null> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('activities')
+    .select('activity_id, title, lesson_goal, before_hook, activity_brief, after_bridge')
+    .eq('activity_id', activityId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as ActivityEdit) ?? null;
+}
+
+// Save edited lesson text. Empty strings are stored as null so the lesson page
+// hides the section rather than showing a blank.
+export async function updateActivityText(
+  activityId: string,
+  fields: { title: string; lesson_goal: string; before_hook: string; activity_brief: string; after_bridge: string }
+): Promise<void> {
+  const supabase = supabaseServer();
+  const clean = (s: string) => (s.trim() === '' ? null : s.trim());
+  const { error } = await supabase
+    .from('activities')
+    .update({
+      title: fields.title.trim(),
+      lesson_goal: clean(fields.lesson_goal),
+      before_hook: clean(fields.before_hook),
+      activity_brief: clean(fields.activity_brief),
+      after_bridge: clean(fields.after_bridge),
+    })
+    .eq('activity_id', activityId);
+  if (error) throw error;
+}
+
 export type QuizCell = { score: number; total: number } | null;
 export type QuizScoresView = {
   byClass: Array<{

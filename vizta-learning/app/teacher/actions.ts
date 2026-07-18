@@ -9,6 +9,7 @@ import {
   bulkAddStudents,
   setModuleUnlocked,
   updateActivityVideo,
+  updateActivityText,
 } from '@/lib/teacherData';
 import type { ClassName } from '@/lib/classCodes';
 
@@ -192,4 +193,30 @@ export async function updateVideo(
   }
   revalidatePath('/teacher/content');
   return { ok: true, message: 'Video updated.' };
+}
+
+export async function updateLessonText(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const activityId = String(formData.get('activity_id') ?? '');
+  const title = String(formData.get('title') ?? '').trim();
+  if (!activityId) return { error: 'Missing lesson.' };
+  if (!title) return { error: 'The lesson needs a title.' };
+  try {
+    await updateActivityText(activityId, {
+      title,
+      lesson_goal: String(formData.get('lesson_goal') ?? ''),
+      before_hook: String(formData.get('before_hook') ?? ''),
+      activity_brief: String(formData.get('activity_brief') ?? ''),
+      after_bridge: String(formData.get('after_bridge') ?? ''),
+    });
+  } catch {
+    return { error: 'Could not save the lesson text. Please try again.' };
+  }
+  revalidatePath('/teacher/content');
+  revalidatePath(`/teacher/content/${activityId}`);
+  revalidatePath(`/lesson/${activityId}`);
+  return { ok: true, message: 'Lesson text saved.' };
 }

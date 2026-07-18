@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useFormState, useFormStatus } from 'react-dom';
 import { updateVideo, type ActionState } from '../actions';
 
@@ -29,7 +30,7 @@ export default function VideoEditForm({
       <input type="hidden" name="activity_id" value={activityId} />
       <div className="video-edit-head">
         <strong>{title}</strong>
-        <span className="grade-sub">{activityId}</span>
+        <Link className="edit-text-link" href={`/teacher/content/${activityId}`}>Edit lesson text →</Link>
       </div>
       {state.error ? <div className="error" role="alert">{state.error}</div> : null}
       {state.ok ? <div className="banner banner-success" role="status">{state.message}</div> : null}
