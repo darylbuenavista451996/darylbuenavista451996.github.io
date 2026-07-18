@@ -2,6 +2,7 @@
 
 import crypto from 'node:crypto';
 import { supabaseServer } from '@/lib/supabase';
+import { rateLimit, tooManyMessage } from '@/lib/rateLimit';
 
 export type SignupState = { ok?: boolean; error?: string };
 
@@ -21,6 +22,11 @@ export async function signUpTeacher(
   _prev: SignupState,
   formData: FormData
 ): Promise<SignupState> {
+  // The teacher code is the highest-value guess target, so limit hard:
+  // 6 attempts per 10 minutes per IP.
+  const limit = rateLimit('teacher-signup', { limit: 6, windowMs: 600_000 });
+  if (!limit.ok) return { error: tooManyMessage(limit.retryAfterSec) };
+
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const password = String(formData.get('password') ?? '');
   const code = String(formData.get('code') ?? '');

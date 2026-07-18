@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { gradeForCode } from '@/lib/classCodes';
 import { supabaseServer } from '@/lib/supabase';
 import { SESSION_COOKIE, serialize, cookieOptions } from '@/lib/session';
+import { rateLimit, tooManyMessage } from '@/lib/rateLimit';
 
 export type LoginState = { error?: string };
 
@@ -15,6 +16,10 @@ export async function login(
   _prev: LoginState,
   formData: FormData
 ): Promise<LoginState> {
+  // Slow down number-guessing: 15 tries per minute per IP.
+  const limit = rateLimit('student-login', { limit: 15, windowMs: 60_000 });
+  if (!limit.ok) return { error: tooManyMessage(limit.retryAfterSec) };
+
   const classCode = String(formData.get('classCode') ?? '').trim();
   const studentNumber = String(formData.get('studentNumber') ?? '').trim();
 
