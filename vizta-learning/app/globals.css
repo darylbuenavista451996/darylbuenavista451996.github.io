@@ -170,6 +170,14 @@ input:focus { border-color: var(--mint); }
 /* Banners ---------------------------------------------------------------- */
 .banner { background: var(--navy-tint); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 18px 0; font-size: 15px; }
 .banner-success { background: var(--mint-tint); border-color: #bfe6d6; color: var(--navy); }
+.banner-cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.banner-cta .btn { white-space: nowrap; }
+
+/* Student grade book ----------------------------------------------------- */
+.grades-total { display: flex; align-items: baseline; gap: 10px; background: var(--navy-tint); border-radius: 12px; padding: 14px 20px; margin: 4px 0 18px; }
+.grades-total-num { font-size: 26px; font-weight: 800; color: var(--navy); }
+.grades-total-lbl { font-size: 14px; color: var(--muted); }
+.tag-pt { font-size: 13px; color: var(--muted); }
 
 /* Badges ----------------------------------------------------------------- */
 .badge-done { background: var(--mint); color: #fff; }

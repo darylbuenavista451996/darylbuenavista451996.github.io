@@ -68,6 +68,7 @@ export default async function DashboardPage() {
             <span className="who">
               {session.name} · <span className="badge">{session.class === 'G9' ? 'Grade 9' : 'Grade 10'}</span>
             </span>
+            <Link className="btn btn-ghost btn-sm" href="/grades">My grades</Link>
             <SignOut compact />
           </div>
         </div>
@@ -106,8 +107,13 @@ export default async function DashboardPage() {
             </div>
           </div>
         ) : dueNext ? (
-          <div className="banner" role="status">
-            <strong>Up next:</strong> Task {dueNext.activity.order} — {dueNext.activity.title}
+          <div className="banner banner-cta" role="status">
+            <div>
+              <strong>Up next:</strong> Task {dueNext.activity.order} — {dueNext.activity.title}
+            </div>
+            <Link className="btn btn-primary btn-sm" href={`/lesson/${dueNext.activity.activity_id}`}>
+              {completeCount === 0 ? 'Start learning' : 'Continue where I left off'}
+            </Link>
           </div>
         ) : null}
 

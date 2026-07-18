@@ -184,6 +184,111 @@ export async function getDashboard(
   };
 }
 
+export type StudentGradeRow = {
+  activity_id: string;
+  order: number;
+  title: string;
+  is_performance_task: boolean;
+  status: LessonStatus;
+  grade: number | null;
+  rubric_total: number | null;
+  quizScore: number | null;
+  quizTotal: number;
+  practiceScore: number | null;
+  practiceTotal: number;
+  complete: boolean;
+  locked: boolean;
+};
+
+export type StudentGradesView = {
+  module: Module;
+  rows: StudentGradeRow[];
+  // Totals across everything scored so far.
+  earned: number;
+  possible: number;
+};
+
+// A student-facing grade book: for each task, the teacher's grade, the quiz
+// score and the auto-graded activity score. Read-only; scoped to this student.
+export async function getStudentGrades(
+  studentId: string,
+  cls: ClassName
+): Promise<StudentGradesView | null> {
+  const dash = await getDashboard(studentId, cls);
+  if (!dash) return null;
+  const supabase = supabaseServer();
+  const activityIds = dash.lessons.map((l) => l.activity.activity_id);
+
+  // Quiz item counts (the total each quiz is out of).
+  const quizTotals = new Map<string, number>();
+  if (activityIds.length > 0) {
+    const { data: qz } = await supabase
+      .from('quizzes')
+      .select('activity_id')
+      .in('activity_id', activityIds);
+    for (const q of qz ?? [])
+      quizTotals.set(q.activity_id, (quizTotals.get(q.activity_id) ?? 0) + 1);
+  }
+
+  // Latest quiz score per activity.
+  const quizScores = new Map<string, number>();
+  if (activityIds.length > 0) {
+    const { data: qr } = await supabase
+      .from('quiz_results')
+      .select('activity_id, score, date')
+      .eq('student_id', studentId)
+      .in('activity_id', activityIds)
+      .order('date', { ascending: false });
+    for (const r of qr ?? [])
+      if (!quizScores.has(r.activity_id)) quizScores.set(r.activity_id, r.score);
+  }
+
+  // Practice auto-scores (error-tolerant — column may not exist yet).
+  const practiceScores = new Map<string, number | null>();
+  {
+    const { data: pr, error } = await supabase
+      .from('submissions')
+      .select('activity_id, practice_score')
+      .eq('student_id', studentId)
+      .in('activity_id', activityIds.length ? activityIds : ['__none__']);
+    if (!error)
+      for (const r of pr ?? [])
+        practiceScores.set(r.activity_id, (r as { practice_score?: number | null }).practice_score ?? null);
+  }
+
+  let earned = 0;
+  let possible = 0;
+  const rows: StudentGradeRow[] = dash.lessons.map((l) => {
+    const id = l.activity.activity_id;
+    const quizTotal = quizTotals.get(id) ?? 0;
+    const quizScore = quizScores.has(id) ? quizScores.get(id)! : null;
+    const practiceScore = practiceScores.get(id) ?? null;
+    const rubricTotal = l.activity.rubric_total ?? null;
+
+    if (l.grade != null && rubricTotal != null) { earned += l.grade; possible += rubricTotal; }
+    if (quizScore != null) { earned += quizScore; possible += quizTotal; }
+    if (practiceScore != null) { earned += practiceScore; possible += PRACTICE_TOTAL; }
+
+    return {
+      activity_id: id,
+      order: l.activity.order,
+      title: l.activity.title,
+      is_performance_task: l.activity.is_performance_task,
+      status: l.status,
+      grade: l.grade,
+      rubric_total: rubricTotal,
+      quizScore,
+      quizTotal,
+      practiceScore,
+      practiceTotal: PRACTICE_TOTAL,
+      complete: l.complete,
+      locked: l.locked,
+    };
+  });
+
+  return { module: dash.module, rows, earned, possible };
+}
+
 // The single lesson view for a student, with the same lock logic applied so a
 // student can't jump ahead by editing the URL. Returns null if not found or
 // not part of the student's class module.
