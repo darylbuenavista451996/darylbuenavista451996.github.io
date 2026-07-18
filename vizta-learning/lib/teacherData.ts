@@ -2,6 +2,7 @@
 // operations; the Server Actions that call them verify the teacher session first.
 
 import { supabaseServer } from './supabase';
+import { hashPassword, generateTempPassword } from './studentAuth';
 import type { ClassName } from './classCodes';
 import type { Module } from './data';
 
@@ -9,6 +10,7 @@ export type RosterEntry = {
   student_id: string;
   name: string;
   student_number: string;
+  email: string | null;
   class: string;
   moduleTitle: string | null;
   complete: number;
@@ -20,7 +22,7 @@ export type RosterEntry = {
 export async function getRoster(): Promise<RosterEntry[]> {
   const supabase = supabaseServer();
   const [students, modules, activities, submissions, quizResults] = await Promise.all([
-    supabase.from('students').select('student_id, name, student_number, class').order('class').order('student_number'),
+    supabase.from('students').select('student_id, name, student_number, email, class').order('class').order('name'),
     supabase.from('modules').select('module_id, title, grade_class, "order"'),
     supabase.from('activities').select('activity_id, module_id'),
     supabase.from('submissions').select('student_id, activity_id'),
@@ -55,6 +57,7 @@ export async function getRoster(): Promise<RosterEntry[]> {
       student_id: s.student_id,
       name: s.name,
       student_number: s.student_number,
+      email: (s as { email?: string | null }).email ?? null,
       class: s.class,
       moduleTitle: mod?.title ?? null,
       complete,
@@ -244,6 +247,31 @@ export async function bulkAddStudents(
   if (error) return { ok: false, error: 'Could not import the roster. Please try again.' };
   const added = data?.length ?? 0;
   return { ok: true, added, skipped: rows.length - added };
+}
+
+// Reset a self-registered student's password to a fresh temporary one. Returns
+// the plain temp password ONCE so the teacher can hand it to the student; only
+// the hash is stored. Only works for students who have an email account.
+export async function resetStudentPassword(
+  studentId: string
+): Promise<{ ok: true; tempPassword: string } | { ok: false; error: string }> {
+  const supabase = supabaseServer();
+  const { data: student, error: readErr } = await supabase
+    .from('students')
+    .select('student_id, email')
+    .eq('student_id', studentId)
+    .maybeSingle();
+  if (readErr) return { ok: false, error: 'Could not find that student.' };
+  if (!student || !(student as { email?: string | null }).email)
+    return { ok: false, error: 'This student signs in with a class code, not a password.' };
+
+  const tempPassword = generateTempPassword();
+  const { error } = await supabase
+    .from('students')
+    .update({ password_hash: hashPassword(tempPassword) })
+    .eq('student_id', studentId);
+  if (error) return { ok: false, error: 'Could not reset the password. Please try again.' };
+  return { ok: true, tempPassword };
 }
 
 export async function setModuleUnlocked(moduleId: string, unlocked: boolean): Promise<void> {

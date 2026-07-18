@@ -16,16 +16,21 @@ export default function LandingPage() {
         <h1>Welcome. Let&apos;s make something.</h1>
         <p className="lede">
           This is your self-paced Media Arts course. Watch, practice, and check
-          what you learned, one lesson at a time. Choose your grade to begin.
+          what you learned, one lesson at a time. Create your account to begin —
+          pick your grade:
         </p>
 
         <div className="choice-grid">
-          <Link className="btn btn-primary" href="/login?grade=G9">
+          <Link className="btn btn-primary" href="/signup?grade=G9">
             I&apos;m in Grade 9
           </Link>
-          <Link className="btn btn-navy" href="/login?grade=G10">
+          <Link className="btn btn-navy" href="/signup?grade=G10">
             I&apos;m in Grade 10
           </Link>
+        </div>
+
+        <div className="auth-links">
+          Already have an account? <Link href="/login">Sign in</Link>
         </div>
 
         <p className="footer">

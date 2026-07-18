@@ -10,6 +10,7 @@ import {
   setModuleUnlocked,
   updateActivityVideo,
   updateActivityText,
+  resetStudentPassword,
 } from '@/lib/teacherData';
 import type { ClassName } from '@/lib/classCodes';
 
@@ -138,6 +139,21 @@ export async function importStudents(
   if (res.skipped > 0) parts.push(`${res.skipped} already existed (skipped).`);
   if (problems.length > 0) parts.push(`${problems.length} row(s) had errors: ${problems.slice(0, 3).join(' ')}`);
   return { ok: true, message: parts.join(' ') };
+}
+
+export type ResetPwState = { ok?: boolean; error?: string; tempPassword?: string };
+
+export async function resetStudentPasswordAction(
+  _prev: ResetPwState,
+  formData: FormData
+): Promise<ResetPwState> {
+  await requireTeacher();
+  const studentId = String(formData.get('student_id') ?? '');
+  if (!studentId) return { error: 'Missing student.' };
+  const res = await resetStudentPassword(studentId);
+  if (!res.ok) return { error: res.error };
+  revalidatePath('/teacher/students');
+  return { ok: true, tempPassword: res.tempPassword };
 }
 
 export async function toggleModule(

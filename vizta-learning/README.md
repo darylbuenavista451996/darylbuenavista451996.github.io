@@ -13,8 +13,11 @@ admin panel, and the n8n grade export.
 - Submissions are **text, image url, or link only**. Never a file upload.
 - The data model is exactly the five conceptual groups in the brief: Students,
   Modules, Activities, Submissions, and Quizzes + QuizResults. No extra tables.
-- Student login is **class code + student number**. No student emails, no
-  student passwords.
+- Students can **create their own account** (name + email + password, gated by a
+  class code) — the Khan-Academy-style flow — **or** be added by a teacher and
+  sign in with **class code + student number**. Both work. Student passwords are
+  stored only as a salted scrypt hash, and students are kept entirely separate
+  from the teacher (Supabase Auth) system, so they can never reach teacher pages.
 - All content loads from the **seed files**, never hard-coded in the app.
 - Branding is Vizta **mint `#3EB489`** and **navy `#1B2A4A`**.
 - **Free tier only.** Any choice that risks a cost gets flagged here, not shipped.
@@ -335,6 +338,28 @@ seed rows — no code changes. See **[Adding Term 2 and beyond](#adding-term-2-a
 - [x] **In-app lesson text editing** for teachers (title, goal, hook, brief, closing)
 - [x] **Security headers** (HSTS, nosniff, frame-deny, referrer + permissions policy)
 - [x] **Multi-term progression** (terms unlock in order as the class finishes them)
+- [x] **Student self-registration** (name + email + password, gated by a class code)
+
+## Student accounts (self-registration)
+
+Students create their own account at **`/signup`**: name, email (their Gmail is
+fine), a password, and the **class code** their teacher gives them (which places
+them in the right grade). They then sign in at `/login` with email + password.
+Teacher-added students (class code + student number, no email) still work — the
+login page has a "Log in with a class code instead" option for them.
+
+**One-time setup — run the migration.** This feature needs the new columns:
+
+1. Supabase dashboard → **SQL Editor** → paste the contents of
+   `supabase/migrations/0006_student_accounts.sql` → **Run**.
+2. That's the only step. No env vars, no redeploy needed (the code is already
+   deployed; it reads the new columns error-tolerantly until they exist).
+
+**Forgot password (students):** a student who forgets tells their teacher. On
+the roster, each self-registered student has a **Reset password** button that
+generates a fresh temporary password to hand back to them. (Students have no
+email-based self-reset yet — that would need an email provider; ask if you want
+it.) Passwords are stored only as salted scrypt hashes.
 
 ## Teacher accounts: sign-up, forgot & reset password
 

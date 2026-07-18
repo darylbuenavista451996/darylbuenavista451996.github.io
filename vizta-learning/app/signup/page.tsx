@@ -1,12 +1,11 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from '../Brand';
-import EmailLoginForm from './EmailLoginForm';
-import LoginForm from './LoginForm';
+import SignupForm from './SignupForm';
 import { getSession } from '@/lib/session';
 import { codesForGrade, type ClassName } from '@/lib/classCodes';
 
-export default function LoginPage({
+export default function StudentSignupPage({
   searchParams,
 }: {
   searchParams: { grade?: string };
@@ -20,28 +19,17 @@ export default function LoginPage({
     <main className="page">
       <div className="card">
         <Brand />
-        <h1>Sign in</h1>
+        <h1>Create your account</h1>
         <p className="lede">
-          Sign in with the email and password you used to create your account.
+          Make your own account to start the course.
+          {grade ? <> You picked <span className="badge">{grade === 'G9' ? 'Grade 9' : 'Grade 10'}</span>.</> : null}
         </p>
 
-        <EmailLoginForm />
+        <SignupForm suggestedCode={suggestedCode} />
 
         <div className="auth-links">
-          New here? <Link href={grade ? `/signup?grade=${grade}` : '/signup'}>Create an account</Link>
+          Already have an account? <Link href="/login">Sign in</Link>
         </div>
-        <p className="hint">
-          Forgot your password? Ask your teacher to reset it for you.
-        </p>
-
-        <details className="alt-login">
-          <summary>Log in with a class code instead</summary>
-          <p className="hint">
-            If your teacher added you with a student number (no email), use this.
-          </p>
-          <LoginForm suggestedCode={suggestedCode} />
-        </details>
-
         <Link className="muted-link" href="/">← Back</Link>
       </div>
     </main>

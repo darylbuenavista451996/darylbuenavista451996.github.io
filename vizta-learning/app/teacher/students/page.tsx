@@ -1,6 +1,7 @@
 import TeacherNav from '../TeacherNav';
 import AddStudentForm from './AddStudentForm';
 import BulkImportForm from './BulkImportForm';
+import ResetPasswordButton from './ResetPasswordButton';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getRoster } from '@/lib/teacherData';
 
@@ -37,21 +38,27 @@ export default async function StudentsPage() {
             <div className="table-scroll">
               <table className="data-table">
                 <thead>
-                  <tr><th>Name</th><th>Number</th><th>Class</th><th>Module</th><th>Progress</th></tr>
+                  <tr><th>Name</th><th>Sign-in</th><th>Class</th><th>Progress</th><th>Account</th></tr>
                 </thead>
                 <tbody>
                   {roster.map((s) => (
                     <tr key={s.student_id}>
                       <td>{s.name}</td>
-                      <td>{s.student_number}</td>
+                      <td>
+                        {s.email ? (
+                          <span className="signin-email">{s.email}</span>
+                        ) : (
+                          <span className="signin-num">#{s.student_number || '—'} <span className="muted-tag">class code</span></span>
+                        )}
+                      </td>
                       <td>{s.class}</td>
-                      <td>{s.moduleTitle ?? '—'}</td>
                       <td>
                         <div className="mini-progress" aria-label={`${s.pct} percent`}>
                           <div className="mini-track"><div className="mini-fill" style={{ width: `${s.pct}%` }} /></div>
                           <span className="mini-lbl">{s.complete}/{s.total}</span>
                         </div>
                       </td>
+                      <td>{s.email ? <ResetPasswordButton studentId={s.student_id} /> : <span className="muted-tag">—</span>}</td>
                     </tr>
                   ))}
                 </tbody>
