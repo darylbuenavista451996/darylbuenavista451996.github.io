@@ -4,9 +4,9 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { submitActivity, type SubmitState } from './actions';
 import type { SubmissionRow } from '@/lib/data';
 
-function SaveButton({ graded }: { graded: boolean }) {
+function SaveButton({ locked }: { locked: boolean }) {
   const { pending } = useFormStatus();
-  if (graded) return null;
+  if (locked) return null;
   return (
     <button className="btn btn-primary" type="submit" disabled={pending}>
       {pending ? 'Saving…' : 'Submit my work'}
@@ -27,7 +27,9 @@ export default function ActivitySubmit({
   const [state, formAction] = useFormState<SubmitState, FormData>(bound, {});
 
   const graded = existing?.status === 'Graded';
-  const submitted = existing?.status === 'Submitted' || state.ok;
+  const submitted = existing?.status === 'Submitted' || state.ok === true;
+  // Once submitted (or graded), the answer is final — no re-editing.
+  const locked = graded || submitted;
 
   return (
     <form action={formAction} className="submit-box">
@@ -35,11 +37,10 @@ export default function ActivitySubmit({
         <div className="banner banner-success" role="status">
           <strong>Graded{existing?.grade != null ? `: ${existing.grade} points` : ''}.</strong>
           {existing?.feedback ? <div className="feedback">“{existing.feedback}”</div> : null}
-          <div className="hint">A graded submission can no longer be changed.</div>
         </div>
       ) : submitted ? (
         <div className="banner banner-success" role="status">
-          ✓ Submitted. You can still edit and resubmit until your teacher grades it.
+          ✓ Submitted. Your teacher will review it.
         </div>
       ) : null}
 
@@ -54,7 +55,7 @@ export default function ActivitySubmit({
             rows={6}
             placeholder="Write your answer here…"
             defaultValue={existing?.content ?? ''}
-            disabled={graded}
+            disabled={locked}
             required
           />
         </>
@@ -68,13 +69,15 @@ export default function ActivitySubmit({
             inputMode="url"
             placeholder={kind === 'image' ? 'https://… (an image URL)' : 'https://…'}
             defaultValue={existing?.content ?? ''}
-            disabled={graded}
+            disabled={locked}
             required
           />
         </>
       )}
-      <p className="hint">Submissions are text, a link, or an image link — never a file upload.</p>
-      <SaveButton graded={graded} />
+      {locked ? null : (
+        <p className="hint">Submissions are text, a link, or an image link — never a file upload.</p>
+      )}
+      <SaveButton locked={locked} />
     </form>
   );
 }

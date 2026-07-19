@@ -29,7 +29,7 @@ export default function ReflectionBox({
     <form action={formAction} className="reflection-box">
       {done ? (
         <div className="banner banner-success" role="status">
-          ✓ Reflection saved. You have completion credit for this. You can still edit it.
+          ✓ Reflection saved. You have completion credit for this.
         </div>
       ) : null}
       {state.error ? <div className="error" role="alert">{state.error}</div> : null}

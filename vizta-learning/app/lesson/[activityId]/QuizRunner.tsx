@@ -30,17 +30,20 @@ export default function QuizRunner({
   // After scoring, map quiz_id -> review row for coloring.
   const review = new Map((state.review ?? []).map((r) => [r.quiz_id, r]));
   const scored = state.scored === true;
+  // Already completed on a previous visit — this quiz is one attempt only.
+  const alreadyDone = !scored && priorScore != null;
+  const locked = scored || alreadyDone;
 
   return (
     <form action={formAction}>
       {scored ? (
         <div className="banner banner-success" role="status">
           <strong>You scored {state.score} out of {state.total}.</strong>
-          <div className="hint">Correct answers are marked below. You can retake it to improve.</div>
+          <div className="hint">Correct answers are marked below.</div>
         </div>
-      ) : priorScore != null ? (
-        <div className="banner" role="status">
-          Your last score was <strong>{priorScore} out of {items.length}</strong>. You can retake it below.
+      ) : alreadyDone ? (
+        <div className="banner banner-success" role="status">
+          <strong>You already completed this quiz — you scored {priorScore} out of {items.length}.</strong>
         </div>
       ) : null}
 
@@ -68,7 +71,7 @@ export default function QuizRunner({
                         name={q.quiz_id}
                         value={letter}
                         defaultChecked={r?.chosen === letter}
-                        disabled={scored}
+                        disabled={locked}
                       />
                       <span><b>{letter}.</b> {text}</span>
                       {scored && r && letter === r.correct ? <span className="tick"> ✓</span> : null}
@@ -81,11 +84,7 @@ export default function QuizRunner({
         })}
       </ol>
 
-      {scored ? (
-        <a className="btn btn-navy" href={`/lesson/${activityId}`}>Retake the quiz</a>
-      ) : (
-        <GradeButton />
-      )}
+      {locked ? null : <GradeButton />}
     </form>
   );
 }

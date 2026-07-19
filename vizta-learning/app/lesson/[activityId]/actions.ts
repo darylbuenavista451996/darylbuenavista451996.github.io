@@ -7,6 +7,7 @@ import {
   getLessonForStudent,
   getSubmission,
   getQuizKey,
+  getLatestQuizResult,
   submissionKind,
   REFLECTION_MIN_WORDS,
   gradePractice,
@@ -43,10 +44,10 @@ export async function submitActivity(
   if (result.lesson.locked)
     return { error: 'Finish the earlier lessons first — this one is locked.' };
 
-  // Can't edit after a teacher has graded it.
+  // One submission only — can't edit after it's been submitted or graded.
   const existing = await getSubmission(session.sid, activityId);
-  if (existing?.status === 'Graded')
-    return { error: 'This has already been graded, so it can no longer be changed.' };
+  if (existing?.status === 'Submitted' || existing?.status === 'Graded')
+    return { error: 'You have already submitted this, so it can no longer be changed.' };
 
   const kind = submissionKind(result.lesson.activity.submission_type);
   const content = String(formData.get('content') ?? '').trim();
@@ -247,6 +248,10 @@ export async function submitQuiz(
   if (!result) return { error: 'We could not find that lesson.' };
   if (result.lesson.locked)
     return { error: 'Finish the earlier lessons first — this one is locked.' };
+
+  // One attempt only — reject if a result already exists for this quiz.
+  const already = await getLatestQuizResult(session.sid, activityId);
+  if (already) return { error: 'You have already completed this quiz.' };
 
   const key = await getQuizKey(activityId);
   if (key.length === 0) return { error: 'This lesson has no quiz.' };
