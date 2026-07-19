@@ -167,6 +167,10 @@ input:focus { border-color: var(--mint); }
 .temp-pw { font-size: 13px; color: var(--navy); }
 .temp-pw code { background: var(--mint-tint); border-radius: 4px; padding: 2px 6px; font-size: 14px; font-weight: 700; }
 
+/* Reopen submission (teacher grading) */
+.reopen-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+.reopen-note { font-size: 12px; color: var(--muted); }
+
 .eyebrow { display: block; text-transform: uppercase; letter-spacing: 0.6px; font-size: 12px; font-weight: 700; color: var(--mint-dark); margin-bottom: 4px; }
 .module-head { margin-bottom: 18px; }
 .goal { color: var(--navy); background: var(--mint-tint); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; }

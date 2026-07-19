@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { requireTeacher, teacherServerClient } from '@/lib/teacherAuth';
 import {
   setGrade,
+  reopenSubmission,
   addStudent as addStudentDb,
   bulkAddStudents,
   setModuleUnlocked,
@@ -48,6 +49,25 @@ export async function gradeSubmission(
   revalidatePath('/teacher/grade');
   revalidatePath('/teacher/students');
   return { ok: true, message: 'Grade saved.' };
+}
+
+export async function reopenSubmissionAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const studentId = String(formData.get('student_id') ?? '');
+  const activityId = String(formData.get('activity_id') ?? '');
+  if (!studentId || !activityId) return { error: 'Missing submission reference.' };
+  try {
+    await reopenSubmission(studentId, activityId);
+  } catch {
+    return { error: 'Could not reopen the submission. Please try again.' };
+  }
+  revalidatePath('/teacher/grade');
+  revalidatePath('/dashboard');
+  revalidatePath(`/lesson/${activityId}`);
+  return { ok: true, message: 'Reopened — the student can edit and resubmit.' };
 }
 
 export async function addStudent(

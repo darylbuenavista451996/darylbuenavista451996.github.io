@@ -198,6 +198,19 @@ export async function getGradeQueue(includeGraded = false): Promise<GradeQueueIt
   });
 }
 
+// Reopen a submission so the student can fix an honest mistake and resubmit.
+// Their previous answer is kept (pre-filled) but the task counts as not-yet-
+// submitted again, and any grade/feedback is cleared.
+export async function reopenSubmission(studentId: string, activityId: string): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase
+    .from('submissions')
+    .update({ status: 'Not started', grade: null, feedback: null })
+    .eq('student_id', studentId)
+    .eq('activity_id', activityId);
+  if (error) throw error;
+}
+
 export async function setGrade(
   studentId: string,
   activityId: string,

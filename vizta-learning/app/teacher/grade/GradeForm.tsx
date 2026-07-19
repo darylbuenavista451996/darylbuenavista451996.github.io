@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
-import { gradeSubmission, type ActionState } from '../actions';
+import { gradeSubmission, reopenSubmissionAction, type ActionState } from '../actions';
 import type { GradeQueueItem } from '@/lib/teacherData';
 
 function looksLikeUrl(s: string | null): boolean {
@@ -17,8 +17,18 @@ function Btn() {
   );
 }
 
+function ReopenBtn() {
+  const { pending } = useFormStatus();
+  return (
+    <button className="btn btn-ghost btn-xs" type="submit" disabled={pending}>
+      {pending ? 'Reopening…' : 'Reopen for resubmit'}
+    </button>
+  );
+}
+
 export default function GradeForm({ item }: { item: GradeQueueItem }) {
   const [state, action] = useFormState<ActionState, FormData>(gradeSubmission, {});
+  const [reopenState, reopenAction] = useFormState<ActionState, FormData>(reopenSubmissionAction, {});
   const url = looksLikeUrl(item.content);
 
   return (
@@ -75,6 +85,18 @@ export default function GradeForm({ item }: { item: GradeQueueItem }) {
           <Btn />
         </div>
       </form>
+
+      {reopenState.ok ? (
+        <div className="banner banner-success" role="status">{reopenState.message}</div>
+      ) : (
+        <form action={reopenAction} className="reopen-form">
+          <input type="hidden" name="student_id" value={item.student_id} />
+          <input type="hidden" name="activity_id" value={item.activity_id} />
+          {reopenState.error ? <span className="reset-pw-err">{reopenState.error}</span> : null}
+          <ReopenBtn />
+          <span className="reopen-note">Lets this student fix an honest mistake and submit again.</span>
+        </form>
+      )}
     </li>
   );
 }
