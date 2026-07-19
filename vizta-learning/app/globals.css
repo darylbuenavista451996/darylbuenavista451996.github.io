@@ -171,6 +171,23 @@ input:focus { border-color: var(--mint); }
 .reopen-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
 .reopen-note { font-size: 12px; color: var(--muted); }
 
+/* Avatars */
+.avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex: none; overflow: hidden; }
+.avatar-photo { object-fit: cover; }
+.avatar-initials { color: #fff; font-weight: 700; letter-spacing: 0.3px; }
+.avatar-lg { width: 120px; height: 120px; font-size: 44px; background: var(--navy-tint); }
+.who-avatar { display: inline-flex; border-radius: 50%; }
+.who-avatar:hover { box-shadow: 0 0 0 3px var(--mint-tint); }
+.roster-name { display: inline-flex; align-items: center; gap: 10px; }
+.roster-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* Avatar editor (profile page) */
+.avatar-editor { display: grid; gap: 14px; justify-items: start; }
+.avatar-preview { display: flex; }
+.avatar-form { display: grid; gap: 8px; }
+.avatar-form input[type="file"] { font-size: 14px; }
+.avatar-remove { margin-top: 4px; }
+
 .eyebrow { display: block; text-transform: uppercase; letter-spacing: 0.6px; font-size: 12px; font-weight: 700; color: var(--mint-dark); margin-bottom: 4px; }
 .module-head { margin-bottom: 18px; }
 .goal { color: var(--navy); background: var(--mint-tint); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; }

@@ -1,7 +1,9 @@
 import TeacherNav from '../TeacherNav';
+import Avatar from '../../Avatar';
 import AddStudentForm from './AddStudentForm';
 import BulkImportForm from './BulkImportForm';
 import ResetPasswordButton from './ResetPasswordButton';
+import RemoveAvatarButton from './RemoveAvatarButton';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getRoster } from '@/lib/teacherData';
 
@@ -43,7 +45,12 @@ export default async function StudentsPage() {
                 <tbody>
                   {roster.map((s) => (
                     <tr key={s.student_id}>
-                      <td>{s.name}</td>
+                      <td>
+                        <span className="roster-name">
+                          <Avatar name={s.name} src={s.avatarUrl} size={32} />
+                          {s.name}
+                        </span>
+                      </td>
                       <td>
                         {s.email ? (
                           <span className="signin-email">{s.email}</span>
@@ -58,7 +65,13 @@ export default async function StudentsPage() {
                           <span className="mini-lbl">{s.complete}/{s.total}</span>
                         </div>
                       </td>
-                      <td>{s.email ? <ResetPasswordButton studentId={s.student_id} /> : <span className="muted-tag">—</span>}</td>
+                      <td>
+                        <div className="roster-actions">
+                          {s.email ? <ResetPasswordButton studentId={s.student_id} /> : null}
+                          {s.hasPhoto ? <RemoveAvatarButton studentId={s.student_id} /> : null}
+                          {!s.email && !s.hasPhoto ? <span className="muted-tag">—</span> : null}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

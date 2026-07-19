@@ -16,6 +16,10 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  // Allow profile photos (up to ~4 MB) to be sent to the upload server action.
+  experimental: {
+    serverActions: { bodySizeLimit: '5mb' },
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },

@@ -4,8 +4,10 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from '../Brand';
+import Avatar from '../Avatar';
 import { getSession } from '@/lib/session';
 import { getDashboard, type LessonView } from '@/lib/data';
+import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,6 +77,7 @@ export default async function DashboardPage({
     nextModuleId,
   } = dash;
   const showTerms = modules.length > 1;
+  const avatarSrc = await signedAvatarUrl(await getAvatarPath(session.sid));
 
   return (
     <main className="page page-wide">
@@ -82,6 +85,9 @@ export default async function DashboardPage({
         <div className="topbar">
           <Brand />
           <div className="topbar-right">
+            <Link href="/profile" className="who-avatar" title="Edit your profile photo">
+              <Avatar name={session.name} src={avatarSrc} size={36} />
+            </Link>
             <span className="who">
               {session.name} · <span className="badge">{session.class === 'G9' ? 'Grade 9' : 'Grade 10'}</span>
             </span>

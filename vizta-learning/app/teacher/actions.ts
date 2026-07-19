@@ -12,6 +12,7 @@ import {
   updateActivityVideo,
   updateActivityText,
   resetStudentPassword,
+  removeStudentAvatar,
 } from '@/lib/teacherData';
 import type { ClassName } from '@/lib/classCodes';
 
@@ -174,6 +175,22 @@ export async function resetStudentPasswordAction(
   if (!res.ok) return { error: res.error };
   revalidatePath('/teacher/students');
   return { ok: true, tempPassword: res.tempPassword };
+}
+
+export async function removeAvatarAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const studentId = String(formData.get('student_id') ?? '');
+  if (!studentId) return { error: 'Missing student.' };
+  try {
+    await removeStudentAvatar(studentId);
+  } catch {
+    return { error: 'Could not remove the photo. Please try again.' };
+  }
+  revalidatePath('/teacher/students');
+  return { ok: true, message: 'Photo removed.' };
 }
 
 export async function toggleModule(

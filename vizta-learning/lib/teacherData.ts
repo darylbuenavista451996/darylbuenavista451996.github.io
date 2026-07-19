@@ -3,6 +3,8 @@
 
 import { supabaseServer } from './supabase';
 import { hashPassword, generateTempPassword } from './studentAuth';
+import { signedAvatarUrls } from './avatarStore';
+import { AVATAR_BUCKET } from './avatar';
 import type { ClassName } from './classCodes';
 import type { Module } from './data';
 
@@ -11,6 +13,8 @@ export type RosterEntry = {
   name: string;
   student_number: string;
   email: string | null;
+  avatarUrl: string | null;
+  hasPhoto: boolean;
   class: string;
   moduleTitle: string | null;
   complete: number;
@@ -45,6 +49,25 @@ export async function getRoster(): Promise<RosterEntry[]> {
   const subSet = new Set((submissions.data ?? []).map((s) => `${s.student_id}|${s.activity_id}`));
   const quizSet = new Set((quizResults.data ?? []).map((q) => `${q.student_id}|${q.activity_id}`));
 
+  // Avatar paths, read + signed error-tolerantly (column/bucket may not exist
+  // yet). Falls back to initials everywhere if unavailable.
+  const avatarByStudent = new Map<string, string>();
+  const avatarUrlByPath = await (async () => {
+    const paths: string[] = [];
+    const rows = await supabase.from('students').select('student_id, avatar_path');
+    if (!rows.error) {
+      for (const r of rows.data ?? []) {
+        const p = (r as { avatar_path?: string | null }).avatar_path;
+        if (p) {
+          avatarByStudent.set(r.student_id, p);
+          paths.push(p);
+        }
+      }
+      return signedAvatarUrls(paths);
+    }
+    return new Map<string, string>();
+  })();
+
   return (students.data ?? []).map((s) => {
     const mod = moduleByClass.get(s.class);
     const acts = mod ? actsByModule.get(mod.module_id) ?? new Set<string>() : new Set<string>();
@@ -53,11 +76,14 @@ export async function getRoster(): Promise<RosterEntry[]> {
     for (const aid of acts) {
       if (subSet.has(`${s.student_id}|${aid}`) && quizSet.has(`${s.student_id}|${aid}`)) complete++;
     }
+    const path = avatarByStudent.get(s.student_id);
     return {
       student_id: s.student_id,
       name: s.name,
       student_number: s.student_number,
       email: (s as { email?: string | null }).email ?? null,
+      avatarUrl: path ? avatarUrlByPath.get(path) ?? null : null,
+      hasPhoto: !!path,
       class: s.class,
       moduleTitle: mod?.title ?? null,
       complete,
@@ -285,6 +311,17 @@ export async function resetStudentPassword(
     .eq('student_id', studentId);
   if (error) return { ok: false, error: 'Could not reset the password. Please try again.' };
   return { ok: true, tempPassword };
+}
+
+// Teacher moderation: remove a student's profile photo (e.g. inappropriate).
+export async function removeStudentAvatar(studentId: string): Promise<void> {
+  const supabase = supabaseServer();
+  await supabase.storage.from(AVATAR_BUCKET).remove([`${studentId}/avatar`]);
+  const { error } = await supabase
+    .from('students')
+    .update({ avatar_path: null })
+    .eq('student_id', studentId);
+  if (error) throw error;
 }
 
 export async function setModuleUnlocked(moduleId: string, unlocked: boolean): Promise<void> {
