@@ -86,7 +86,7 @@ export default async function DashboardPage({
           <Brand />
           <div className="topbar-right">
             <Link href="/profile" className="who-avatar" title="Edit your profile photo">
-              <Avatar name={session.name} src={avatarSrc} size={36} />
+              <Avatar name={session.name} src={avatarSrc} size={52} />
             </Link>
             <span className="who">
               {session.name} · <span className="badge">{session.class === 'G9' ? 'Grade 9' : 'Grade 10'}</span>

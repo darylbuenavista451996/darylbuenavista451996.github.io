@@ -47,7 +47,7 @@ export default async function StudentsPage() {
                     <tr key={s.student_id}>
                       <td>
                         <span className="roster-name">
-                          <Avatar name={s.name} src={s.avatarUrl} size={32} />
+                          <Avatar name={s.name} src={s.avatarUrl} size={64} />
                           {s.name}
                         </span>
                       </td>
