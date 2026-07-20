@@ -224,6 +224,69 @@ export async function getGradeQueue(includeGraded = false): Promise<GradeQueueIt
   });
 }
 
+export type AttendanceStatus = 'Present' | 'Late' | 'Absent';
+export type AttendanceRow = {
+  student_id: string;
+  name: string;
+  student_number: string;
+  status: AttendanceStatus | null;
+};
+export type AttendanceClass = { cls: string; label: string; students: AttendanceRow[] };
+
+const CLASS_LABELS: Record<string, string> = { G9: 'Grade 9', G10: 'Grade 10' };
+
+// The roster grouped by class, each student with their mark for the given date
+// (null if not marked yet). Error-tolerant: if the attendance table isn't there
+// yet, everyone simply comes back unmarked.
+export async function getAttendanceForDate(date: string): Promise<AttendanceClass[]> {
+  const supabase = supabaseServer();
+  const { data: students, error } = await supabase
+    .from('students')
+    .select('student_id, name, student_number, class')
+    .order('class')
+    .order('name');
+  if (error) throw error;
+
+  const marks = new Map<string, AttendanceStatus>();
+  const att = await supabase.from('attendance').select('student_id, status').eq('date', date);
+  if (!att.error) {
+    for (const a of att.data ?? []) marks.set(a.student_id, a.status as AttendanceStatus);
+  }
+
+  const byClass = new Map<string, AttendanceRow[]>();
+  for (const s of students ?? []) {
+    if (!byClass.has(s.class)) byClass.set(s.class, []);
+    byClass.get(s.class)!.push({
+      student_id: s.student_id,
+      name: s.name,
+      student_number: s.student_number ?? '',
+      status: marks.get(s.student_id) ?? null,
+    });
+  }
+  const out: AttendanceClass[] = [];
+  for (const [cls, list] of byClass) out.push({ cls, label: CLASS_LABELS[cls] ?? cls, students: list });
+  out.sort((a, b) => a.cls.localeCompare(b.cls));
+  return out;
+}
+
+// Save (upsert) the marks for a date. Unmarked students are left untouched.
+export async function saveAttendance(
+  date: string,
+  marks: Array<{ student_id: string; status: AttendanceStatus }>
+): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
+  if (marks.length === 0) return { ok: true, count: 0 };
+  const supabase = supabaseServer();
+  const now = new Date().toISOString();
+  const rows = marks.map((m) => ({ student_id: m.student_id, date, status: m.status, updated_at: now }));
+  const { error } = await supabase.from('attendance').upsert(rows, { onConflict: 'student_id,date' });
+  if (error) {
+    if (error.code === '42P01')
+      return { ok: false, error: 'Attendance is not switched on yet. Run migration 0008 in Supabase.' };
+    return { ok: false, error: 'Could not save attendance. Please try again.' };
+  }
+  return { ok: true, count: marks.length };
+}
+
 // Reopen a submission so the student can fix an honest mistake and resubmit.
 // Their previous answer is kept (pre-filled) but the task counts as not-yet-
 // submitted again, and any grade/feedback is cleared.

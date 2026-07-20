@@ -13,6 +13,8 @@ import {
   updateActivityText,
   resetStudentPassword,
   removeStudentAvatar,
+  saveAttendance,
+  type AttendanceStatus,
 } from '@/lib/teacherData';
 import type { ClassName } from '@/lib/classCodes';
 
@@ -191,6 +193,31 @@ export async function removeAvatarAction(
   }
   revalidatePath('/teacher/students');
   return { ok: true, message: 'Photo removed.' };
+}
+
+const VALID_STATUS: AttendanceStatus[] = ['Present', 'Late', 'Absent'];
+
+export async function saveAttendanceAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const date = String(formData.get('date') ?? '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: 'Pick a valid date.' };
+
+  const marks: Array<{ student_id: string; status: AttendanceStatus }> = [];
+  for (const [key, value] of formData.entries()) {
+    if (!key.startsWith('mark_')) continue;
+    const status = String(value) as AttendanceStatus;
+    if (!VALID_STATUS.includes(status)) continue; // skip unmarked / blanks
+    marks.push({ student_id: key.slice(5), status });
+  }
+  if (marks.length === 0) return { error: 'Mark at least one student before saving.' };
+
+  const res = await saveAttendance(date, marks);
+  if (!res.ok) return { error: res.error };
+  revalidatePath('/teacher/attendance');
+  return { ok: true, message: `Saved attendance for ${res.count} student${res.count === 1 ? '' : 's'}.` };
 }
 
 export async function toggleModule(

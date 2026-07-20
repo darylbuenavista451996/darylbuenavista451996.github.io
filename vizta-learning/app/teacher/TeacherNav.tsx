@@ -7,6 +7,7 @@ export default function TeacherNav({ active }: { active: string }) {
   const links = [
     { href: '/teacher', label: 'Overview', key: 'overview' },
     { href: '/teacher/students', label: 'Students', key: 'students' },
+    { href: '/teacher/attendance', label: 'Attendance', key: 'attendance' },
     { href: '/teacher/grade', label: 'Grading', key: 'grade' },
     { href: '/teacher/scores', label: 'Scores', key: 'scores' },
     { href: '/teacher/modules', label: 'Modules', key: 'modules' },
