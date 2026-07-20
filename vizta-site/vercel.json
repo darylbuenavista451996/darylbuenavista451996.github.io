@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/web-platforms/media-arts",
+      "destination": "https://learn.viztasystems.com/web-platforms/media-arts"
+    },
+    {
+      "source": "/web-platforms/media-arts/:path*",
+      "destination": "https://learn.viztasystems.com/web-platforms/media-arts/:path*"
+    }
+  ]
+}

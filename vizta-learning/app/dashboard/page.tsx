@@ -8,6 +8,7 @@ import Avatar from '../Avatar';
 import { getSession } from '@/lib/session';
 import { getDashboard, type LessonView } from '@/lib/data';
 import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
+import { BASE_PATH } from '@/lib/basePath';
 
 export const dynamic = 'force-dynamic';
 
@@ -221,7 +222,7 @@ export default async function DashboardPage({
 
 function SignOut({ compact }: { compact?: boolean }) {
   return (
-    <form action="/logout" method="post">
+    <form action={`${BASE_PATH}/logout`} method="post">
       <button className={compact ? 'btn btn-ghost btn-sm' : 'btn btn-ghost'} type="submit">
         Sign out
       </button>

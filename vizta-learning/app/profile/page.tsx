@@ -26,8 +26,8 @@ export default async function ProfilePage() {
           <span className="eyebrow">Your profile</span>
           <h1>Profile photo</h1>
           <p className="lede">
-            Add a photo, {session.name} — it shows on your dashboard and to your
-            teacher. You can change or remove it any time.
+            Add a photo, {session.name}. It shows on your dashboard and to your
+            teacher, and you can change or remove it any time.
           </p>
         </div>
 

@@ -3,12 +3,13 @@
 import { NextResponse } from 'next/server';
 import { getTeacher } from '@/lib/teacherAuth';
 import { getAttendanceSheet, attendanceToCsv } from '@/lib/exportData';
+import { BASE_PATH } from '@/lib/basePath';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET() {
   const teacher = await getTeacher();
-  if (!teacher) return NextResponse.redirect(new URL('/teacher/login', request.url));
+  if (!teacher) return new NextResponse(null, { status: 307, headers: { Location: `${BASE_PATH}/teacher/login` } });
   let csv: string;
   try {
     csv = attendanceToCsv(await getAttendanceSheet());

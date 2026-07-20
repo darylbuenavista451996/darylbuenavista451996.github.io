@@ -18,7 +18,7 @@ export default function ResetPasswordButton({ studentId }: { studentId: string }
   if (state.ok && state.tempPassword) {
     return (
       <span className="temp-pw" role="status">
-        New password: <code>{state.tempPassword}</code> — give this to the student.
+        New password: <code>{state.tempPassword}</code>. Give this to the student.
       </span>
     );
   }

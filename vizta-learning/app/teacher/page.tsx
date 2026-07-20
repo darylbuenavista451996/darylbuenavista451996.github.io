@@ -3,6 +3,7 @@ import TeacherNav from './TeacherNav';
 import ExportButton from './ExportButton';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getRoster, getGradeQueue, getClassInsights } from '@/lib/teacherData';
+import { BASE_PATH } from '@/lib/basePath';
 
 const CLASS_LABEL: Record<string, string> = { G9: 'Grade 9', G10: 'Grade 10' };
 
@@ -79,10 +80,10 @@ export default async function TeacherHome() {
         </div>
 
         <div className="banner banner-success" role="note">
-          <strong>Export grades for your records</strong> — one click, opens in Excel
+          <strong>Export grades for your records.</strong> One click, opens in Excel
           or Google Sheets, and includes each activity&apos;s competency code for DepEd.
           <div className="export-row">
-            <a className="btn btn-primary btn-sm" href="/teacher/export">Download grades (CSV)</a>
+            <a className="btn btn-primary btn-sm" href={`${BASE_PATH}/teacher/export`}>Download grades (CSV)</a>
           </div>
         </div>
 
@@ -90,7 +91,7 @@ export default async function TeacherHome() {
           <summary>Advanced: automatic export with n8n (optional)</summary>
           <p className="hint">
             If you ever run n8n (for example on a server), you can have it pull grades
-            automatically on a schedule — see the README. This is entirely optional; the
+            automatically on a schedule (see the README). This is entirely optional; the
             download button above needs no setup.
           </p>
           <div className="export-row"><ExportButton /></div>

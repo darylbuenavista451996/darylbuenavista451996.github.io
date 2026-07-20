@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { saveAttendanceAction, type ActionState } from '../actions';
 import type { AttendanceClass, AttendanceStatus } from '@/lib/teacherData';
+import { BASE_PATH } from '@/lib/basePath';
 
 const STATUSES: AttendanceStatus[] = ['Present', 'Late', 'Absent'];
 const SHORT: Record<AttendanceStatus, string> = { Present: 'P', Late: 'L', Absent: 'A' };
@@ -80,7 +81,7 @@ export default function AttendanceForm({ date, classes }: { date: string; classe
 
       <div className="att-actions">
         <SaveBtn />
-        <a className="btn btn-ghost btn-sm" href="/teacher/attendance/export">Download attendance (CSV)</a>
+        <a className="btn btn-ghost btn-sm" href={`${BASE_PATH}/teacher/attendance/export`}>Download attendance (CSV)</a>
       </div>
     </form>
   );

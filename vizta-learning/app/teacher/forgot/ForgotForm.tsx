@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { teacherBrowserClient } from '@/lib/teacherBrowser';
+import { BASE_PATH } from '@/lib/basePath';
 
 export default function ForgotForm() {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ export default function ForgotForm() {
     setPending(true);
     try {
       const supabase = teacherBrowserClient();
-      const redirectTo = `${window.location.origin}/teacher/reset`;
+      const redirectTo = `${window.location.origin}${BASE_PATH}/teacher/reset`;
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo,
       });

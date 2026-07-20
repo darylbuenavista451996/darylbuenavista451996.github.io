@@ -16,8 +16,8 @@ export default function LandingPage() {
         <h1>Welcome. Let&apos;s make something.</h1>
         <p className="lede">
           This is your self-paced Media Arts course. Watch, practice, and check
-          what you learned, one lesson at a time. Create your account to begin —
-          pick your grade:
+          what you learned, one lesson at a time. Create your account to begin.
+          Pick your grade:
         </p>
 
         <div className="choice-grid">

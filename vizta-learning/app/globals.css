@@ -67,7 +67,7 @@ a { color: var(--mint-dark); }
 .brand-mark {
   width: 40px; height: 40px; border-radius: 10px; flex: none;
   /* logo.png on top; gradient shows through silently if the file isn't there */
-  background-image: url('/logo.png'), linear-gradient(135deg, var(--mint), var(--navy));
+  background-image: url('/web-platforms/media-arts/logo.png'), linear-gradient(135deg, var(--mint), var(--navy));
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 .brand-name { font-weight: 800; letter-spacing: 0.2px; color: var(--navy); }

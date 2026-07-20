@@ -27,7 +27,7 @@ export default function LessonTextForm({ activity }: { activity: ActivityEdit })
       </label>
       <label>
         Lesson goal
-        <span className="field-hint">One sentence — what the student will be able to do.</span>
+        <span className="field-hint">One sentence: what the student will be able to do.</span>
         <textarea name="lesson_goal" rows={2} defaultValue={activity.lesson_goal ?? ''} />
       </label>
       <label>
