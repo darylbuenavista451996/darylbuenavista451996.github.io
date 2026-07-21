@@ -6,9 +6,12 @@
 //   e.g.  MEDIA9:G9,MEDIA10:G10
 // Codes are matched case-insensitively and trimmed.
 
-export type ClassName = 'G9' | 'G10';
+// G9/G10 are the Media Arts grades; M9 is the Grade 9 Mathematics track.
+export type ClassName = 'G9' | 'G10' | 'M9';
 
-const DEFAULT = 'MEDIA9:G9,MEDIA10:G10';
+const VALID_CLASSES: ClassName[] = ['G9', 'G10', 'M9'];
+
+const DEFAULT = 'MEDIA9:G9,MEDIA10:G10,MATH9:M9';
 
 export function classCodeMap(): Map<string, ClassName> {
   const raw = process.env.CLASS_CODES?.trim() || DEFAULT;
@@ -16,8 +19,8 @@ export function classCodeMap(): Map<string, ClassName> {
   for (const pair of raw.split(',')) {
     const [code, cls] = pair.split(':').map((s) => s?.trim());
     if (!code || !cls) continue;
-    if (cls !== 'G9' && cls !== 'G10') continue;
-    map.set(code.toUpperCase(), cls);
+    if (!VALID_CLASSES.includes(cls as ClassName)) continue;
+    map.set(code.toUpperCase(), cls as ClassName);
   }
   return map;
 }

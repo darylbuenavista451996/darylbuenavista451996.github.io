@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from './Brand';
-import { getSession } from '@/lib/session';
+import { getSession, studentHome } from '@/lib/session';
 
 export default function LandingPage() {
-  // Already signed in? Go straight to the dashboard.
-  if (getSession()) redirect('/dashboard');
+  // Already signed in? Go straight to the right home for the student's class.
+  const session = getSession();
+  if (session) redirect(studentHome(session.class));
 
   return (
     <main className="page">

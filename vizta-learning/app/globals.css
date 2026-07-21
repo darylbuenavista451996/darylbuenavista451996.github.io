@@ -666,3 +666,34 @@ a.term-pill:hover { border-color: var(--mint); }
 .mlz-takeaways .mlz-method-title { color: var(--mint-dark); }
 
 .mlz-reveal { margin-top: 4px; }
+
+/* Mathematics home page */
+.math-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.math-lessons { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+.math-lesson {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 16px 14px;
+  background: var(--card);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
+.math-lesson.soon { opacity: 0.72; }
+.math-lesson-tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+.math-lesson-tag.ready { background: var(--mint); color: #fff; }
+.math-lesson-tag.soon { background: var(--navy-tint); color: var(--muted); }
+.math-lesson-title { display: block; font-size: 17px; font-weight: 700; color: var(--navy); }
+.math-lesson-blurb { display: block; font-size: 14px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+.math-lesson-go { display: block; font-size: 13px; color: var(--mint-dark); font-weight: 600; margin-top: 10px; }

@@ -28,6 +28,9 @@ export default async function DashboardPage({
 }) {
   const session = getSession();
   if (!session) redirect('/login');
+  // Mathematics students have their own home; keep them out of the Media Arts
+  // module dashboard entirely.
+  if (session.class === 'M9') redirect('/math');
 
   let dash;
   try {

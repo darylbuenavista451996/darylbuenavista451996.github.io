@@ -18,9 +18,15 @@ export type StudentSession = {
   sid: string; // student_id (uuid)
   name: string;
   student_number: string;
-  class: 'G9' | 'G10';
+  class: 'G9' | 'G10' | 'M9';
   iat: number; // issued-at, seconds
 };
+
+// Where a student lands after signing in. Mathematics students (M9) get the
+// Mathematics home; Media Arts grades keep the module dashboard.
+export function studentHome(cls: StudentSession['class']): string {
+  return cls === 'M9' ? '/math' : '/dashboard';
+}
 
 function secret(): string {
   const s = process.env.SESSION_SECRET;

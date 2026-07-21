@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { gradeForCode } from '@/lib/classCodes';
 import { supabaseServer } from '@/lib/supabase';
 import { verifyPassword } from '@/lib/studentAuth';
-import { SESSION_COOKIE, serialize, cookieOptions } from '@/lib/session';
+import { SESSION_COOKIE, serialize, cookieOptions, studentHome } from '@/lib/session';
 import { rateLimit, tooManyMessage } from '@/lib/rateLimit';
 
 export type LoginState = { error?: string };
@@ -49,12 +49,12 @@ export async function loginWithEmail(
       sid: student.student_id,
       name: student.name,
       student_number: student.student_number ?? '',
-      class: student.class as 'G9' | 'G10',
+      class: student.class as 'G9' | 'G10' | 'M9',
     }),
     cookieOptions
   );
 
-  redirect('/dashboard');
+  redirect(studentHome(student.class as 'G9' | 'G10' | 'M9'));
 }
 
 // Class code + student number login. Teacher-adds-first model: a student can
@@ -114,10 +114,10 @@ export async function login(
       sid: student.student_id,
       name: student.name,
       student_number: student.student_number,
-      class: student.class as 'G9' | 'G10',
+      class: student.class as 'G9' | 'G10' | 'M9',
     }),
     cookieOptions
   );
 
-  redirect('/dashboard');
+  redirect(studentHome(student.class as 'G9' | 'G10' | 'M9'));
 }
