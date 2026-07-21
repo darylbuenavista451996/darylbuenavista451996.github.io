@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import RegisterSW from './RegisterSW';
 import './globals.css';
 
 const GA_ID = 'G-7547KXG4HX';
@@ -19,7 +20,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <RegisterSW />
+      </body>
       {/* Google Analytics (gtag.js). Same GA4 property as the public site so
           student lesson traffic and site traffic land in one place. */}
       <Script

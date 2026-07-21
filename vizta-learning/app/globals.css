@@ -490,3 +490,116 @@ a.term-pill:hover { border-color: var(--mint); }
   .cert { box-shadow: none; max-width: 100%; }
   .cert-inner { border-color: var(--navy); }
 }
+
+/* Parallel & Perpendicular Lines — interactive math lesson ----------------- */
+.mlz-card { max-width: 640px; text-align: left; }
+.mlz-back {
+  display: inline-block;
+  margin: 14px 0 4px;
+  font-size: 14px;
+  color: var(--mint-dark);
+  text-decoration: none;
+}
+.mlz-back:hover { text-decoration: underline; }
+.mlz-kicker {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.mlz-title { margin: 4px 0 6px; font-size: 24px; line-height: 1.2; color: var(--navy); }
+.mlz-lead { color: var(--ink); margin: 6px 0 18px; }
+.mlz-lead-sm { font-size: 15px; color: var(--muted); }
+.mlz-h2 { font-size: 18px; color: var(--navy); margin: 26px 0 10px; }
+
+.mlz-concept {
+  background: var(--mint-tint);
+  border: 1px solid #cdeadd;
+  border-radius: var(--radius);
+  padding: 14px 16px 14px;
+  margin: 4px 0 8px;
+}
+.mlz-concept .mlz-h2 { margin-top: 4px; }
+.mlz-rules { margin: 0; padding-left: 18px; }
+.mlz-rules li { margin: 8px 0; font-size: 15px; }
+
+.mlz-tool {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 16px 18px;
+  margin: 14px 0;
+  background: var(--card);
+}
+.mlz-tool-title { margin: 0 0 4px; font-size: 16px; color: var(--navy); }
+.mlz-tool-hint { margin: 0 0 12px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.mlz-field { display: block; margin: 10px 0; }
+.mlz-field > span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+.mlz-input {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 16px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+}
+.mlz-input:focus { outline: none; border-color: var(--mint); box-shadow: 0 0 0 3px rgba(62,180,137,0.16); }
+.mlz-point-row { display: flex; gap: 12px; }
+.mlz-field-sm { flex: 1; }
+.mlz-mode { display: flex; gap: 10px; margin: 12px 0 4px; }
+.mlz-mode-opt {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.mlz-mode-opt.on { border-color: var(--mint); background: var(--mint-tint); color: var(--navy); font-weight: 600; }
+.mlz-go { margin-top: 12px; width: 100%; justify-content: center; }
+.mlz-err { color: var(--danger); font-size: 14px; margin: 10px 0 0; }
+
+.mlz-result { margin-top: 14px; padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
+.mlz-verdict { display: block; font-size: 18px; margin-bottom: 6px; }
+.mlz-slopes { margin: 4px 0; font-size: 14px; color: var(--ink); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.mlz-why { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+.mlz-parallel { background: #eaf5ff; border-color: #bcdcf5; }
+.mlz-parallel .mlz-verdict { color: #1f6fb0; }
+.mlz-perp { background: var(--mint-tint); border-color: #cdeadd; }
+.mlz-perp .mlz-verdict { color: var(--mint-dark); }
+.mlz-neither { background: #f4f2ee; border-color: #ddd6c9; }
+.mlz-neither .mlz-verdict { color: #8a6d2f; }
+.mlz-answer { background: var(--navy-tint); border-color: #cdd6ea; }
+.mlz-answer .mlz-verdict { color: var(--navy); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.mlz-steps { margin: 8px 0 0; padding-left: 20px; }
+.mlz-steps li { margin: 6px 0; font-size: 14px; color: var(--ink); line-height: 1.5; }
+
+.mlz-practice { border-top: 1px solid var(--border); padding: 14px 0 4px; }
+.mlz-q { font-size: 15px; margin: 0 0 10px; }
+.mlz-q code { background: var(--navy-tint); padding: 1px 6px; border-radius: 5px; font-size: 14px; }
+.mlz-qnum {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; margin-right: 8px;
+  background: var(--navy); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700;
+  vertical-align: middle;
+}
+.mlz-choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.mlz-choice {
+  flex: 1; min-width: 92px;
+  padding: 10px 8px; font-size: 14px;
+  border: 1px solid var(--border); border-radius: 9px;
+  background: #fff; color: var(--ink); cursor: pointer;
+}
+.mlz-choice:hover:not(:disabled) { border-color: var(--mint); }
+.mlz-choice:disabled { cursor: default; }
+.mlz-choice.right { background: var(--mint); border-color: var(--mint); color: #fff; font-weight: 600; }
+.mlz-choice.wrong { background: var(--danger-tint); border-color: #e5b7b7; color: var(--danger); }
+.mlz-feedback { margin: 10px 0 0; font-size: 14px; font-weight: 600; }
+.mlz-feedback.ok { color: var(--mint-dark); }
+.mlz-feedback.no { color: var(--danger); }
