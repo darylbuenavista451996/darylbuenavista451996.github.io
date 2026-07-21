@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from '../Brand';
 import SignupForm from './SignupForm';
-import { getSession } from '@/lib/session';
+import { getSession, studentHome } from '@/lib/session';
 import { codesForGrade, type ClassName } from '@/lib/classCodes';
 
 export default function StudentSignupPage({
@@ -10,7 +10,8 @@ export default function StudentSignupPage({
 }: {
   searchParams: { grade?: string };
 }) {
-  if (getSession()) redirect('/dashboard');
+  const existing = getSession();
+  if (existing) redirect(studentHome(existing.class));
 
   const grade = searchParams.grade === 'G10' ? 'G10' : searchParams.grade === 'G9' ? 'G9' : undefined;
   const suggestedCode = grade ? codesForGrade(grade as ClassName)[0] : undefined;
