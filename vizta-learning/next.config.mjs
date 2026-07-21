@@ -24,9 +24,16 @@ const nextConfig = {
   reactStrictMode: true,
   basePath: BASE_PATH,
   env: { NEXT_PUBLIC_BASE_PATH: BASE_PATH },
-  // Allow profile photos (up to ~4 MB) to be sent to the upload server action.
   experimental: {
-    serverActions: { bodySizeLimit: '5mb' },
+    serverActions: {
+      // Allow profile photos (up to ~4 MB) to be sent to the upload server action.
+      bodySizeLimit: '5mb',
+      // The app is served through a reverse proxy on the main domain, so form
+      // submits (Server Actions) arrive with the browser's origin
+      // (viztasystems.com) while the forwarded host is learn.viztasystems.com.
+      // Trust these origins so Next doesn't reject the action.
+      allowedOrigins: ['viztasystems.com', 'www.viztasystems.com', 'learn.viztasystems.com'],
+    },
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
