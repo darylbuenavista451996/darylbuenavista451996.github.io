@@ -285,7 +285,7 @@
             <h4>Automation</h4>
             <span>connected workflows</span>
           </div>
-          <a class="cap-tile cap-link" href="#view-platforms">
+          <a class="cap-tile cap-link" href="/web-platforms">
             <svg class="cap-ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="7" y="9" width="26" height="22" rx="3"/><path d="M7 15 H33"/>
               <circle cx="11" cy="12" r="0.9" fill="currentColor" stroke="none"/><circle cx="14" cy="12" r="0.9" fill="currentColor" stroke="none"/>
@@ -429,53 +429,8 @@
   </div>
 
   <!-- ===================== WEB PLATFORMS ===================== -->
-  <section class="view" data-view="platforms">
-    <div class="wrap">
-      <nav class="crumb"><a href="#">Home</a><span class="sep">/</span><span>Web platforms</span></nav>
-      <div class="sec-head" style="margin-top:18px;">
-        <span class="eyebrow">Web platforms</span>
-        <h2>Products people use, on the web.</h2>
-        <p>Full platforms we design, build, and run. Choose one to explore.</p>
-      </div>
-      <div class="browse-grid">
-        <a class="browse-card" href="#view-learning">
-          <span class="tag-live">Live</span>
-          <h3>Learning platforms</h3>
-          <p>Self-paced courses students work through, with lessons, quizzes, automatic grading, and progress tracking.</p>
-          <span class="go">Explore subjects →</span>
-        </a>
-        <div class="browse-card soon">
-          <span class="tag-soon">Coming soon</span>
-          <h3>Daily Lesson Plan Generator</h3>
-          <p>An AI tool for teachers that builds a full daily lesson plan from a topic, ready to review and use.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ===================== LEARNING PLATFORMS ===================== -->
-  <section class="view" data-view="learning">
-    <div class="wrap">
-      <nav class="crumb"><a href="#">Home</a><span class="sep">/</span><a href="#view-platforms">Web platforms</a><span class="sep">/</span><span>Learning platforms</span></nav>
-      <div class="sec-head" style="margin-top:18px;">
-        <span class="eyebrow">Learning platforms</span>
-        <h2>Self-paced learning, by subject.</h2>
-      </div>
-      <div class="browse-grid">
-        <a class="browse-card" href="https://learn.viztasystems.com">
-          <span class="tag-live">Live</span>
-          <h3>Media Arts</h3>
-          <p>Grade 9 and 10 Media Arts. Lessons, quizzes, automatic grading, and certificates. Used by students every day.</p>
-          <span class="go">Open the platform →</span>
-        </a>
-        <div class="browse-card soon">
-          <span class="tag-soon">Coming soon</span>
-          <h3>Mathematics</h3>
-          <p>A self-paced Mathematics platform, in development.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer class="foot layer">
@@ -495,24 +450,7 @@
   (function () {
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    /* View router (drill-down) */
-    var views = document.querySelectorAll(".view");
-    function showView(name) {
-      views.forEach(function (v) { v.classList.toggle("active", v.getAttribute("data-view") === name); });
-    }
-    function route() {
-      var h = (location.hash || "").replace("#", "");
-      if (h === "view-platforms") { showView("platforms"); window.scrollTo(0, 0); }
-      else if (h === "view-learning") { showView("learning"); window.scrollTo(0, 0); }
-      else {
-        showView("home");
-        if (h) { var el = document.getElementById(h); if (el) el.scrollIntoView(); }
-        else window.scrollTo(0, 0);
-      }
-    }
-    window.addEventListener("hashchange", route);
-    route();
-
+    
     /* Constellation */
     var canvas = document.getElementById("constellation");
     var ctx = canvas.getContext("2d");
@@ -564,5 +502,6 @@
     }
   })();
 </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
