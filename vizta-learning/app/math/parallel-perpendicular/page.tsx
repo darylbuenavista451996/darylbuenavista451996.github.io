@@ -19,11 +19,11 @@ export default function ParallelPerpendicularPage() {
   return (
     <main className="page">
       <div className="card mlz-card">
-        <Brand />
+        <Brand subtitle="Mathematics · Grade 9" />
         <Link className="mlz-back" href="/dashboard">
           ← Back to dashboard
         </Link>
-        <span className="mlz-kicker">Mathematics · Grade 9</span>
+        <span className="mlz-kicker">Mathematics · Grade 9 · Coordinate Geometry</span>
         <h1 className="mlz-title">Parallel &amp; Perpendicular Lines</h1>
         <ParallelLesson />
       </div>
