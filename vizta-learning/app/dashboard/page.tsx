@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from '../Brand';
 import Avatar from '../Avatar';
-import { getSession } from '@/lib/session';
+import { getSession, studentHome } from '@/lib/session';
 import { getDashboard, type LessonView } from '@/lib/data';
 import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
 import { BASE_PATH } from '@/lib/basePath';
@@ -28,9 +28,9 @@ export default async function DashboardPage({
 }) {
   const session = getSession();
   if (!session) redirect('/login');
-  // Mathematics students have their own home; keep them out of the Media Arts
-  // module dashboard entirely.
-  if (session.class === 'M9') redirect('/math');
+  // Mathematics students live in the separate Mathematics app; keep them out of
+  // the Media Arts module dashboard entirely.
+  if (session.class === 'M9') redirect(studentHome(session.class));
 
   let dash;
   try {

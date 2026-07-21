@@ -1,10 +1,9 @@
-// Mathematics home. Where Grade 9 Mathematics (M9) students land after signing
-// in. Lists the available math lessons. These lessons are self-contained
-// interactive pages (not the Media Arts module system), so this page stays
+// Mathematics home. Where students land after signing in. Lists the available
+// math lessons. Each lesson is a self-contained interactive page, so this stays
 // simple: a greeting and a list of lessons to open.
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import Brand from '../Brand';
+import Brand from './Brand';
 import { getSession } from '@/lib/session';
 import { BASE_PATH } from '@/lib/basePath';
 
@@ -19,7 +18,7 @@ type Lesson = {
 
 const LESSONS: Lesson[] = [
   {
-    href: '/math/parallel-perpendicular',
+    href: '/parallel-perpendicular',
     title: 'Parallel & Perpendicular Lines',
     blurb:
       'Check whether two lines are parallel, perpendicular, or neither, and find the equation of a line through a point.',

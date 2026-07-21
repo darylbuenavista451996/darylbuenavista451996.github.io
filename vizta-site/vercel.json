@@ -7,6 +7,14 @@
     {
       "source": "/web-platforms/media-arts/:path*",
       "destination": "https://learn.viztasystems.com/web-platforms/media-arts/:path*"
+    },
+    {
+      "source": "/web-platforms/mathematics",
+      "destination": "https://mathematics.viztasystems.com/web-platforms/mathematics"
+    },
+    {
+      "source": "/web-platforms/mathematics/:path*",
+      "destination": "https://mathematics.viztasystems.com/web-platforms/mathematics/:path*"
     }
   ]
 }

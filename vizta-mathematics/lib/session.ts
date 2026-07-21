@@ -1,12 +1,10 @@
 // Student session — a small signed, httpOnly cookie.
 //
-// Golden rules honored here:
-//   - No passwords stored. The cookie only carries who the student is.
-//   - No student number in the URL (it lives only in this signed cookie).
-//   - Only name, student number, and class are ever held.
-//
-// The cookie value is  base64url(payload) + "." + base64url(hmacSHA256).
-// It is signed with SESSION_SECRET so it cannot be forged or edited.
+// This is intentionally identical to the Media Arts app's session: same cookie
+// name and same SESSION_SECRET, so a student who signs in on either app is
+// recognized by both (both are served under viztasystems.com). The cookie value
+// is base64url(payload) + "." + base64url(hmacSHA256), signed so it cannot be
+// forged or edited.
 
 import crypto from 'node:crypto';
 import { cookies } from 'next/headers';
@@ -22,14 +20,6 @@ export type StudentSession = {
   iat: number; // issued-at, seconds
 };
 
-// Where a student lands after signing in. Mathematics (M9) lives in its own app
-// at a separate base path, so those students go to its absolute URL; Media Arts
-// grades keep the module dashboard within this app.
-const MATH_APP_URL = 'https://viztasystems.com/web-platforms/mathematics';
-export function studentHome(cls: StudentSession['class']): string {
-  return cls === 'M9' ? MATH_APP_URL : '/dashboard';
-}
-
 function secret(): string {
   const s = process.env.SESSION_SECRET;
   if (!s || s.length < 16) {
@@ -40,8 +30,7 @@ function secret(): string {
   return s;
 }
 
-const b64url = (buf: Buffer | string) =>
-  Buffer.from(buf).toString('base64url');
+const b64url = (buf: Buffer | string) => Buffer.from(buf).toString('base64url');
 
 function sign(payloadB64: string): string {
   return crypto.createHmac('sha256', secret()).update(payloadB64).digest('base64url');
@@ -59,7 +48,6 @@ export function verify(token: string | undefined): StudentSession | null {
   if (dot < 0) return null;
   const payload = token.slice(0, dot);
   const mac = token.slice(dot + 1);
-  // constant-time compare to resist timing attacks
   const expected = sign(payload);
   const a = Buffer.from(mac);
   const b = Buffer.from(expected);
