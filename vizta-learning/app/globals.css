@@ -697,3 +697,23 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .math-lesson-title { display: block; font-size: 17px; font-weight: 700; color: var(--navy); }
 .math-lesson-blurb { display: block; font-size: 14px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
 .math-lesson-go { display: block; font-size: 13px; color: var(--mint-dark); font-weight: 600; margin-top: 10px; }
+
+/* Teacher roster: class filter + remove student */
+.roster-filter { display: flex; align-items: center; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; }
+.roster-filter label { font-size: 14px; color: var(--muted); }
+.roster-select {
+  padding: 9px 12px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  min-width: 220px;
+}
+.roster-select:focus { outline: none; border-color: var(--mint); box-shadow: 0 0 0 3px rgba(62,180,137,0.16); }
+.remove-student { color: var(--danger); }
+.remove-student:hover { background: var(--danger-tint); }
+.remove-form { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.remove-warn { font-size: 13px; color: var(--danger); font-weight: 600; }
+.remove-yes { background: var(--danger); color: #fff; border-color: var(--danger); }
+.remove-yes:hover { filter: brightness(0.94); }

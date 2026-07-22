@@ -233,7 +233,11 @@ export type AttendanceRow = {
 };
 export type AttendanceClass = { cls: string; label: string; students: AttendanceRow[] };
 
-const CLASS_LABELS: Record<string, string> = { G9: 'Grade 9', G10: 'Grade 10' };
+const CLASS_LABELS: Record<string, string> = {
+  G9: 'Grade 9 Media Arts',
+  G10: 'Grade 10 Media Arts',
+  M9: 'Grade 9 Mathematics',
+};
 
 // The roster grouped by class, each student with their mark for the given date
 // (null if not marked yet). Error-tolerant: if the attendance table isn't there
@@ -384,6 +388,17 @@ export async function removeStudentAvatar(studentId: string): Promise<void> {
     .from('students')
     .update({ avatar_path: null })
     .eq('student_id', studentId);
+  if (error) throw error;
+}
+
+// Remove a student entirely. Their submissions, quiz results, and attendance
+// rows are deleted too via ON DELETE CASCADE foreign keys. Also clears their
+// profile photo from storage so nothing is orphaned.
+export async function removeStudent(studentId: string): Promise<void> {
+  const supabase = supabaseServer();
+  // Best-effort photo cleanup (ignore if bucket/file is absent).
+  await supabase.storage.from(AVATAR_BUCKET).remove([`${studentId}/avatar`]);
+  const { error } = await supabase.from('students').delete().eq('student_id', studentId);
   if (error) throw error;
 }
 

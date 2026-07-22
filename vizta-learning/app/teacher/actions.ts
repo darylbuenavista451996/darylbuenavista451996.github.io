@@ -13,6 +13,7 @@ import {
   updateActivityText,
   resetStudentPassword,
   removeStudentAvatar,
+  removeStudent,
   saveAttendance,
   type AttendanceStatus,
 } from '@/lib/teacherData';
@@ -193,6 +194,22 @@ export async function removeAvatarAction(
   }
   revalidatePath('/teacher/students');
   return { ok: true, message: 'Photo removed.' };
+}
+
+export async function removeStudentAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const studentId = String(formData.get('student_id') ?? '');
+  if (!studentId) return { error: 'Missing student.' };
+  try {
+    await removeStudent(studentId);
+  } catch {
+    return { error: 'Could not remove the student. Please try again.' };
+  }
+  revalidatePath('/teacher/students');
+  return { ok: true, message: 'Student removed.' };
 }
 
 const VALID_STATUS: AttendanceStatus[] = ['Present', 'Late', 'Absent'];
