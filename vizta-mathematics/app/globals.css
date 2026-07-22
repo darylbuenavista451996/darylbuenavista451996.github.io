@@ -697,3 +697,77 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .math-lesson-title { display: block; font-size: 17px; font-weight: 700; color: var(--navy); }
 .math-lesson-blurb { display: block; font-size: 14px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
 .math-lesson-go { display: block; font-size: 13px; color: var(--mint-dark); font-weight: 600; margin-top: 10px; }
+
+/* Six-part lesson framework --------------------------------------------- */
+.ls-hud {
+  position: sticky; top: 8px; z-index: 20;
+  background: var(--navy); color: #fff;
+  border-radius: 12px; padding: 12px 14px; margin: 8px 0 18px;
+  box-shadow: 0 6px 18px rgba(27,42,74,0.28);
+}
+.ls-hud-top { display: flex; justify-content: space-between; align-items: baseline; }
+.ls-hud-label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.8; }
+.ls-hud-points { font-size: 20px; font-weight: 800; }
+.ls-hud-max { font-size: 14px; font-weight: 500; opacity: 0.7; }
+.ls-hud-track { height: 7px; background: rgba(255,255,255,0.22); border-radius: 999px; margin-top: 8px; overflow: hidden; }
+.ls-hud-fill { height: 100%; background: var(--mint); border-radius: 999px; transition: width 0.35s ease; }
+.ls-hud-streak { display: inline-block; margin-top: 8px; font-size: 12px; opacity: 0.9; }
+
+.ls-sec { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 14px 0; background: var(--card); }
+.ls-tag { display: flex; align-items: center; gap: 10px; }
+.ls-step {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; flex: none;
+  background: var(--navy-tint); color: var(--navy); border-radius: 50%;
+  font-size: 14px; font-weight: 800;
+}
+.ls-step.done { background: var(--mint); color: #fff; }
+.ls-h2 { font-size: 18px; color: var(--navy); margin: 0; }
+.ls-sub { font-size: 14px; color: var(--muted); margin: 8px 0 12px; }
+.ls-earned { color: var(--mint-dark); font-weight: 700; font-size: 14px; margin: 12px 0 0; }
+
+.ls-video { position: relative; width: 100%; padding-top: 56.25%; border-radius: 10px; overflow: hidden; background: #000; }
+.ls-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.ls-video-meta { font-size: 13px; color: var(--muted); margin: 8px 0 12px; }
+
+.ls-read { margin: 4px 0 12px; }
+.ls-activity { margin: 4px 0 12px; }
+
+.ls-reflect {
+  width: 100%; padding: 11px 12px; font-size: 15px; font-family: inherit;
+  border: 1px solid var(--border); border-radius: 9px; resize: vertical; color: var(--ink);
+}
+.ls-reflect:focus { outline: none; border-color: var(--mint); box-shadow: 0 0 0 3px rgba(62,180,137,0.16); }
+
+.ls-q { border-top: 1px solid var(--border); padding: 14px 0 4px; }
+.ls-q:first-child { border-top: 0; }
+.ls-q-text { font-size: 15px; margin: 0 0 10px; font-weight: 600; }
+.ls-q-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; margin-right: 8px; vertical-align: middle;
+  background: var(--navy); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700;
+}
+.ls-opts { display: flex; flex-direction: column; gap: 8px; }
+.ls-opt {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px;
+  font-size: 15px; cursor: pointer;
+}
+.ls-opt.sel { border-color: var(--mint); background: var(--mint-tint); }
+.ls-submit { width: 100%; justify-content: center; margin-top: 14px; }
+.ls-note { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+
+.ls-quiz-result { padding: 16px; border-radius: 10px; background: var(--navy-tint); border: 1px solid #cdd6ea; }
+.ls-quiz-result.perfect { background: var(--mint-tint); border-color: #cdeadd; }
+.ls-quiz-result strong { font-size: 18px; color: var(--navy); }
+.ls-quiz-result p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+.ls-rewards { background: linear-gradient(180deg, #fbfdff, #f2f7ff); border-color: #cdd6ea; }
+.ls-reward-total { display: flex; align-items: baseline; gap: 10px; margin: 8px 0 12px; }
+.ls-reward-num { font-size: 40px; font-weight: 800; color: var(--navy); line-height: 1; }
+.ls-reward-of { font-size: 15px; color: var(--muted); }
+.ls-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.ls-badge {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  background: #fff; border: 1px solid var(--mint); border-radius: 999px; padding: 6px 12px;
+}
