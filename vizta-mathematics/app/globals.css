@@ -771,3 +771,8 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
   font-size: 13px; font-weight: 700; color: var(--navy);
   background: #fff; border: 1px solid var(--mint); border-radius: 999px; padding: 6px 12px;
 }
+
+/* Guided practice worksheet in the lesson activity */
+.mlz-guided { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 6px; }
+.mlz-sub-h { font-size: 15px; color: var(--navy); margin: 16px 0 6px; }
+.mlz-reveal { width: auto; padding: 8px 14px; font-size: 14px; margin-top: 4px; }

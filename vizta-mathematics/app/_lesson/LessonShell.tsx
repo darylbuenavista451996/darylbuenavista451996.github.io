@@ -14,7 +14,7 @@ import {
   type LessonProgress,
   EMPTY_PROGRESS,
 } from '@/lib/points';
-import { loadProgress, saveProgress, bumpStreak, getStreak, type Streak } from '@/lib/lessonStore';
+import { loadProgress, saveProgress } from '@/lib/lessonStore';
 
 export type QuizQuestion = { q: string; options: string[]; answer: number };
 
@@ -108,13 +108,11 @@ function Quiz({
 export default function LessonShell({ content }: { content: LessonContent }) {
   const { lessonId, video, discussion, activity, reflectionPrompt, quiz } = content;
   const [p, setP] = useState<LessonProgress>(EMPTY_PROGRESS);
-  const [streak, setStreak] = useState<Streak>({ last: '', count: 0 });
   const [ready, setReady] = useState(false);
 
   // Load saved progress after mount (localStorage is client-only).
   useEffect(() => {
     setP(loadProgress(lessonId));
-    setStreak(getStreak());
     setReady(true);
   }, [lessonId]);
 
@@ -124,8 +122,6 @@ export default function LessonShell({ content }: { content: LessonContent }) {
       saveProgress(lessonId, next);
       return next;
     });
-    // Any progress today keeps the daily streak alive.
-    setStreak(bumpStreak());
   }
 
   const points = computePoints(p);
@@ -135,7 +131,6 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const badges: string[] = [];
   if (p.quizDone && p.quizScore === QUIZ_LENGTH) badges.push('Perfect Score ⭐');
   if (complete) badges.push('Lesson Complete ✅');
-  if (streak.count >= 3) badges.push(`${streak.count}-day streak 🔥`);
 
   return (
     <div className="ls" aria-busy={!ready}>
@@ -146,7 +141,6 @@ export default function LessonShell({ content }: { content: LessonContent }) {
           <span className="ls-hud-points">{points} <span className="ls-hud-max">/ {MAX_POINTS}</span></span>
         </div>
         <div className="ls-hud-track"><div className="ls-hud-fill" style={{ width: `${pct}%` }} /></div>
-        {streak.count > 0 && <span className="ls-hud-streak">🔥 {streak.count}-day streak</span>}
       </div>
 
       {/* 1. Watch */}
