@@ -233,3 +233,34 @@ export function findLine(
   steps.push(`Answer: ${lineToString(target)}.`);
   return { line: target, steps };
 }
+
+// Evaluate a linear function y = mx + b at a given x. Returns null for a
+// vertical line (not a function).
+export function evalLine(line: Line, x: Rat): Rat | null {
+  if (line.kind === 'vertical') return null;
+  return line.m.mul(x).add(line.b);
+}
+
+// Build the line through two points, with worked steps. Vertical if the
+// x-values match.
+export function lineFromTwoPoints(
+  x1: Rat,
+  y1: Rat,
+  x2: Rat,
+  y2: Rat,
+): { line: Line; steps: string[] } {
+  const steps: string[] = [];
+  if (x1.eq(x2)) {
+    steps.push('The two x-values are the same, so this is a vertical line.');
+    return { line: { kind: 'vertical', x: x1 }, steps };
+  }
+  const m = y2.sub(y1).div(x2.sub(x1));
+  steps.push(
+    `Slope = (y2 - y1) / (x2 - x1) = (${y2.toString()} - ${y1.toString()}) / (${x2.toString()} - ${x1.toString()}) = ${m.toString()}.`,
+  );
+  const b = y1.sub(m.mul(x1));
+  steps.push(`Find b using (${x1.toString()}, ${y1.toString()}): b = ${y1.toString()} - (${m.toString()})(${x1.toString()}) = ${b.toString()}.`);
+  const line: Line = { kind: 'slope', m, b };
+  steps.push(`Answer: ${lineToString(line)}.`);
+  return { line, steps };
+}

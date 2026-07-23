@@ -1,7 +1,7 @@
 'use client';
 
 // Flushes a finished-but-not-yet-sent result to the server. Rendered on the
-// locked screen so that a student who finished the lesson OFFLINE and comes back
+// locked screen so that a student who finished a lesson OFFLINE and comes back
 // later (even after the teacher has re-locked it) still gets their points into
 // the teacher's records the moment they have internet.
 

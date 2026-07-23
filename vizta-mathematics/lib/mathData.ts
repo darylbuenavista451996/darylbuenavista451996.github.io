@@ -2,6 +2,25 @@
 // (never reaches the browser), scoped in code to the signed-in student.
 
 import { supabaseServer } from './supabase';
+import { LESSONS } from './lessons';
+
+// Make sure every lesson in the registry has a row in math_lessons (locked by
+// default). Insert-and-ignore, so existing rows and their unlock state are never
+// touched. This lets a newly deployed lesson appear in the teacher dashboard
+// with no manual SQL. Error-tolerant: does nothing if the table is missing.
+export async function ensureLessonsRegistered(): Promise<void> {
+  try {
+    const supabase = supabaseServer();
+    await supabase
+      .from('math_lessons')
+      .upsert(
+        LESSONS.map((l) => ({ lesson_id: l.id, title: l.title, order: l.order, unlocked: false })),
+        { onConflict: 'lesson_id', ignoreDuplicates: true }
+      );
+  } catch {
+    /* table not there yet; nothing to do */
+  }
+}
 
 // Whether a lesson is open for students. Lessons are locked by default; the
 // teacher unlocks them from the dashboard. Error-tolerant: if the table is not

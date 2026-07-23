@@ -1,30 +1,15 @@
-// Mathematics home. Where students land after signing in. Lists the available
-// math lessons. Each lesson is a self-contained interactive page, so this stays
-// simple: a greeting and a list of lessons to open.
+// Mathematics home. Where students land after signing in. Lists the math lessons
+// from the registry, and makes sure each is registered (locked) in the teacher
+// dashboard.
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from './Brand';
 import { getSession } from '@/lib/session';
 import { BASE_PATH } from '@/lib/basePath';
+import { LESSONS } from '@/lib/lessons';
+import { ensureLessonsRegistered } from '@/lib/mathData';
 
 export const dynamic = 'force-dynamic';
-
-type Lesson = {
-  href: string;
-  title: string;
-  blurb: string;
-  status: 'ready' | 'soon';
-};
-
-const LESSONS: Lesson[] = [
-  {
-    href: '/parallel-perpendicular',
-    title: 'Parallel & Perpendicular Lines',
-    blurb:
-      'Check whether two lines are parallel, perpendicular, or neither, and find the equation of a line through a point.',
-    status: 'ready',
-  },
-];
 
 function SignOut() {
   return (
@@ -36,11 +21,14 @@ function SignOut() {
   );
 }
 
-export default function MathHome() {
+export default async function MathHome() {
   const session = getSession();
   if (!session) redirect('/login');
 
+  await ensureLessonsRegistered();
+
   const firstName = session.name.split(' ')[0] || session.name;
+  const lessons = [...LESSONS].sort((a, b) => a.order - b.order);
 
   return (
     <main className="page">
@@ -58,22 +46,14 @@ export default function MathHome() {
         </p>
 
         <div className="math-lessons">
-          {LESSONS.map((l) =>
-            l.status === 'ready' ? (
-              <Link key={l.href} className="math-lesson" href={l.href}>
-                <span className="math-lesson-tag ready">Ready</span>
-                <span className="math-lesson-title">{l.title}</span>
-                <span className="math-lesson-blurb">{l.blurb}</span>
-                <span className="math-lesson-go">Open lesson →</span>
-              </Link>
-            ) : (
-              <div key={l.href} className="math-lesson soon">
-                <span className="math-lesson-tag soon">Coming soon</span>
-                <span className="math-lesson-title">{l.title}</span>
-                <span className="math-lesson-blurb">{l.blurb}</span>
-              </div>
-            )
-          )}
+          {lessons.map((l) => (
+            <Link key={l.id} className="math-lesson" href={`/${l.id}`}>
+              <span className="math-lesson-tag ready">Lesson {l.order}</span>
+              <span className="math-lesson-title">{l.title}</span>
+              <span className="math-lesson-blurb">{l.blurb}</span>
+              <span className="math-lesson-go">Open lesson →</span>
+            </Link>
+          ))}
         </div>
       </div>
     </main>
