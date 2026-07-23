@@ -826,3 +826,7 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .gq-key { font-size: 14px; font-weight: 700; margin: 8px 0 0; }
 .gq-key.ok { color: var(--mint-dark); }
 .gq-key.no { color: var(--danger); }
+
+/* Grayed disabled buttons (e.g. Finish before everything is done) */
+.btn:disabled { background: #c4ccd8; color: #fff; border-color: transparent; cursor: not-allowed; }
+.btn-ghost:disabled { background: #eef1f5; color: #9aa3b2; }

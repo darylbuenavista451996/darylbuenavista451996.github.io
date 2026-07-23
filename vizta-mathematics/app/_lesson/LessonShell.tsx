@@ -237,6 +237,9 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const timeUp = remaining <= 0;
   const answeredCount = flat.filter((_, i) => p.answers[i] !== undefined).length;
   const allAnswered = answeredCount === total;
+  // Everything must be done before Finish turns green: all graded questions AND
+  // the reflection. The timer can still auto-finish when it runs out.
+  const canFinish = allAnswered && p.reflected;
   const finished = p.finished;
 
   function onPick(index: number, val: Answer) {
@@ -453,16 +456,20 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         ) : (
           <>
             <p className="ls-sub">
-              Pressing Finish reveals your points and the answer key, and cannot be undone. Make sure
-              you have answered everything (and written your reflection for {REFLECTION_POINTS} points).
+              Finish turns on once you have answered every question and saved your reflection. Pressing
+              it reveals your points and the answer key, and cannot be undone.
             </p>
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!allAnswered}
+              disabled={!canFinish}
               onClick={doFinish}
             >
-              {allAnswered ? 'Finish lesson' : `Answer all ${total} questions first (${answeredCount}/${total})`}
+              {!allAnswered
+                ? `Answer all ${total} questions first (${answeredCount}/${total})`
+                : !p.reflected
+                  ? 'Save your reflection first'
+                  : 'Finish lesson'}
             </button>
           </>
         )}
