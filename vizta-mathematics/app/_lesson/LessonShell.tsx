@@ -2,10 +2,11 @@
 
 // The shared six-part lesson flow: Watch, Learn, Activity, Reflect, Quiz,
 // Rewards. Content is passed in per lesson, so every math lesson reuses this
-// exact structure and the same reward-points rules. Everything runs in the
-// browser and persists to localStorage, so it works fully offline once opened.
+// exact structure and the same reward-points rules. It runs offline once
+// opened (localStorage), enforces a 45-minute time limit, and records the final
+// points on the server (once) so the teacher can export them.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   computePoints,
   isLessonComplete,
@@ -15,6 +16,10 @@ import {
   EMPTY_PROGRESS,
 } from '@/lib/points';
 import { loadProgress, saveProgress } from '@/lib/lessonStore';
+import { recordResult } from '../actions';
+
+const LIMIT_MINUTES = 45;
+const LIMIT_MS = LIMIT_MINUTES * 60 * 1000;
 
 export type QuizQuestion = { q: string; options: string[]; answer: number };
 
@@ -36,20 +41,46 @@ function SectionTag({ n, label, done }: { n: number; label: string; done: boolea
   );
 }
 
-// ---- The quiz (10 questions, one attempt) ----
+function fmtTime(ms: number): string {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(s / 60);
+  const ss = s % 60;
+  return `${m}:${ss.toString().padStart(2, '0')}`;
+}
+
+// ---- The quiz (10 questions, one attempt; auto-submits when time is up) ----
 function Quiz({
   questions,
   done,
   score,
+  timeUp,
   onSubmit,
 }: {
   questions: QuizQuestion[];
   done: boolean;
   score: number;
+  timeUp: boolean;
   onSubmit: (score: number) => void;
 }) {
   const [picks, setPicks] = useState<(number | null)[]>(() => questions.map(() => null));
+  const submittedRef = useRef(false);
   const allAnswered = picks.every((p) => p !== null);
+
+  function submit() {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    let s = 0;
+    questions.forEach((q, i) => {
+      if (picks[i] === q.answer) s += 1;
+    });
+    onSubmit(s);
+  }
+
+  // When the timer runs out, submit whatever is answered.
+  useEffect(() => {
+    if (timeUp && !done && !submittedRef.current) submit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeUp, done]);
 
   if (done) {
     return (
@@ -64,14 +95,6 @@ function Quiz({
     );
   }
 
-  function submit() {
-    let s = 0;
-    questions.forEach((q, i) => {
-      if (picks[i] === q.answer) s += 1;
-    });
-    onSubmit(s);
-  }
-
   return (
     <div className="ls-quiz">
       {questions.map((q, qi) => (
@@ -84,6 +107,7 @@ function Quiz({
                   type="radio"
                   name={`q${qi}`}
                   checked={picks[qi] === oi}
+                  disabled={timeUp}
                   onChange={() => setPicks((prev) => prev.map((p, i) => (i === qi ? oi : p)))}
                 />
                 {opt}
@@ -92,15 +116,10 @@ function Quiz({
           </div>
         </div>
       ))}
-      <button
-        type="button"
-        className="btn btn-primary ls-submit"
-        onClick={submit}
-        disabled={!allAnswered}
-      >
+      <button type="button" className="btn btn-primary ls-submit" onClick={submit} disabled={!allAnswered}>
         {allAnswered ? 'Submit answers' : `Answer all ${QUIZ_LENGTH} questions`}
       </button>
-      <p className="ls-note">You have one attempt, so check your answers first.</p>
+      <p className="ls-note">You have one attempt, and submitting finishes the lesson. Check your answers first.</p>
     </div>
   );
 }
@@ -110,17 +129,43 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const [p, setP] = useState<LessonProgress>(EMPTY_PROGRESS);
   const [ready, setReady] = useState(false);
   const [warn, setWarn] = useState(false);
+  const [startAt, setStartAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
-  // Load saved progress after mount (localStorage is client-only).
+  const START_KEY = `vmath.start.${lessonId}`;
+  const SYNC_KEY = `vmath.synced.${lessonId}`;
+
+  // Load saved progress and the timer start (localStorage is client-only).
   useEffect(() => {
     setP(loadProgress(lessonId));
+    let s: number | null = null;
+    try {
+      const r = window.localStorage.getItem(START_KEY);
+      if (r) s = parseInt(r, 10);
+    } catch {
+      /* ignore */
+    }
+    if (!s || Number.isNaN(s)) {
+      s = Date.now();
+      try {
+        window.localStorage.setItem(START_KEY, String(s));
+      } catch {
+        /* ignore */
+      }
+    }
+    setStartAt(s);
     setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
-  // Integrity: if the student leaves the page (switches tabs or apps, e.g. to
-  // search for answers), count it and warn them when they come back. We cannot
-  // block app switching on a phone, but this discourages it and records how
-  // often it happened for the teacher.
+  // Tick the clock every second.
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Integrity: count when the student leaves the page and warn them on return.
   useEffect(() => {
     function onVisibility() {
       if (document.hidden) {
@@ -136,7 +181,12 @@ export default function LessonShell({ content }: { content: LessonContent }) {
     return () => document.removeEventListener('visibilitychange', onVisibility);
   }, [lessonId]);
 
+  const remaining = startAt ? startAt + LIMIT_MS - now : LIMIT_MS;
+  const timeUp = remaining <= 0;
+  const locked = p.quizDone || timeUp; // no more earning once the quiz is in or time is up
+
   function update(patch: Partial<LessonProgress>) {
+    if (locked) return;
     setP((prev) => {
       const next = { ...prev, ...patch };
       saveProgress(lessonId, next);
@@ -147,6 +197,44 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const points = computePoints(p);
   const pct = Math.round((points / MAX_POINTS) * 100);
   const complete = isLessonComplete(p);
+
+  // Record the final result on the server, once, after the quiz is submitted
+  // (which also happens automatically when time runs out). Retries on a later
+  // visit if the student was offline.
+  useEffect(() => {
+    if (!ready || !p.quizDone) return;
+    let alreadySynced = false;
+    try {
+      alreadySynced = window.localStorage.getItem(SYNC_KEY) === '1';
+    } catch {
+      /* ignore */
+    }
+    if (alreadySynced) {
+      setSyncStatus('saved');
+      return;
+    }
+    setSyncStatus('saving');
+    recordResult({
+      lessonId,
+      points: computePoints(p),
+      quizScore: p.quizScore,
+      tabSwitches: p.tabSwitches,
+    })
+      .then((r) => {
+        if (r.ok) {
+          try {
+            window.localStorage.setItem(SYNC_KEY, '1');
+          } catch {
+            /* ignore */
+          }
+          setSyncStatus('saved');
+        } else {
+          setSyncStatus('error');
+        }
+      })
+      .catch(() => setSyncStatus('error'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, p.quizDone]);
 
   const badges: string[] = [];
   if (p.quizDone && p.quizScore === QUIZ_LENGTH) badges.push('Perfect Score ⭐');
@@ -164,14 +252,21 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         </div>
       )}
 
-      {/* Points HUD */}
+      {/* Points + timer HUD */}
       <div className="ls-hud">
         <div className="ls-hud-top">
           <span className="ls-hud-label">Reward points</span>
           <span className="ls-hud-points">{points} <span className="ls-hud-max">/ {MAX_POINTS}</span></span>
         </div>
         <div className="ls-hud-track"><div className="ls-hud-fill" style={{ width: `${pct}%` }} /></div>
+        <div className={`ls-timer ${remaining <= 5 * 60 * 1000 && !timeUp ? 'low' : ''}`}>
+          {timeUp ? '⏱ Time is up' : `⏱ ${fmtTime(remaining)} left`}
+        </div>
       </div>
+
+      {timeUp && !p.quizDone && (
+        <div className="ls-timeup" role="status">Time is up. Your lesson has been submitted with what you finished.</div>
+      )}
 
       {/* 1. Watch */}
       <section className="ls-sec">
@@ -190,7 +285,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         {p.watched ? (
           <p className="ls-earned">Watched · +1 point</p>
         ) : (
-          <button type="button" className="btn btn-ghost" onClick={() => update({ watched: true })}>
+          <button type="button" className="btn btn-ghost" disabled={locked} onClick={() => update({ watched: true })}>
             I watched the video
           </button>
         )}
@@ -203,7 +298,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         {p.read ? (
           <p className="ls-earned">Read · +1 point</p>
         ) : (
-          <button type="button" className="btn btn-ghost" onClick={() => update({ read: true })}>
+          <button type="button" className="btn btn-ghost" disabled={locked} onClick={() => update({ read: true })}>
             I read this
           </button>
         )}
@@ -217,7 +312,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         {p.activityDone ? (
           <p className="ls-earned">Activity done · +2 points</p>
         ) : (
-          <button type="button" className="btn btn-ghost" onClick={() => update({ activityDone: true })}>
+          <button type="button" className="btn btn-ghost" disabled={locked} onClick={() => update({ activityDone: true })}>
             I did the activity
           </button>
         )}
@@ -232,7 +327,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
           rows={4}
           placeholder="Write your answer here…"
           value={p.reflection}
-          readOnly={p.reflected}
+          readOnly={p.reflected || locked}
           onChange={(e) => setP((prev) => ({ ...prev, reflection: e.target.value }))}
         />
         {p.reflected ? (
@@ -241,7 +336,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
           <button
             type="button"
             className="btn btn-ghost"
-            disabled={p.reflection.trim().length < 3}
+            disabled={locked || p.reflection.trim().length < 3}
             onClick={() => update({ reflected: true })}
           >
             Save my reflection
@@ -252,12 +347,19 @@ export default function LessonShell({ content }: { content: LessonContent }) {
       {/* 5. Quiz */}
       <section className="ls-sec">
         <SectionTag n={5} label="Multiple choice" done={p.quizDone} />
-        <p className="ls-sub">Ten questions, one point each. A perfect score earns a 2-point bonus.</p>
+        <p className="ls-sub">Ten questions, one point each. A perfect score earns a 2-point bonus. Submitting finishes the lesson.</p>
         <Quiz
           questions={quiz}
           done={p.quizDone}
           score={p.quizScore}
-          onSubmit={(s) => update({ quizDone: true, quizScore: s })}
+          timeUp={timeUp}
+          onSubmit={(s) => {
+            setP((prev) => {
+              const next = { ...prev, quizDone: true, quizScore: s };
+              saveProgress(lessonId, next);
+              return next;
+            });
+          }}
         />
       </section>
 
@@ -277,9 +379,17 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         ) : (
           <p className="ls-sub">Finish every part to earn badges.</p>
         )}
-        <p className="ls-note">
-          Your points are saved on this phone. When you connect to the internet, they are recorded for your teacher.
-        </p>
+        {p.quizDone ? (
+          <p className="ls-note">
+            {syncStatus === 'saved'
+              ? '✓ Your points are recorded for your teacher.'
+              : syncStatus === 'saving'
+                ? 'Saving your points…'
+                : 'Saved on this phone. Your points will be sent to your teacher when you are online.'}
+          </p>
+        ) : (
+          <p className="ls-note">Finish the quiz to record your points for your teacher.</p>
+        )}
       </section>
     </div>
   );

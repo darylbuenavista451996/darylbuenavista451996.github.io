@@ -15,6 +15,7 @@ import {
   removeStudentAvatar,
   removeStudent,
   saveAttendance,
+  setMathLessonUnlocked,
   type AttendanceStatus,
 } from '@/lib/teacherData';
 import type { ClassName } from '@/lib/classCodes';
@@ -252,6 +253,23 @@ export async function toggleModule(
   }
   revalidatePath('/teacher/modules');
   return { ok: true, message: unlocked ? 'Module unlocked.' : 'Module locked.' };
+}
+
+export async function toggleMathLesson(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const lessonId = String(formData.get('lesson_id') ?? '');
+  const unlocked = String(formData.get('unlocked') ?? '') === 'true';
+  if (!lessonId) return { error: 'Missing lesson.' };
+  try {
+    await setMathLessonUnlocked(lessonId, unlocked);
+  } catch {
+    return { error: 'Could not update the lesson.' };
+  }
+  revalidatePath('/teacher/math');
+  return { ok: true, message: unlocked ? 'Lesson unlocked.' : 'Lesson locked.' };
 }
 
 // Ping the n8n webhook to run the grade export on demand. The actual export

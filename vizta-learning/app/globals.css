@@ -717,3 +717,18 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .remove-warn { font-size: 13px; color: var(--danger); font-weight: 600; }
 .remove-yes { background: var(--danger); color: #fff; border-color: var(--danger); }
 .remove-yes:hover { filter: brightness(0.94); }
+
+/* Teacher Mathematics panel */
+.math-lock-list { display: grid; gap: 10px; margin-top: 8px; }
+.math-lock-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.math-lock-row.open { border-color: #cdeadd; background: var(--mint-tint); }
+.math-lock-info { display: flex; align-items: center; gap: 10px; }
+.math-lock-title { font-weight: 700; color: var(--navy); }
+.math-lock-tag { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700;
+  padding: 3px 9px; border-radius: 999px; }
+.math-lock-tag.open { background: var(--mint); color: #fff; }
+.math-lock-tag.shut { background: var(--navy-tint); color: var(--muted); }
+.math-lock-form { display: inline-flex; align-items: center; gap: 8px; }
+.math-flag { display: inline-block; min-width: 22px; text-align: center; background: var(--danger-tint);
+  color: var(--danger); border-radius: 6px; padding: 1px 7px; font-weight: 700; font-size: 13px; }

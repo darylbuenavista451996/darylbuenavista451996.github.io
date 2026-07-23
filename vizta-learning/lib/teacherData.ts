@@ -552,3 +552,69 @@ export async function getActivitiesBrief(): Promise<
   if (error) throw error;
   return data ?? [];
 }
+
+// ---- Mathematics platform (separate app, shared database) -----------------
+
+export type MathLessonRow = { lesson_id: string; title: string; order: number; unlocked: boolean };
+
+// All math lessons with their lock state. Error-tolerant: returns [] if the
+// table isn't there yet (migration 0010 not run), so the page stays usable.
+export async function getMathLessons(): Promise<MathLessonRow[]> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('math_lessons')
+    .select('lesson_id, title, "order", unlocked')
+    .order('order', { ascending: true });
+  if (error) return [];
+  return (data ?? []).map((m) => ({
+    lesson_id: m.lesson_id as string,
+    title: m.title as string,
+    order: (m.order as number) ?? 0,
+    unlocked: Boolean(m.unlocked),
+  }));
+}
+
+export async function setMathLessonUnlocked(lessonId: string, unlocked: boolean): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase.from('math_lessons').update({ unlocked }).eq('lesson_id', lessonId);
+  if (error) throw error;
+}
+
+export type MathResultRow = {
+  student_id: string;
+  name: string;
+  class: string;
+  lesson_id: string;
+  points: number;
+  quiz_score: number;
+  tab_switches: number;
+  submitted_at: string;
+};
+
+// Recorded math results joined with student names, newest first. Error-tolerant.
+export async function getMathResults(): Promise<MathResultRow[]> {
+  const supabase = supabaseServer();
+  const [results, students] = await Promise.all([
+    supabase
+      .from('math_results')
+      .select('student_id, lesson_id, points, quiz_score, tab_switches, submitted_at')
+      .order('submitted_at', { ascending: false }),
+    supabase.from('students').select('student_id, name, class'),
+  ]);
+  if (results.error) return [];
+  const byId = new Map<string, { name: string; class: string }>();
+  for (const s of students.data ?? []) byId.set(s.student_id, { name: s.name, class: s.class });
+  return (results.data ?? []).map((r) => {
+    const s = byId.get(r.student_id as string);
+    return {
+      student_id: r.student_id as string,
+      name: s?.name ?? 'Unknown',
+      class: s?.class ?? '',
+      lesson_id: r.lesson_id as string,
+      points: (r.points as number) ?? 0,
+      quiz_score: (r.quiz_score as number) ?? 0,
+      tab_switches: (r.tab_switches as number) ?? 0,
+      submitted_at: r.submitted_at as string,
+    };
+  });
+}
