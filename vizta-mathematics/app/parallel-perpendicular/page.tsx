@@ -9,6 +9,7 @@ import Brand from '../Brand';
 import { getSession } from '@/lib/session';
 import { getLessonUnlocked, getExistingResult } from '@/lib/mathData';
 import ParallelLesson from './ParallelLesson';
+import PendingSync from './PendingSync';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,6 +63,7 @@ export default async function ParallelPerpendicularPage() {
           <span className="mlz-lock-icon" aria-hidden="true">🔒</span>
           <h2>This lesson is locked.</h2>
           <p>Your teacher will open it when it is time. Check back then.</p>
+          <PendingSync lessonId={LESSON_ID} />
         </div>
       </Shell>
     );

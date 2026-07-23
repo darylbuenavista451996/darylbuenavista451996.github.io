@@ -19,16 +19,18 @@ export async function recordResult(input: {
   const session = getSession();
   if (!session) return { ok: false, error: 'Not signed in.' };
 
-  // Only record for a lesson the teacher has unlocked.
+  // The lesson must exist, but it does NOT need to be currently unlocked: a
+  // student can only reach a finished state by having taken it while it was
+  // open, and they may reconnect to sync after the teacher has locked it again.
   const supabase = supabaseServer();
   try {
     const lesson = await supabase
       .from('math_lessons')
-      .select('unlocked')
+      .select('lesson_id')
       .eq('lesson_id', input.lessonId)
       .maybeSingle();
-    if (lesson.error || !lesson.data?.unlocked) {
-      return { ok: false, error: 'This lesson is not open.' };
+    if (lesson.error || !lesson.data) {
+      return { ok: false, error: 'Unknown lesson.' };
     }
 
     const { error } = await supabase.from('math_results').insert({
