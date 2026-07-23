@@ -43,7 +43,7 @@ export default async function LessonPage({
   const result = await getLessonForStudent(session.sid, session.class, activityId);
   if (!result) notFound();
 
-  const { lesson } = result;
+  const { lesson, next } = result;
   // Sequential unlocking, enforced server-side: no jumping ahead via the URL.
   if (lesson.locked) redirect('/dashboard');
 
@@ -229,6 +229,36 @@ export default async function LessonPage({
             />
           </section>
         ) : null}
+
+        {/* Finish the task -> unlock the next */}
+        <section className="lesson-section">
+          {lesson.complete ? (
+            next ? (
+              <div className="task-done ready">
+                <strong>✓ Task {a.order} complete. Great work!</strong>
+                <Link className="btn btn-primary" href={`/lesson/${next.activity.activity_id}`}>
+                  Start Task {next.activity.order} →
+                </Link>
+              </div>
+            ) : (
+              <div className="task-done ready">
+                <strong>🎉 You finished this module!</strong>
+                <Link className="btn btn-primary" href="/dashboard">Back to dashboard</Link>
+              </div>
+            )
+          ) : (
+            <div className="task-done pending">
+              <strong>Task {a.order} is not finished yet.</strong>
+              <p className="hint">
+                To unlock the next task, {!lesson.hasSubmission ? 'submit your activity' : null}
+                {!lesson.hasSubmission && !lesson.hasQuiz ? ' and ' : null}
+                {!lesson.hasQuiz ? 'take the quiz' : null}
+                {lesson.hasSubmission && lesson.hasQuiz ? 'finish the remaining part' : null}.
+              </p>
+              <button className="btn btn-primary" type="button" disabled>Task completed</button>
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );

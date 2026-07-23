@@ -386,7 +386,7 @@ export async function getLessonForStudent(
   studentId: string,
   cls: ClassName,
   activityId: string
-): Promise<{ lesson: LessonView; module: Module } | null> {
+): Promise<{ lesson: LessonView; module: Module; next: LessonView | null } | null> {
   const supabase = supabaseServer();
   const { data: act, error } = await supabase
     .from('activities')
@@ -398,9 +398,12 @@ export async function getLessonForStudent(
 
   const dash = await getDashboard(studentId, cls, act.module_id);
   if (!dash) return null;
-  const lesson = dash.lessons.find((l) => l.activity.activity_id === activityId);
-  if (!lesson) return null;
-  return { lesson, module: dash.module };
+  const idx = dash.lessons.findIndex((l) => l.activity.activity_id === activityId);
+  if (idx < 0) return null;
+  const lesson = dash.lessons[idx];
+  // The next task in this module (already unlocked once this one is complete).
+  const next = dash.lessons[idx + 1] ?? null;
+  return { lesson, module: dash.module, next };
 }
 
 export type QuizItem = {
