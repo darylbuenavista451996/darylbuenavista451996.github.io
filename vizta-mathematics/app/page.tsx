@@ -4,10 +4,12 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from './Brand';
+import Avatar from './Avatar';
 import { getSession } from '@/lib/session';
 import { BASE_PATH } from '@/lib/basePath';
 import { LESSONS } from '@/lib/lessons';
 import { ensureLessonsRegistered } from '@/lib/mathData';
+import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,13 +31,19 @@ export default async function MathHome() {
 
   const firstName = session.name.split(' ')[0] || session.name;
   const lessons = [...LESSONS].sort((a, b) => a.order - b.order);
+  const avatarSrc = await signedAvatarUrl(await getAvatarPath(session.sid));
 
   return (
     <main className="page">
       <div className="card mlz-card">
         <div className="math-head">
           <Brand subtitle="Mathematics · Grade 9" />
-          <SignOut />
+          <div className="topbar-right">
+            <Link href="/profile" className="who-avatar" title="Add or change your photo">
+              <Avatar name={session.name} src={avatarSrc} size={44} />
+            </Link>
+            <SignOut />
+          </div>
         </div>
 
         <h1 className="mlz-title">Hi {firstName}. Let&apos;s do some math.</h1>
