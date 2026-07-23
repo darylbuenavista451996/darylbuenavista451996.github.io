@@ -52,8 +52,9 @@ export default function MathHome() {
 
         <h1 className="mlz-title">Hi {firstName}. Let&apos;s do some math.</h1>
         <p className="mlz-lead">
-          Open a lesson to start. Each one works on your phone, and once you have
-          opened it with internet, it keeps working even with no connection.
+          Open a lesson to start. Watch the video while you have internet. After
+          that, the reading, activities, and quiz keep working even if your
+          connection drops.
         </p>
 
         <div className="math-lessons">
