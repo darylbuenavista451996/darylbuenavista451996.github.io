@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { submitActivity, type SubmitState } from './actions';
 import type { SubmissionRow } from '@/lib/data';
+import { useDraft, draftKey, clearDraft } from '@/lib/useDraft';
 
 function SaveButton({ locked }: { locked: boolean }) {
   const { pending } = useFormStatus();
@@ -18,10 +20,12 @@ export default function ActivitySubmit({
   activityId,
   kind,
   existing,
+  studentKey,
 }: {
   activityId: string;
   kind: 'text' | 'link' | 'image';
   existing: SubmissionRow | null;
+  studentKey: string;
 }) {
   const bound = submitActivity.bind(null, activityId);
   const [state, formAction] = useFormState<SubmitState, FormData>(bound, {});
@@ -30,6 +34,14 @@ export default function ActivitySubmit({
   const submitted = existing?.status === 'Submitted' || state.ok === true;
   // Once submitted (or graded), the answer is final — no re-editing.
   const locked = graded || submitted;
+
+  const key = draftKey(studentKey, activityId, 'activity');
+  const [content, setContent] = useDraft(key, existing?.content ?? '', !locked);
+
+  // Clear the saved draft once the work is actually submitted.
+  useEffect(() => {
+    if (locked) clearDraft(key);
+  }, [locked, key]);
 
   return (
     <form action={formAction} className="submit-box">
@@ -40,7 +52,7 @@ export default function ActivitySubmit({
         </div>
       ) : submitted ? (
         <div className="banner banner-success" role="status">
-          ✓ Submitted. Your teacher will review it.
+          ✓ Submitted. This will be checked by your teacher.
         </div>
       ) : null}
 
@@ -54,7 +66,8 @@ export default function ActivitySubmit({
             name="content"
             rows={6}
             placeholder="Write your answer here…"
-            defaultValue={existing?.content ?? ''}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             disabled={locked}
             required
           />
@@ -68,14 +81,15 @@ export default function ActivitySubmit({
             type="text"
             inputMode="url"
             placeholder={kind === 'image' ? 'https://… (an image URL)' : 'https://…'}
-            defaultValue={existing?.content ?? ''}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             disabled={locked}
             required
           />
         </>
       )}
       {locked ? null : (
-        <p className="hint">Submissions are text, a link, or an image link — never a file upload.</p>
+        <p className="hint">Your answer is saved on this device as you type, so it is not lost if you sign out. Submissions are text, a link, or an image link — never a file upload.</p>
       )}
       <SaveButton locked={locked} />
     </form>

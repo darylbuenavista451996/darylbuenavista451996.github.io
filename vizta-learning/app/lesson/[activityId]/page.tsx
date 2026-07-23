@@ -27,6 +27,7 @@ import ActivitySubmit from './ActivitySubmit';
 import QuizRunner from './QuizRunner';
 import ReflectionBox from './ReflectionBox';
 import PracticeBox from './PracticeBox';
+import LessonGuard from './LessonGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -71,6 +72,8 @@ export default async function LessonPage({
           <Brand />
           <Link className="btn btn-ghost btn-sm" href="/dashboard">← Dashboard</Link>
         </div>
+
+        <LessonGuard />
 
         <div className="module-head">
           <span className="eyebrow">
@@ -168,6 +171,7 @@ export default async function LessonPage({
                       existing={practice.text}
                       existingScore={practice.score}
                       thoroughInitially={practiceGrade.thorough}
+                      studentKey={session.sid}
                     />
                   ) : null}
                   {s.type === 'reflect' ? (
@@ -175,6 +179,7 @@ export default async function LessonPage({
                       activityId={a.activity_id}
                       existing={reflection}
                       initiallyDone={reflectionDone(reflection)}
+                      studentKey={session.sid}
                     />
                   ) : null}
                 </li>
@@ -190,7 +195,7 @@ export default async function LessonPage({
           {a.tool ? <p className="tool-note"><strong>Tool:</strong> {a.tool}</p> : null}
           {a.ai_note ? <p className="ai-note"><strong>On using an AI agent:</strong> {a.ai_note}</p> : null}
 
-          <ActivitySubmit activityId={a.activity_id} kind={kind} existing={existingSubmission} />
+          <ActivitySubmit activityId={a.activity_id} kind={kind} existing={existingSubmission} studentKey={session.sid} />
         </section>
 
         {/* Rubric */}

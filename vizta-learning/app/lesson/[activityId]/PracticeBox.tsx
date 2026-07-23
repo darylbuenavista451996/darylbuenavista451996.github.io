@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from 'react-dom';
 import { savePractice, type PracticeState } from './actions';
+import { useDraft, draftKey } from '@/lib/useDraft';
 
 function SaveBtn() {
   const { pending } = useFormStatus();
@@ -18,26 +19,30 @@ export default function PracticeBox({
   existing,
   existingScore,
   thoroughInitially,
+  studentKey,
 }: {
   activityId: string;
   total: number;
   existing: string | null;
   existingScore: number | null;
   thoroughInitially: boolean;
+  studentKey: string;
 }) {
   const bound = savePractice.bind(null, activityId);
   const [state, formAction] = useFormState<PracticeState, FormData>(bound, {});
 
-  const scored = state.ok || existingScore != null;
-  const score = state.ok ? state.score! : existingScore ?? 0;
-  const thorough = state.ok ? !!state.thorough : thoroughInitially;
+  // "Submitted" once it has been saved (this visit or a previous one). We no
+  // longer show a number to the student — the teacher checks it.
+  const submitted = state.ok || existingScore != null;
+
+  const key = draftKey(studentKey, activityId, 'practice');
+  const [text, setText] = useDraft(key, existing ?? '');
 
   return (
     <form action={formAction} className="practice-box">
-      {scored ? (
+      {submitted ? (
         <div className="banner banner-success" role="status">
-          <strong>Score: {score} / {total}</strong>
-          {!thorough ? <div className="hint">You can add more detail and save again to raise your score.</div> : null}
+          ✓ Submitted. This will be checked by your teacher.
         </div>
       ) : null}
       {state.error ? <div className="error" role="alert">{state.error}</div> : null}
@@ -48,11 +53,13 @@ export default function PracticeBox({
         name="practice"
         rows={6}
         placeholder="Write your answer here…"
-        defaultValue={existing ?? ''}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
         required
       />
+      <p className="hint">Saved on this device as you type, so it is not lost if you sign out. You can edit and submit again.</p>
       <div className="practice-foot">
-        <span className="practice-total">Total points: {total}</span>
+        <span className="practice-total">Worth {total} points</span>
         <SaveBtn />
       </div>
     </form>
