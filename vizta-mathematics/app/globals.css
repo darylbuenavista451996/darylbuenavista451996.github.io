@@ -801,3 +801,28 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .mlz-lock-icon { font-size: 40px; display: block; }
 .mlz-locked.done { text-align: left; }
 .mlz-locked.done h2 { font-size: 18px; }
+
+/* Graded questions (v2) */
+.ls-step.muted { background: var(--navy-tint); color: var(--muted); font-weight: 700; }
+.gq { border-top: 1px solid var(--border); padding: 14px 0 6px; }
+.gq:first-child { border-top: 0; }
+.gq-prompt { font-size: 15px; font-weight: 600; margin: 0 0 10px; color: var(--ink); }
+.gq-prompt code { background: var(--navy-tint); padding: 1px 6px; border-radius: 5px; font-size: 14px; white-space: nowrap; }
+.gq-hint { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.gq-opts { display: flex; flex-direction: column; gap: 8px; }
+.gq-opt {
+  text-align: left; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px;
+  background: #fff; color: var(--ink); font-size: 15px; font-family: inherit; cursor: pointer;
+}
+.gq-opt:hover:not(:disabled) { border-color: var(--mint); }
+.gq-opt:disabled { cursor: default; }
+.gq-opt.sel { border-color: var(--navy); background: var(--navy-tint); font-weight: 600; }
+.gq-opt.correct { border-color: var(--mint); background: var(--mint-tint); color: var(--mint-dark); font-weight: 700; }
+.gq-opt.wrong { border-color: #e5b7b7; background: var(--danger-tint); color: var(--danger); }
+.gq-typed-row { display: flex; gap: 8px; }
+.gq-typed-row .mlz-input { flex: 1; }
+.gq-lock { width: auto; padding: 11px 16px; }
+.gq-typed { font-size: 15px; margin: 4px 0; }
+.gq-key { font-size: 14px; font-weight: 700; margin: 8px 0 0; }
+.gq-key.ok { color: var(--mint-dark); }
+.gq-key.no { color: var(--danger); }

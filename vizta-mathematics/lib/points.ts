@@ -1,70 +1,34 @@
-// Reward-points rules for a lesson. Confirmed with the teacher: modest values,
-// based on each student's own performance (no ranking against classmates).
+// Reward-points model (v2). Points come ONLY from graded work — no points for
+// watching the video or reading. Nothing reveals whether an answer is right
+// until the student presses "Finish lesson", so answers can't be shared mid-way.
 //
-//   Watch the video ......... 1
-//   Read the discussion ..... 1
-//   Do the activity ......... 2
-//   Write the reflection .... 2
-//   Multiple-choice quiz .... 1 per correct answer (10 questions = up to 10)
-//   Perfect quiz bonus ...... 2
-//   ---------------------------------
-//   Maximum per lesson ...... 18
+// Per lesson the graded parts and their points are defined in the lesson content
+// (each question carries its own points). Reflection is a completion item.
 
-export const POINTS = {
-  watch: 1,
-  read: 1,
-  activity: 2,
-  reflect: 2,
-  quizPerCorrect: 1,
-  perfectBonus: 2,
-} as const;
+export const REFLECTION_POINTS = 2;
 
-export const QUIZ_LENGTH = 10;
-export const MAX_POINTS =
-  POINTS.watch +
-  POINTS.read +
-  POINTS.activity +
-  POINTS.reflect +
-  QUIZ_LENGTH * POINTS.quizPerCorrect +
-  POINTS.perfectBonus; // 18
+// A student's answer to a graded question: a chosen option index, or typed text.
+export type Answer = number | string;
 
 export type LessonProgress = {
-  watched: boolean;
-  read: boolean;
-  activityDone: boolean;
   reflection: string;
   reflected: boolean;
-  quizDone: boolean;
-  quizScore: number; // 0..QUIZ_LENGTH
+  answers: Record<number, Answer>; // keyed by the question's global index
+  finished: boolean; // pressed "Finish lesson"
   tabSwitches: number; // times the student left the page (integrity signal)
+  finalPoints?: number; // total points, frozen at Finish (for offline re-sync)
+  finalQuizScore?: number; // multiple-choice quiz correct count, frozen at Finish
 };
 
 export const EMPTY_PROGRESS: LessonProgress = {
-  watched: false,
-  read: false,
-  activityDone: false,
   reflection: '',
   reflected: false,
-  quizDone: false,
-  quizScore: 0,
+  answers: {},
+  finished: false,
   tabSwitches: 0,
 };
 
-// Total reward points from a lesson's current state.
-export function computePoints(p: LessonProgress): number {
-  let pts = 0;
-  if (p.watched) pts += POINTS.watch;
-  if (p.read) pts += POINTS.read;
-  if (p.activityDone) pts += POINTS.activity;
-  if (p.reflected) pts += POINTS.reflect;
-  if (p.quizDone) {
-    pts += p.quizScore * POINTS.quizPerCorrect;
-    if (p.quizScore === QUIZ_LENGTH) pts += POINTS.perfectBonus;
-  }
-  return pts;
-}
-
-// Everything in the lesson has been done.
-export function isLessonComplete(p: LessonProgress): boolean {
-  return p.watched && p.read && p.activityDone && p.reflected && p.quizDone;
+// Normalize a typed answer for comparison: lowercase, no spaces.
+export function normalizeTyped(s: string): string {
+  return s.trim().toLowerCase().replace(/\s+/g, '');
 }

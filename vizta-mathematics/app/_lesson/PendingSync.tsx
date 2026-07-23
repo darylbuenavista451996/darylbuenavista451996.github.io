@@ -3,11 +3,11 @@
 // Flushes a finished-but-not-yet-sent result to the server. Rendered on the
 // locked screen so that a student who finished a lesson OFFLINE and comes back
 // later (even after the teacher has re-locked it) still gets their points into
-// the teacher's records the moment they have internet.
+// the teacher's records the moment they have internet. Uses the score frozen at
+// Finish, so it needs no access to the lesson's questions.
 
 import { useEffect, useState } from 'react';
 import { loadProgress } from '@/lib/lessonStore';
-import { computePoints } from '@/lib/points';
 import { recordResult } from '../actions';
 
 export default function PendingSync({ lessonId }: { lessonId: string }) {
@@ -15,7 +15,7 @@ export default function PendingSync({ lessonId }: { lessonId: string }) {
 
   useEffect(() => {
     const p = loadProgress(lessonId);
-    if (!p.quizDone) return; // nothing finished to send
+    if (!p.finished || p.finalPoints === undefined) return; // nothing finished to send
     let synced = false;
     try {
       synced = window.localStorage.getItem(`vmath.synced.${lessonId}`) === '1';
@@ -27,8 +27,8 @@ export default function PendingSync({ lessonId }: { lessonId: string }) {
     setMsg('Sending your earlier work to your teacher…');
     recordResult({
       lessonId,
-      points: computePoints(p),
-      quizScore: p.quizScore,
+      points: p.finalPoints,
+      quizScore: p.finalQuizScore ?? 0,
       tabSwitches: p.tabSwitches,
     })
       .then((r) => {

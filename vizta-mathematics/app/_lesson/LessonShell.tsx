@@ -1,19 +1,18 @@
 'use client';
 
-// The shared six-part lesson flow: Watch, Learn, Activity, Reflect, Quiz,
-// Rewards. Content is passed in per lesson, so every math lesson reuses this
-// exact structure and the same reward-points rules. It runs offline once
-// opened (localStorage), enforces a 45-minute time limit, and records the final
-// points on the server (once) so the teacher can export them.
+// The lesson flow (v2): Watch and Learn earn no points; the graded work is
+// typed and multiple-choice questions, each LOCKED the moment it is answered,
+// with NO right/wrong feedback until the student presses "Finish lesson". Finish
+// reveals the points and the answer key, and records the result on the server.
+// 45-minute timer; works offline once opened.
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  computePoints,
-  isLessonComplete,
-  MAX_POINTS,
-  QUIZ_LENGTH,
-  type LessonProgress,
   EMPTY_PROGRESS,
+  REFLECTION_POINTS,
+  normalizeTyped,
+  type LessonProgress,
+  type Answer,
 } from '@/lib/points';
 import { loadProgress, saveProgress } from '@/lib/lessonStore';
 import { recordResult } from '../actions';
@@ -21,122 +20,177 @@ import { recordResult } from '../actions';
 const LIMIT_MINUTES = 45;
 const LIMIT_MS = LIMIT_MINUTES * 60 * 1000;
 
-export type QuizQuestion = { q: string; options: string[]; answer: number };
-
+export type ChoiceQuestion = {
+  kind: 'choice';
+  prompt: React.ReactNode;
+  options: string[];
+  answer: number;
+  points: number;
+};
+export type TypedQuestion = {
+  kind: 'typed';
+  prompt: React.ReactNode;
+  accept: string[];
+  correct: string;
+  points: number;
+  placeholder?: string;
+  hint?: string;
+};
+export type GradedQuestion = ChoiceQuestion | TypedQuestion;
+export type GradedGroup = {
+  title: string;
+  instructions?: string;
+  quiz?: boolean; // the multiple-choice quiz group (used for the recorded quiz score)
+  questions: GradedQuestion[];
+};
 export type LessonContent = {
   lessonId: string;
   video: { title: string; youtubeId: string; channel: string };
   discussion: React.ReactNode;
-  activity: React.ReactNode;
+  explore?: React.ReactNode;
+  groups: GradedGroup[];
   reflectionPrompt: string;
-  quiz: QuizQuestion[];
 };
 
-function SectionTag({ n, label, done }: { n: number; label: string; done: boolean }) {
-  return (
-    <div className="ls-tag">
-      <span className={`ls-step ${done ? 'done' : ''}`}>{done ? '✓' : n}</span>
-      <h2 className="ls-h2">{label}</h2>
-    </div>
-  );
+function isCorrect(q: GradedQuestion, a: Answer | undefined): boolean {
+  if (a === undefined) return false;
+  if (q.kind === 'choice') return a === q.answer;
+  return q.accept.map(normalizeTyped).includes(normalizeTyped(String(a)));
 }
 
 function fmtTime(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(s / 60);
-  const ss = s % 60;
-  return `${m}:${ss.toString().padStart(2, '0')}`;
+  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 }
 
-// ---- The quiz (10 questions, one attempt; auto-submits when time is up) ----
-function Quiz({
-  questions,
-  done,
-  score,
-  timeUp,
-  onSubmit,
+// ---- one multiple-choice question ----
+function ChoiceQ({
+  q,
+  index,
+  value,
+  finished,
+  onPick,
 }: {
-  questions: QuizQuestion[];
-  done: boolean;
-  score: number;
-  timeUp: boolean;
-  onSubmit: (score: number) => void;
+  q: ChoiceQuestion;
+  index: number;
+  value: Answer | undefined;
+  finished: boolean;
+  onPick: (index: number, value: Answer) => void;
 }) {
-  const [picks, setPicks] = useState<(number | null)[]>(() => questions.map(() => null));
-  const submittedRef = useRef(false);
-  const allAnswered = picks.every((p) => p !== null);
-
-  function submit() {
-    if (submittedRef.current) return;
-    submittedRef.current = true;
-    let s = 0;
-    questions.forEach((q, i) => {
-      if (picks[i] === q.answer) s += 1;
-    });
-    onSubmit(s);
-  }
-
-  // When the timer runs out, submit whatever is answered.
-  useEffect(() => {
-    if (timeUp && !done && !submittedRef.current) submit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeUp, done]);
-
-  if (done) {
-    return (
-      <div className={`ls-quiz-result ${score === QUIZ_LENGTH ? 'perfect' : ''}`}>
-        <strong>You scored {score} / {QUIZ_LENGTH}.</strong>
-        <p>
-          {score === QUIZ_LENGTH
-            ? 'Perfect. You earned the bonus points.'
-            : `That is ${score} reward ${score === 1 ? 'point' : 'points'} from the quiz.`}
+  const answered = value !== undefined;
+  return (
+    <div className="gq">
+      <p className="gq-prompt">{q.prompt}</p>
+      <div className="gq-opts">
+        {q.options.map((opt, oi) => {
+          let cls = 'gq-opt';
+          if (finished) {
+            if (oi === q.answer) cls += ' correct';
+            else if (oi === value) cls += ' wrong';
+          } else if (oi === value) cls += ' sel';
+          return (
+            <button
+              key={oi}
+              type="button"
+              className={cls}
+              disabled={answered || finished}
+              onClick={() => onPick(index, oi)}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+      {finished && (
+        <p className={`gq-key ${value === q.answer ? 'ok' : 'no'}`}>
+          {value === q.answer ? `Correct · +${q.points}` : `Answer: ${q.options[q.answer]}`}
         </p>
+      )}
+    </div>
+  );
+}
+
+// ---- one typed question ----
+function TypedQ({
+  q,
+  index,
+  value,
+  finished,
+  onPick,
+}: {
+  q: TypedQuestion;
+  index: number;
+  value: Answer | undefined;
+  finished: boolean;
+  onPick: (index: number, value: Answer) => void;
+}) {
+  const [text, setText] = useState('');
+  const answered = value !== undefined;
+
+  if (answered || finished) {
+    const correct = isCorrect(q, value);
+    return (
+      <div className="gq">
+        <p className="gq-prompt">{q.prompt}</p>
+        <p className="gq-typed">Your answer: <strong>{value !== undefined ? String(value) : '(no answer)'}</strong></p>
+        {finished && (
+          <p className={`gq-key ${correct ? 'ok' : 'no'}`}>
+            {correct ? `Correct · +${q.points}` : `Answer: ${q.correct}`}
+          </p>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="ls-quiz">
-      {questions.map((q, qi) => (
-        <div className="ls-q" key={qi}>
-          <p className="ls-q-text"><span className="ls-q-num">{qi + 1}</span>{q.q}</p>
-          <div className="ls-opts">
-            {q.options.map((opt, oi) => (
-              <label key={oi} className={`ls-opt ${picks[qi] === oi ? 'sel' : ''}`}>
-                <input
-                  type="radio"
-                  name={`q${qi}`}
-                  checked={picks[qi] === oi}
-                  disabled={timeUp}
-                  onChange={() => setPicks((prev) => prev.map((p, i) => (i === qi ? oi : p)))}
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        </div>
-      ))}
-      <button type="button" className="btn btn-primary ls-submit" onClick={submit} disabled={!allAnswered}>
-        {allAnswered ? 'Submit answers' : `Answer all ${QUIZ_LENGTH} questions`}
-      </button>
-      <p className="ls-note">You have one attempt, and submitting finishes the lesson. Check your answers first.</p>
+    <div className="gq">
+      <p className="gq-prompt">{q.prompt}</p>
+      {q.hint && <p className="gq-hint">{q.hint}</p>}
+      <div className="gq-typed-row">
+        <input
+          className="mlz-input"
+          value={text}
+          placeholder={q.placeholder}
+          onChange={(e) => setText(e.target.value)}
+          spellCheck={false}
+          autoCapitalize="none"
+        />
+        <button
+          type="button"
+          className="btn btn-primary gq-lock"
+          disabled={text.trim().length === 0}
+          onClick={() => onPick(index, text.trim())}
+        >
+          Lock
+        </button>
+      </div>
     </div>
   );
 }
 
 export default function LessonShell({ content }: { content: LessonContent }) {
-  const { lessonId, video, discussion, activity, reflectionPrompt, quiz } = content;
+  const { lessonId, video, discussion, explore, groups, reflectionPrompt } = content;
   const [p, setP] = useState<LessonProgress>(EMPTY_PROGRESS);
   const [ready, setReady] = useState(false);
   const [warn, setWarn] = useState(false);
   const [startAt, setStartAt] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const syncRef = useRef(false);
 
   const START_KEY = `vmath.start.${lessonId}`;
   const SYNC_KEY = `vmath.synced.${lessonId}`;
 
-  // Load saved progress and the timer start (localStorage is client-only).
+  // Flatten graded questions into a single indexed list.
+  const flat: GradedQuestion[] = [];
+  const quizIdx: number[] = [];
+  for (const g of groups) for (const q of g.questions) {
+    if (g.quiz) quizIdx.push(flat.length);
+    flat.push(q);
+  }
+  const total = flat.length;
+  const maxPoints = flat.reduce((s, q) => s + q.points, 0) + REFLECTION_POINTS;
+
   useEffect(() => {
     setP(loadProgress(lessonId));
     let s: number | null = null;
@@ -159,13 +213,11 @@ export default function LessonShell({ content }: { content: LessonContent }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
-  // Tick the clock every second.
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
 
-  // Integrity: count when the student leaves the page and warn them on return.
   useEffect(() => {
     function onVisibility() {
       if (document.hidden) {
@@ -183,41 +235,70 @@ export default function LessonShell({ content }: { content: LessonContent }) {
 
   const remaining = startAt ? startAt + LIMIT_MS - now : LIMIT_MS;
   const timeUp = remaining <= 0;
-  const locked = p.quizDone || timeUp; // no more earning once the quiz is in or time is up
+  const answeredCount = flat.filter((_, i) => p.answers[i] !== undefined).length;
+  const allAnswered = answeredCount === total;
+  const finished = p.finished;
 
-  function update(patch: Partial<LessonProgress>) {
-    if (locked) return;
+  function onPick(index: number, val: Answer) {
+    if (finished) return;
     setP((prev) => {
-      const next = { ...prev, ...patch };
+      if (prev.answers[index] !== undefined) return prev; // already locked
+      const next = { ...prev, answers: { ...prev.answers, [index]: val } };
       saveProgress(lessonId, next);
       return next;
     });
   }
 
-  const points = computePoints(p);
-  const pct = Math.round((points / MAX_POINTS) * 100);
-  const complete = isLessonComplete(p);
+  function doFinish() {
+    setP((prev) => {
+      if (prev.finished) return prev;
+      let pts = 0;
+      flat.forEach((q, i) => {
+        if (isCorrect(q, prev.answers[i])) pts += q.points;
+      });
+      if (prev.reflected) pts += REFLECTION_POINTS;
+      const qc = quizIdx.filter((i) => isCorrect(flat[i], prev.answers[i])).length;
+      const next = { ...prev, finished: true, finalPoints: pts, finalQuizScore: qc };
+      saveProgress(lessonId, next);
+      return next;
+    });
+  }
 
-  // Record the final result on the server, once, after the quiz is submitted
-  // (which also happens automatically when time runs out). Retries on a later
-  // visit if the student was offline.
+  // Time's up: finish automatically with whatever is answered.
   useEffect(() => {
-    if (!ready || !p.quizDone) return;
-    let alreadySynced = false;
+    if (timeUp && ready && !finished) doFinish();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeUp, ready, finished]);
+
+  // Score (only meaningful once finished).
+  let points = 0;
+  flat.forEach((q, i) => {
+    if (isCorrect(q, p.answers[i])) points += q.points;
+  });
+  if (p.reflected) points += REFLECTION_POINTS;
+  const quizCorrect = quizIdx.filter((i) => isCorrect(flat[i], p.answers[i])).length;
+
+  // Record on the server, once, after finishing. Retries on a later online visit.
+  useEffect(() => {
+    if (!ready || !finished) return;
+    if (syncRef.current) return;
+    let already = false;
     try {
-      alreadySynced = window.localStorage.getItem(SYNC_KEY) === '1';
+      already = window.localStorage.getItem(SYNC_KEY) === '1';
     } catch {
       /* ignore */
     }
-    if (alreadySynced) {
+    if (already) {
       setSyncStatus('saved');
+      syncRef.current = true;
       return;
     }
+    syncRef.current = true;
     setSyncStatus('saving');
     recordResult({
       lessonId,
-      points: computePoints(p),
-      quizScore: p.quizScore,
+      points: p.finalPoints ?? points,
+      quizScore: p.finalQuizScore ?? quizCorrect,
       tabSwitches: p.tabSwitches,
     })
       .then((r) => {
@@ -230,20 +311,21 @@ export default function LessonShell({ content }: { content: LessonContent }) {
           setSyncStatus('saved');
         } else {
           setSyncStatus('error');
+          syncRef.current = false;
         }
       })
-      .catch(() => setSyncStatus('error'));
+      .catch(() => {
+        setSyncStatus('error');
+        syncRef.current = false;
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, p.quizDone]);
+  }, [ready, finished]);
 
-  const badges: string[] = [];
-  if (p.quizDone && p.quizScore === QUIZ_LENGTH) badges.push('Perfect Score ⭐');
-  if (complete) badges.push('Lesson Complete ✅');
+  let gi = 0; // running global index while rendering groups
 
   return (
     <div className="ls" aria-busy={!ready}>
-      {/* Integrity warning shown after the student leaves the page */}
-      {warn && (
+      {warn && !finished && (
         <div className="ls-warn" role="alert">
           <strong>Please stay on this lesson.</strong> You left the page{' '}
           {p.tabSwitches === 1 ? 'once' : `${p.tabSwitches} times`}. During a graded lesson you should
@@ -252,26 +334,35 @@ export default function LessonShell({ content }: { content: LessonContent }) {
         </div>
       )}
 
-      {/* Points + timer HUD */}
+      {/* HUD: progress + timer (points are hidden until Finish) */}
       <div className="ls-hud">
         <div className="ls-hud-top">
-          <span className="ls-hud-label">Reward points</span>
-          <span className="ls-hud-points">{points} <span className="ls-hud-max">/ {MAX_POINTS}</span></span>
+          {finished ? (
+            <>
+              <span className="ls-hud-label">Reward points</span>
+              <span className="ls-hud-points">{points} <span className="ls-hud-max">/ {maxPoints}</span></span>
+            </>
+          ) : (
+            <>
+              <span className="ls-hud-label">Answered</span>
+              <span className="ls-hud-points">{answeredCount} <span className="ls-hud-max">/ {total}</span></span>
+            </>
+          )}
         </div>
-        <div className="ls-hud-track"><div className="ls-hud-fill" style={{ width: `${pct}%` }} /></div>
-        <div className={`ls-timer ${remaining <= 5 * 60 * 1000 && !timeUp ? 'low' : ''}`}>
-          {timeUp ? '⏱ Time is up' : `⏱ ${fmtTime(remaining)} left`}
+        <div className="ls-hud-track">
+          <div className="ls-hud-fill" style={{ width: `${finished ? Math.round((points / maxPoints) * 100) : Math.round((answeredCount / Math.max(1, total)) * 100)}%` }} />
         </div>
+        {!finished && (
+          <div className={`ls-timer ${remaining <= 5 * 60 * 1000 && !timeUp ? 'low' : ''}`}>
+            {timeUp ? '⏱ Time is up' : `⏱ ${fmtTime(remaining)} left`}
+          </div>
+        )}
       </div>
 
-      {timeUp && !p.quizDone && (
-        <div className="ls-timeup" role="status">Time is up. Your lesson has been submitted with what you finished.</div>
-      )}
-
-      {/* 1. Watch */}
+      {/* Watch (no points) */}
       <section className="ls-sec">
-        <SectionTag n={1} label="Watch" done={p.watched} />
-        <p className="ls-sub">Watch the video first. It needs internet, so watch it once while you are connected.</p>
+        <div className="ls-tag"><span className="ls-step muted">▶</span><h2 className="ls-h2">Watch</h2></div>
+        <p className="ls-sub">Watch the video. It needs internet, so watch it while you are connected.</p>
         <div className="ls-video">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}`}
@@ -282,113 +373,98 @@ export default function LessonShell({ content }: { content: LessonContent }) {
           />
         </div>
         <p className="ls-video-meta">{video.title} · {video.channel}</p>
-        {p.watched ? (
-          <p className="ls-earned">Watched · +1 point</p>
-        ) : (
-          <button type="button" className="btn btn-ghost" disabled={locked} onClick={() => update({ watched: true })}>
-            I watched the video
-          </button>
-        )}
       </section>
 
-      {/* 2. Learn */}
+      {/* Learn (no points) */}
       <section className="ls-sec">
-        <SectionTag n={2} label="Learn" done={p.read} />
+        <div className="ls-tag"><span className="ls-step muted">📖</span><h2 className="ls-h2">Learn</h2></div>
         <div className="ls-read">{discussion}</div>
-        {p.read ? (
-          <p className="ls-earned">Read · +1 point</p>
-        ) : (
-          <button type="button" className="btn btn-ghost" disabled={locked} onClick={() => update({ read: true })}>
-            I read this
-          </button>
-        )}
       </section>
 
-      {/* 3. Activity */}
-      <section className="ls-sec">
-        <SectionTag n={3} label="Activity" done={p.activityDone} />
-        <p className="ls-sub">Try the tools below. Play with your own examples until it makes sense.</p>
-        <div className="ls-activity">{activity}</div>
-        {p.activityDone ? (
-          <p className="ls-earned">Activity done · +2 points</p>
-        ) : (
-          <button type="button" className="btn btn-ghost" disabled={locked} onClick={() => update({ activityDone: true })}>
-            I did the activity
-          </button>
-        )}
-      </section>
+      {/* Explore (ungraded tools) */}
+      {explore && (
+        <section className="ls-sec">
+          <div className="ls-tag"><span className="ls-step muted">✎</span><h2 className="ls-h2">Practice tools</h2></div>
+          <p className="ls-sub">Use these to practice. They are not graded — the graded questions come next.</p>
+          <div className="ls-activity">{explore}</div>
+        </section>
+      )}
 
-      {/* 4. Reflect */}
+      {/* Graded groups */}
+      {groups.map((g, giGroup) => (
+        <section className="ls-sec" key={ giGroup }>
+          <div className="ls-tag"><span className="ls-step">{giGroup + 1}</span><h2 className="ls-h2">{g.title}</h2></div>
+          {g.instructions && <p className="ls-sub">{g.instructions}</p>}
+          {g.questions.map((q) => {
+            const index = gi++;
+            return q.kind === 'choice' ? (
+              <ChoiceQ key={index} q={q} index={index} value={p.answers[index]} finished={finished} onPick={onPick} />
+            ) : (
+              <TypedQ key={index} q={q} index={index} value={p.answers[index]} finished={finished} onPick={onPick} />
+            );
+          })}
+        </section>
+      ))}
+
+      {/* Reflect (completion) */}
       <section className="ls-sec">
-        <SectionTag n={4} label="Reflect" done={p.reflected} />
+        <div className="ls-tag"><span className="ls-step">{groups.length + 1}</span><h2 className="ls-h2">Reflect</h2></div>
         <p className="ls-sub">{reflectionPrompt}</p>
         <textarea
           className="ls-reflect"
           rows={4}
           placeholder="Write your answer here…"
           value={p.reflection}
-          readOnly={p.reflected || locked}
+          readOnly={p.reflected || finished}
           onChange={(e) => setP((prev) => ({ ...prev, reflection: e.target.value }))}
         />
         {p.reflected ? (
-          <p className="ls-earned">Reflection saved · +2 points · locked</p>
+          <p className="ls-earned">Reflection saved · locked</p>
         ) : (
           <button
             type="button"
             className="btn btn-ghost"
-            disabled={locked || p.reflection.trim().length < 3}
-            onClick={() => update({ reflected: true })}
+            disabled={finished || p.reflection.trim().length < 3}
+            onClick={() => setP((prev) => { const next = { ...prev, reflected: true }; saveProgress(lessonId, next); return next; })}
           >
             Save my reflection
           </button>
         )}
       </section>
 
-      {/* 5. Quiz */}
-      <section className="ls-sec">
-        <SectionTag n={5} label="Multiple choice" done={p.quizDone} />
-        <p className="ls-sub">Ten questions, one point each. A perfect score earns a 2-point bonus. Submitting finishes the lesson.</p>
-        <Quiz
-          questions={quiz}
-          done={p.quizDone}
-          score={p.quizScore}
-          timeUp={timeUp}
-          onSubmit={(s) => {
-            setP((prev) => {
-              const next = { ...prev, quizDone: true, quizScore: s };
-              saveProgress(lessonId, next);
-              return next;
-            });
-          }}
-        />
-      </section>
-
-      {/* 6. Rewards */}
+      {/* Finish */}
       <section className="ls-sec ls-rewards">
-        <SectionTag n={6} label="Your rewards" done={complete} />
-        <div className="ls-reward-total">
-          <span className="ls-reward-num">{points}</span>
-          <span className="ls-reward-of">out of {MAX_POINTS} points</span>
-        </div>
-        {badges.length > 0 ? (
-          <div className="ls-badges">
-            {badges.map((b) => (
-              <span key={b} className="ls-badge">{b}</span>
-            ))}
-          </div>
+        <div className="ls-tag"><span className="ls-step">🏆</span><h2 className="ls-h2">Finish</h2></div>
+        {finished ? (
+          <>
+            <div className="ls-reward-total">
+              <span className="ls-reward-num">{points}</span>
+              <span className="ls-reward-of">out of {maxPoints} reward points</span>
+            </div>
+            <p className="ls-sub">The answer key is now shown above, in green (correct) and red. Scroll up to review.</p>
+            <p className="ls-note">
+              {syncStatus === 'saved'
+                ? '✓ Your points are recorded for your teacher.'
+                : syncStatus === 'saving'
+                  ? 'Saving your points…'
+                  : 'Saved on this phone. Your points will be sent to your teacher when you are online.'}
+            </p>
+          </>
         ) : (
-          <p className="ls-sub">Finish every part to earn badges.</p>
-        )}
-        {p.quizDone ? (
-          <p className="ls-note">
-            {syncStatus === 'saved'
-              ? '✓ Your points are recorded for your teacher.'
-              : syncStatus === 'saving'
-                ? 'Saving your points…'
-                : 'Saved on this phone. Your points will be sent to your teacher when you are online.'}
-          </p>
-        ) : (
-          <p className="ls-note">Finish the quiz to record your points for your teacher.</p>
+          <>
+            <p className="ls-sub">
+              Pressing Finish reveals your points and the answer key, and cannot be undone. Make sure
+              you have answered everything (and written your reflection for {REFLECTION_POINTS} points).
+            </p>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={!allAnswered}
+              onClick={doFinish}
+            >
+              {allAnswered ? 'Finish lesson' : `Answer all ${total} questions first (${answeredCount}/${total})`}
+            </button>
+          </>
         )}
       </section>
     </div>
