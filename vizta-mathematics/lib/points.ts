@@ -36,6 +36,7 @@ export type LessonProgress = {
   reflected: boolean;
   quizDone: boolean;
   quizScore: number; // 0..QUIZ_LENGTH
+  tabSwitches: number; // times the student left the page (integrity signal)
 };
 
 export const EMPTY_PROGRESS: LessonProgress = {
@@ -46,6 +47,7 @@ export const EMPTY_PROGRESS: LessonProgress = {
   reflected: false,
   quizDone: false,
   quizScore: 0,
+  tabSwitches: 0,
 };
 
 // Total reward points from a lesson's current state.

@@ -109,11 +109,31 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const { lessonId, video, discussion, activity, reflectionPrompt, quiz } = content;
   const [p, setP] = useState<LessonProgress>(EMPTY_PROGRESS);
   const [ready, setReady] = useState(false);
+  const [warn, setWarn] = useState(false);
 
   // Load saved progress after mount (localStorage is client-only).
   useEffect(() => {
     setP(loadProgress(lessonId));
     setReady(true);
+  }, [lessonId]);
+
+  // Integrity: if the student leaves the page (switches tabs or apps, e.g. to
+  // search for answers), count it and warn them when they come back. We cannot
+  // block app switching on a phone, but this discourages it and records how
+  // often it happened for the teacher.
+  useEffect(() => {
+    function onVisibility() {
+      if (document.hidden) {
+        setP((prev) => {
+          const next = { ...prev, tabSwitches: (prev.tabSwitches ?? 0) + 1 };
+          saveProgress(lessonId, next);
+          return next;
+        });
+        setWarn(true);
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
   }, [lessonId]);
 
   function update(patch: Partial<LessonProgress>) {
@@ -134,6 +154,16 @@ export default function LessonShell({ content }: { content: LessonContent }) {
 
   return (
     <div className="ls" aria-busy={!ready}>
+      {/* Integrity warning shown after the student leaves the page */}
+      {warn && (
+        <div className="ls-warn" role="alert">
+          <strong>Please stay on this lesson.</strong> You left the page{' '}
+          {p.tabSwitches === 1 ? 'once' : `${p.tabSwitches} times`}. During a graded lesson you should
+          not switch to other apps or search elsewhere. Your teacher can see how many times this happened.
+          <button type="button" className="ls-warn-x" onClick={() => setWarn(false)}>I understand</button>
+        </div>
+      )}
+
       {/* Points HUD */}
       <div className="ls-hud">
         <div className="ls-hud-top">
@@ -202,10 +232,11 @@ export default function LessonShell({ content }: { content: LessonContent }) {
           rows={4}
           placeholder="Write your answer here…"
           value={p.reflection}
+          readOnly={p.reflected}
           onChange={(e) => setP((prev) => ({ ...prev, reflection: e.target.value }))}
         />
         {p.reflected ? (
-          <p className="ls-earned">Reflection saved · +2 points</p>
+          <p className="ls-earned">Reflection saved · +2 points · locked</p>
         ) : (
           <button
             type="button"
