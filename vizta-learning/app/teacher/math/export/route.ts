@@ -26,7 +26,7 @@ export async function GET() {
   let csv: string;
   try {
     const rows = await getMathResults();
-    const header = ['Name', 'Class', 'Lesson', 'Reward points', 'Quiz score (/10)', 'Times left page', 'Submitted'];
+    const header = ['Name', 'Class', 'Lesson', 'Reward points', 'Times left page', 'Submitted'];
     const lines = [header.map(cell).join(',')];
     for (const r of rows) {
       lines.push(
@@ -35,7 +35,6 @@ export async function GET() {
           cell(CLASS_LABELS[r.class] ?? r.class),
           cell(r.lesson_id),
           cell(r.points),
-          cell(r.quiz_score),
           cell(r.tab_switches),
           cell(new Date(r.submitted_at).toISOString().slice(0, 16).replace('T', ' ')),
         ].join(',')

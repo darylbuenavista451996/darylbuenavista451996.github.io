@@ -83,7 +83,7 @@ export default async function TeacherMathPage() {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Name</th><th>Class</th><th>Lesson</th><th>Points</th><th>Quiz</th><th>Left page</th><th>Submitted</th>
+                    <th>Name</th><th>Class</th><th>Lesson</th><th>Points</th><th>Left page</th><th>Submitted</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -93,7 +93,6 @@ export default async function TeacherMathPage() {
                       <td>{CLASS_LABELS[r.class] ?? r.class}</td>
                       <td>{r.lesson_id}</td>
                       <td><strong>{r.points}</strong></td>
-                      <td>{r.quiz_score}/10</td>
                       <td>{r.tab_switches > 0 ? <span className="math-flag">{r.tab_switches}</span> : '0'}</td>
                       <td>{fmtDate(r.submitted_at)}</td>
                     </tr>
