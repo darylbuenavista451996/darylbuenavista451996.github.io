@@ -9,16 +9,18 @@
 import { useEffect, useState } from 'react';
 import { loadProgress } from '@/lib/lessonStore';
 import { recordResult } from '../actions';
+import { useStudentKey } from './StudentKey';
 
 export default function PendingSync({ lessonId }: { lessonId: string }) {
   const [msg, setMsg] = useState('');
+  const sid = useStudentKey();
 
   useEffect(() => {
-    const p = loadProgress(lessonId);
+    const p = loadProgress(sid, lessonId);
     if (!p.finished || p.finalPoints === undefined) return; // nothing finished to send
     let synced = false;
     try {
-      synced = window.localStorage.getItem(`vmath.synced.${lessonId}`) === '1';
+      synced = window.localStorage.getItem(`vmath.${sid}.synced.${lessonId}`) === '1';
     } catch {
       /* ignore */
     }
@@ -34,7 +36,7 @@ export default function PendingSync({ lessonId }: { lessonId: string }) {
       .then((r) => {
         if (r.ok) {
           try {
-            window.localStorage.setItem(`vmath.synced.${lessonId}`, '1');
+            window.localStorage.setItem(`vmath.${sid}.synced.${lessonId}`, '1');
           } catch {
             /* ignore */
           }
@@ -44,7 +46,7 @@ export default function PendingSync({ lessonId }: { lessonId: string }) {
         }
       })
       .catch(() => setMsg(''));
-  }, [lessonId]);
+  }, [lessonId, sid]);
 
   if (!msg) return null;
   return <p className="ls-note" style={{ textAlign: 'center', marginTop: 14 }}>{msg}</p>;

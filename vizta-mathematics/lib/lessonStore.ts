@@ -7,7 +7,9 @@
 
 import { EMPTY_PROGRESS, type LessonProgress } from './points';
 
-const LESSON_KEY = (id: string) => `vmath.lesson.${id}`;
+// Keyed per student AND per lesson, so progress never leaks between students on
+// a shared device.
+const LESSON_KEY = (studentKey: string, id: string) => `vmath.${studentKey}.lesson.${id}`;
 
 function safeGet(key: string): string | null {
   try {
@@ -24,8 +26,8 @@ function safeSet(key: string, value: string): void {
   }
 }
 
-export function loadProgress(id: string): LessonProgress {
-  const raw = safeGet(LESSON_KEY(id));
+export function loadProgress(studentKey: string, id: string): LessonProgress {
+  const raw = safeGet(LESSON_KEY(studentKey, id));
   if (!raw) return { ...EMPTY_PROGRESS };
   try {
     return { ...EMPTY_PROGRESS, ...(JSON.parse(raw) as Partial<LessonProgress>) };
@@ -34,6 +36,6 @@ export function loadProgress(id: string): LessonProgress {
   }
 }
 
-export function saveProgress(id: string, p: LessonProgress): void {
-  safeSet(LESSON_KEY(id), JSON.stringify(p));
+export function saveProgress(studentKey: string, id: string, p: LessonProgress): void {
+  safeSet(LESSON_KEY(studentKey, id), JSON.stringify(p));
 }

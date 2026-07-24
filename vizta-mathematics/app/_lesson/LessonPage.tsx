@@ -10,6 +10,7 @@ import Brand from '../Brand';
 import { getSession } from '@/lib/session';
 import { getLessonUnlocked, getExistingResult } from '@/lib/mathData';
 import PendingSync from './PendingSync';
+import { StudentKeyProvider } from './StudentKey';
 
 export default async function LessonPage({
   lessonId,
@@ -31,6 +32,7 @@ export default async function LessonPage({
   ]);
 
   return (
+    <StudentKeyProvider value={session.sid}>
     <main className="page">
       <div className="card mlz-card">
         <Brand subtitle="Mathematics · Grade 9" />
@@ -58,5 +60,6 @@ export default async function LessonPage({
         )}
       </div>
     </main>
+    </StudentKeyProvider>
   );
 }

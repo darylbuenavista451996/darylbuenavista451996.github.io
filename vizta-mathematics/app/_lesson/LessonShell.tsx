@@ -16,6 +16,7 @@ import {
 } from '@/lib/points';
 import { loadProgress, saveProgress } from '@/lib/lessonStore';
 import { recordResult } from '../actions';
+import { useStudentKey } from './StudentKey';
 
 const LIMIT_MINUTES = 45;
 const LIMIT_MS = LIMIT_MINUTES * 60 * 1000;
@@ -178,8 +179,9 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const syncRef = useRef(false);
 
-  const START_KEY = `vmath.start.${lessonId}`;
-  const SYNC_KEY = `vmath.synced.${lessonId}`;
+  const sid = useStudentKey();
+  const START_KEY = `vmath.${sid}.start.${lessonId}`;
+  const SYNC_KEY = `vmath.${sid}.synced.${lessonId}`;
 
   // Flatten graded questions into a single indexed list.
   const flat: GradedQuestion[] = [];
@@ -192,7 +194,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
   const maxPoints = flat.reduce((s, q) => s + q.points, 0) + REFLECTION_POINTS;
 
   useEffect(() => {
-    setP(loadProgress(lessonId));
+    setP(loadProgress(sid, lessonId));
     let s: number | null = null;
     try {
       const r = window.localStorage.getItem(START_KEY);
@@ -223,7 +225,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
       if (document.hidden) {
         setP((prev) => {
           const next = { ...prev, tabSwitches: (prev.tabSwitches ?? 0) + 1 };
-          saveProgress(lessonId, next);
+          saveProgress(sid, lessonId, next);
           return next;
         });
         setWarn(true);
@@ -247,7 +249,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
     setP((prev) => {
       if (prev.answers[index] !== undefined) return prev; // already locked
       const next = { ...prev, answers: { ...prev.answers, [index]: val } };
-      saveProgress(lessonId, next);
+      saveProgress(sid, lessonId, next);
       return next;
     });
   }
@@ -262,7 +264,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
       if (prev.reflected) pts += REFLECTION_POINTS;
       const qc = quizIdx.filter((i) => isCorrect(flat[i], prev.answers[i])).length;
       const next = { ...prev, finished: true, finalPoints: pts, finalQuizScore: qc };
-      saveProgress(lessonId, next);
+      saveProgress(sid, lessonId, next);
       return next;
     });
   }
@@ -428,7 +430,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
             type="button"
             className="btn btn-ghost"
             disabled={finished || p.reflection.trim().length < 3}
-            onClick={() => setP((prev) => { const next = { ...prev, reflected: true }; saveProgress(lessonId, next); return next; })}
+            onClick={() => setP((prev) => { const next = { ...prev, reflected: true }; saveProgress(sid, lessonId, next); return next; })}
           >
             Save my reflection
           </button>
