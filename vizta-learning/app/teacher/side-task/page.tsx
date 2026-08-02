@@ -1,4 +1,4 @@
-// Teacher Side Task panel: every student's "Build Your First Website"
+// Teacher Side Task panel: every student's "Build a Company Homepage"
 // submission. Click a link to open their live site in a new tab and grade the
 // working parts. Grades and links export to CSV.
 import Link from 'next/link';
@@ -6,7 +6,7 @@ import TeacherNav from '../TeacherNav';
 import GradeForm from './GradeForm';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getSideTaskSubmissions } from '@/lib/teacherData';
-import { WEBSITE_TASK_ID, WEBSITE_RUBRIC, WEBSITE_RUBRIC_TOTAL } from '@/lib/sideTask';
+import { HOMEPAGE_TASK_ID, HOMEPAGE_RUBRIC, HOMEPAGE_RUBRIC_TOTAL } from '@/lib/sideTask';
 import { BASE_PATH } from '@/lib/basePath';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +27,7 @@ function fmtDate(iso: string): string {
 
 export default async function TeacherSideTaskPage() {
   await requireTeacher();
-  const rows = await getSideTaskSubmissions(WEBSITE_TASK_ID);
+  const rows = await getSideTaskSubmissions(HOMEPAGE_TASK_ID);
 
   return (
     <main className="page page-wide">
@@ -35,14 +35,14 @@ export default async function TeacherSideTaskPage() {
         <TeacherNav active="side-task" />
         <div className="module-head">
           <span className="eyebrow">Teacher panel</span>
-          <h1>Side Task: Build Your First Website</h1>
+          <h1>Side Task: Build a Company Homepage</h1>
         </div>
 
         <section className="lesson-section">
           <p className="hint">
             This out-of-curriculum task is published to Grade 9 and Grade 10. Open each student&apos;s
             link and grade the working parts. Deduct points for parts that are missing or broken.
-            Total: {WEBSITE_RUBRIC_TOTAL} points. Leave a grade blank and save to unlock a
+            Total: {HOMEPAGE_RUBRIC_TOTAL} points. Leave a grade blank and save to unlock a
             student&apos;s link so they can resubmit.
           </p>
           <details className="st-rubric-details">
@@ -53,7 +53,7 @@ export default async function TeacherSideTaskPage() {
                   <tr><th>Working part</th><th>What it means</th><th>Points</th></tr>
                 </thead>
                 <tbody>
-                  {WEBSITE_RUBRIC.map((p) => (
+                  {HOMEPAGE_RUBRIC.map((p) => (
                     <tr key={p.label}>
                       <td><strong>{p.label}</strong></td>
                       <td>{p.how}</td>
@@ -75,7 +75,7 @@ export default async function TeacherSideTaskPage() {
           </div>
           {rows.length === 0 ? (
             <p className="lede">
-              No websites submitted yet. If you just added this, run the latest database migration
+              No homepages submitted yet. If you just added this, run the latest database migration
               (0011_side_task) in Supabase, then refresh. Submissions appear here as students paste
               their published links.
             </p>
@@ -84,7 +84,7 @@ export default async function TeacherSideTaskPage() {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Name</th><th>Class</th><th>Website</th><th>Submitted</th><th>Grade</th>
+                    <th>Name</th><th>Class</th><th>Homepage</th><th>Submitted</th><th>Grade</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -103,7 +103,7 @@ export default async function TeacherSideTaskPage() {
                           studentId={r.student_id}
                           grade={r.grade}
                           feedback={r.feedback}
-                          total={WEBSITE_RUBRIC_TOTAL}
+                          total={HOMEPAGE_RUBRIC_TOTAL}
                         />
                       </td>
                     </tr>

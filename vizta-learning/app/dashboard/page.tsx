@@ -8,7 +8,7 @@ import Avatar from '../Avatar';
 import { getSession, studentHome } from '@/lib/session';
 import { getDashboard, type LessonView } from '@/lib/data';
 import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
-import { getSideTaskSubmission, WEBSITE_TASK_ID, WEBSITE_RUBRIC_TOTAL } from '@/lib/sideTask';
+import { getSideTaskSubmission, HOMEPAGE_TASK_ID, HOMEPAGE_RUBRIC_TOTAL } from '@/lib/sideTask';
 import { BASE_PATH } from '@/lib/basePath';
 
 export const dynamic = 'force-dynamic';
@@ -83,7 +83,7 @@ export default async function DashboardPage({
   } = dash;
   const showTerms = modules.length > 1;
   const avatarSrc = await signedAvatarUrl(await getAvatarPath(session.sid));
-  const sideTask = await getSideTaskSubmission(session.sid, WEBSITE_TASK_ID);
+  const sideTask = await getSideTaskSubmission(session.sid, HOMEPAGE_TASK_ID);
 
   return (
     <main className="page page-wide">
@@ -221,18 +221,18 @@ export default async function DashboardPage({
           })}
         </ol>
 
-        <Link href="/side-task/website" className="side-task-card">
+        <Link href="/side-task/homepage" className="side-task-card">
           <span className="st-card-icon" aria-hidden="true">🌐</span>
           <span className="st-card-main">
-            <span className="st-card-kicker">Side Task · Extra skill</span>
-            <span className="st-card-title">Build Your First Website</span>
+            <span className="st-card-kicker">Side Task</span>
+            <span className="st-card-title">Build a Company Homepage</span>
             <span className="st-card-sub">
-              Follow the step by step guide, publish your own live website, and submit the link.
+              Build a real, working homepage in code, publish it live, and submit the link.
             </span>
           </span>
           <span className="st-card-right">
             {sideTask?.grade != null ? (
-              <span className="badge badge-graded">Graded · {sideTask.grade}/{WEBSITE_RUBRIC_TOTAL}</span>
+              <span className="badge badge-graded">Graded · {sideTask.grade}/{HOMEPAGE_RUBRIC_TOTAL}</span>
             ) : sideTask ? (
               <span className="badge badge-submitted">Link submitted</span>
             ) : (

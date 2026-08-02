@@ -1,9 +1,9 @@
-// Side Task website submissions download for the signed-in teacher: one row per
+// Side Task homepage submissions download for the signed-in teacher: one row per
 // student, with their published link, grade, and note. Authenticated by session.
 import { NextResponse } from 'next/server';
 import { getTeacher } from '@/lib/teacherAuth';
 import { getSideTaskSubmissions } from '@/lib/teacherData';
-import { WEBSITE_TASK_ID } from '@/lib/sideTask';
+import { HOMEPAGE_TASK_ID } from '@/lib/sideTask';
 import { BASE_PATH } from '@/lib/basePath';
 
 export const dynamic = 'force-dynamic';
@@ -25,8 +25,8 @@ export async function GET() {
 
   let csv: string;
   try {
-    const rows = await getSideTaskSubmissions(WEBSITE_TASK_ID);
-    const header = ['Name', 'Class', 'Website link', 'Grade', 'Note', 'Submitted'];
+    const rows = await getSideTaskSubmissions(HOMEPAGE_TASK_ID);
+    const header = ['Name', 'Class', 'Homepage link', 'Grade', 'Note', 'Submitted'];
     const lines = [header.map(cell).join(',')];
     for (const r of rows) {
       lines.push(
@@ -50,7 +50,7 @@ export async function GET() {
     status: 200,
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': `attachment; filename="vizta-website-task-${date}.csv"`,
+      'Content-Disposition': `attachment; filename="vizta-homepage-task-${date}.csv"`,
       'Cache-Control': 'no-store',
     },
   });

@@ -823,3 +823,40 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .st-grade-msg { font-size: 12px; }
 .st-grade-msg.ok { color: var(--mint-dark); }
 .st-grade-msg.error { color: #c0392b; }
+
+/* ---- Side Task: homepage guide (code blocks, parts) ----------------------- */
+.st-part {
+  font-size: 20px; color: var(--navy); margin: 34px 0 4px;
+  padding-top: 18px; border-top: 2px solid var(--border);
+}
+.st-part-lead { margin: 0 0 14px; }
+.st-step-lead { margin: 0 0 12px; line-height: 1.55; }
+.st-step-lead code, .st-part-lead code, .st-step-body code {
+  background: var(--navy-tint); padding: 1px 6px; border-radius: 5px;
+  font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; color: var(--navy);
+}
+.st-download {
+  width: auto !important; margin: 4px 0 8px; background: var(--navy);
+}
+.st-download:hover { background: var(--navy-light); }
+
+.st-code {
+  border: 1px solid #2c3a55; border-radius: 10px; overflow: hidden;
+  margin: 6px 0 4px; background: #1e2536;
+}
+.st-code-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; background: #172033; border-bottom: 1px solid #2c3a55;
+}
+.st-code-file { color: #8aa0c6; font-size: 12px; font-family: 'Consolas', monospace; }
+.st-copy {
+  background: var(--mint); color: #fff; border: none; border-radius: 6px;
+  padding: 5px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.st-copy:hover { background: var(--mint-dark); }
+.st-code pre {
+  margin: 0; padding: 14px 16px; overflow-x: auto;
+  color: #d6deec; font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12.5px; line-height: 1.6;
+}
+.st-code code { white-space: pre; }

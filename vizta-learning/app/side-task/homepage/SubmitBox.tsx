@@ -1,14 +1,14 @@
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
-import { submitWebsite, type SideTaskState } from '../actions';
+import { submitHomepage, type SideTaskState } from '../actions';
 import { useDraft, draftKey } from '@/lib/useDraft';
 
 function SaveBtn({ hasLink }: { hasLink: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button className="btn btn-primary" type="submit" disabled={pending}>
-      {pending ? 'Saving…' : hasLink ? 'Update my link' : 'Submit my website'}
+      {pending ? 'Saving…' : hasLink ? 'Update my link' : 'Submit my homepage'}
     </button>
   );
 }
@@ -26,9 +26,9 @@ export default function SubmitBox({
   feedback: string | null;
   total: number;
 }) {
-  const [state, formAction] = useFormState<SideTaskState, FormData>(submitWebsite, {});
+  const [state, formAction] = useFormState<SideTaskState, FormData>(submitHomepage, {});
 
-  const key = draftKey(studentKey, 'side-task-website', 'url');
+  const key = draftKey(studentKey, 'side-task-homepage', 'url');
   const [url, setUrl] = useDraft(key, existingUrl ?? '');
 
   const saved = state.ok || (!!existingUrl && !state.error);
@@ -60,13 +60,13 @@ export default function SubmitBox({
         </div>
       ) : null}
       {state.error ? <div className="error" role="alert">{state.error}</div> : null}
-      <label htmlFor="site-url">Paste your published website link</label>
+      <label htmlFor="site-url">Paste your published homepage link</label>
       <input
         id="site-url"
         name="url"
         type="url"
         inputMode="url"
-        placeholder="https://sites.google.com/view/your-name"
+        placeholder="https://your-site-name.netlify.app"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         required

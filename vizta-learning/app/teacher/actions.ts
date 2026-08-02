@@ -19,7 +19,7 @@ import {
   setSideTaskGrade,
   type AttendanceStatus,
 } from '@/lib/teacherData';
-import { WEBSITE_TASK_ID, WEBSITE_RUBRIC_TOTAL } from '@/lib/sideTask';
+import { HOMEPAGE_TASK_ID, HOMEPAGE_RUBRIC_TOTAL } from '@/lib/sideTask';
 import type { ClassName } from '@/lib/classCodes';
 
 export type ActionState = { ok?: boolean; error?: string; message?: string };
@@ -58,7 +58,7 @@ export async function gradeSubmission(
   return { ok: true, message: 'Grade saved.' };
 }
 
-// Grade a student's "Build Your First Website" side task. An empty grade clears
+// Grade a student's "Build a Company Homepage" side task. An empty grade clears
 // it (unlocks the student's link so they can resubmit).
 export async function gradeSideTask(
   _prev: ActionState,
@@ -75,12 +75,12 @@ export async function gradeSideTask(
     grade = Number(gradeRaw);
     if (Number.isNaN(grade) || grade < 0)
       return { error: 'Enter a grade of 0 or more, or leave it blank to clear.' };
-    if (grade > WEBSITE_RUBRIC_TOTAL)
-      return { error: `Grade can't be more than ${WEBSITE_RUBRIC_TOTAL}.` };
+    if (grade > HOMEPAGE_RUBRIC_TOTAL)
+      return { error: `Grade can't be more than ${HOMEPAGE_RUBRIC_TOTAL}.` };
   }
 
   try {
-    await setSideTaskGrade(studentId, WEBSITE_TASK_ID, grade, feedback);
+    await setSideTaskGrade(studentId, HOMEPAGE_TASK_ID, grade, feedback);
   } catch {
     return { error: 'Could not save the grade. Please try again.' };
   }
