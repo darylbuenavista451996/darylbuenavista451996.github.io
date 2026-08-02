@@ -13,6 +13,7 @@ export default function TeacherNav({ active }: { active: string }) {
     { href: '/teacher/modules', label: 'Modules', key: 'modules' },
     { href: '/teacher/content', label: 'Content', key: 'content' },
     { href: '/teacher/math', label: 'Mathematics', key: 'math' },
+    { href: '/teacher/side-task', label: 'Side Task', key: 'side-task' },
   ];
   return (
     <div className="topbar teacher-topbar">

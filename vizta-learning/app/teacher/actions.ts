@@ -16,8 +16,10 @@ import {
   removeStudent,
   saveAttendance,
   setMathLessonUnlocked,
+  setSideTaskGrade,
   type AttendanceStatus,
 } from '@/lib/teacherData';
+import { WEBSITE_TASK_ID, WEBSITE_RUBRIC_TOTAL } from '@/lib/sideTask';
 import type { ClassName } from '@/lib/classCodes';
 
 export type ActionState = { ok?: boolean; error?: string; message?: string };
@@ -54,6 +56,37 @@ export async function gradeSubmission(
   revalidatePath('/teacher/grade');
   revalidatePath('/teacher/students');
   return { ok: true, message: 'Grade saved.' };
+}
+
+// Grade a student's "Build Your First Website" side task. An empty grade clears
+// it (unlocks the student's link so they can resubmit).
+export async function gradeSideTask(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const studentId = String(formData.get('student_id') ?? '');
+  const gradeRaw = String(formData.get('grade') ?? '').trim();
+  const feedback = String(formData.get('feedback') ?? '').trim() || null;
+  if (!studentId) return { error: 'Missing student reference.' };
+
+  let grade: number | null = null;
+  if (gradeRaw !== '') {
+    grade = Number(gradeRaw);
+    if (Number.isNaN(grade) || grade < 0)
+      return { error: 'Enter a grade of 0 or more, or leave it blank to clear.' };
+    if (grade > WEBSITE_RUBRIC_TOTAL)
+      return { error: `Grade can't be more than ${WEBSITE_RUBRIC_TOTAL}.` };
+  }
+
+  try {
+    await setSideTaskGrade(studentId, WEBSITE_TASK_ID, grade, feedback);
+  } catch {
+    return { error: 'Could not save the grade. Please try again.' };
+  }
+  revalidatePath('/teacher/side-task');
+  revalidatePath('/dashboard');
+  return { ok: true, message: grade == null ? 'Grade cleared.' : 'Grade saved.' };
 }
 
 export async function reopenSubmissionAction(

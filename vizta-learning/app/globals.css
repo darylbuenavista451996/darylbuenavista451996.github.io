@@ -756,3 +756,70 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .task-done.pending .btn[disabled] {
   background: #c4ccd8; color: #fff; border-color: transparent; opacity: 1; cursor: not-allowed;
 }
+
+/* ---- Side Task: dashboard card + guide ------------------------------------ */
+.side-task-card {
+  display: flex; align-items: center; gap: 16px; margin-top: 18px;
+  padding: 16px 18px; border: 1px solid var(--border); border-radius: 14px;
+  background: linear-gradient(135deg, var(--mint-tint), #fff);
+  text-decoration: none; color: var(--ink); transition: border-color .15s, box-shadow .15s;
+}
+.side-task-card:hover { border-color: var(--mint); box-shadow: 0 6px 18px rgba(62,180,137,.16); }
+.st-card-icon { font-size: 30px; line-height: 1; flex: 0 0 auto; }
+.st-card-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.st-card-kicker { font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--mint-dark); }
+.st-card-title { font-weight: 800; font-size: 17px; color: var(--navy); }
+.st-card-sub { font-size: 14px; color: var(--muted); }
+.st-card-right { flex: 0 0 auto; }
+
+.st-badge { color: var(--mint-dark) !important; }
+.st-guide h2 { font-size: 18px; color: var(--navy); margin: 26px 0 8px; }
+.st-guide h3 { font-size: 17px; color: var(--navy); margin: 0; }
+
+.st-need { background: var(--navy-tint); border-radius: 12px; padding: 16px 18px; margin-top: 8px; }
+.st-need h2 { margin-top: 0; }
+.st-need-list { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 22px; margin: 6px 0 10px; padding: 0; font-weight: 600; }
+
+.st-steps { list-style: none; counter-reset: none; margin: 8px 0 0; padding: 0; display: grid; gap: 22px; }
+.st-step { border: 1px solid var(--border); border-radius: 14px; background: #fff; padding: 16px 18px; }
+.st-step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.st-step-num {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--mint); color: #fff; font-weight: 800; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.st-img {
+  display: block; width: 100%; max-width: 720px; height: auto; margin: 4px auto 14px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+}
+.st-step-body { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.st-step-body li { line-height: 1.5; }
+.st-tip {
+  margin: 12px 0 0; padding: 10px 14px; border-radius: 10px;
+  background: var(--mint-tint); color: var(--navy); font-size: 14px;
+}
+
+.st-rubric-wrap { margin-top: 28px; }
+.st-rubric td:last-child, .st-rubric th:last-child { text-align: center; font-weight: 700; white-space: nowrap; }
+.st-rubric-details { margin-top: 10px; }
+.st-rubric-details summary { cursor: pointer; font-weight: 600; color: var(--mint-dark); }
+
+.st-submit-wrap { margin-top: 28px; }
+.st-submit { display: grid; gap: 8px; max-width: 560px; }
+.st-submit label { font-weight: 600; }
+.st-submit input[type="url"] {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border);
+  border-radius: 10px; font-size: 15px;
+}
+.st-submit .btn { width: auto; min-width: 200px; margin-top: 4px; }
+
+/* ---- Side Task: teacher grading ------------------------------------------- */
+.st-open-link { font-weight: 600; white-space: nowrap; }
+.st-grade-form { display: grid; gap: 4px; }
+.st-grade-row { display: flex; align-items: center; gap: 6px; }
+.st-grade-input { width: 72px; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+.st-grade-fb { width: 160px; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+.st-grade-form .btn { width: auto; }
+.st-grade-msg { font-size: 12px; }
+.st-grade-msg.ok { color: var(--mint-dark); }
+.st-grade-msg.error { color: #c0392b; }

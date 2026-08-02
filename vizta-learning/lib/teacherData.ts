@@ -618,3 +618,58 @@ export async function getMathResults(): Promise<MathResultRow[]> {
     };
   });
 }
+
+// ---- Side Task: Build Your First Website -----------------------------------
+export type SideTaskRow = {
+  student_id: string;
+  name: string;
+  class: string;
+  url: string;
+  grade: number | null;
+  feedback: string | null;
+  submitted_at: string;
+};
+
+// Every student's website submission, newest first, joined to their name/class.
+export async function getSideTaskSubmissions(taskId: string): Promise<SideTaskRow[]> {
+  const supabase = supabaseServer();
+  const [subs, students] = await Promise.all([
+    supabase
+      .from('side_task_submissions')
+      .select('student_id, url, grade, feedback, submitted_at')
+      .eq('task_id', taskId)
+      .order('submitted_at', { ascending: false }),
+    supabase.from('students').select('student_id, name, class'),
+  ]);
+  if (subs.error) return [];
+  const byId = new Map<string, { name: string; class: string }>();
+  for (const s of students.data ?? []) byId.set(s.student_id, { name: s.name, class: s.class });
+  return (subs.data ?? []).map((r) => {
+    const s = byId.get(r.student_id as string);
+    return {
+      student_id: r.student_id as string,
+      name: s?.name ?? 'Unknown',
+      class: s?.class ?? '',
+      url: r.url as string,
+      grade: (r.grade as number | null) ?? null,
+      feedback: (r.feedback as string | null) ?? null,
+      submitted_at: r.submitted_at as string,
+    };
+  });
+}
+
+// Record (or clear) a teacher's mark for a student's side task.
+export async function setSideTaskGrade(
+  studentId: string,
+  taskId: string,
+  grade: number | null,
+  feedback: string | null
+): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase
+    .from('side_task_submissions')
+    .update({ grade, feedback, updated_at: new Date().toISOString() })
+    .eq('student_id', studentId)
+    .eq('task_id', taskId);
+  if (error) throw error;
+}
