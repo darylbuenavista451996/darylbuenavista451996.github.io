@@ -1,9 +1,10 @@
 // Side Task: "Build a Company Homepage" — an out-of-curriculum, step-by-step
 // guide shown to both Grade 9 and Grade 10 Media Arts. Every student builds the
-// same working homepage for a milk tea shop (BobaBar) in a real code editor,
-// learning what each segment of a webpage does, then publishes it and pastes the
-// live link for the teacher to grade. Self-guided: setup + publish steps have
-// pictures; every line of code is provided and can be copied.
+// same working homepage for a milk tea shop (BobaBar) using Mobirise, a free
+// drag-and-drop website builder (no coding), then publishes it and pastes the
+// live link for the teacher to grade. This teaches the visual skill of building
+// a page, so students can go on to make their own sites afterward. Self-guided:
+// each step has a picture.
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from '../../Brand';
@@ -15,69 +16,147 @@ import {
   HOMEPAGE_RUBRIC,
   HOMEPAGE_RUBRIC_TOTAL,
 } from '@/lib/sideTask';
-import { CSS_FULL, SKELETON, SEGMENTS } from '@/lib/homepageCode';
-import CodeBlock from './CodeBlock';
 import SubmitBox from './SubmitBox';
 
 export const dynamic = 'force-dynamic';
 
 const IMG = (name: string) => `${BASE_PATH}/side-task/homepage/steps/${name}`;
 
-type SetupStep = { img: string; title: string; body: string[]; download?: boolean; tip?: string };
+type Step = { img?: string; title: string; body: string[]; download?: boolean; tip?: string };
 
-const SETUP: SetupStep[] = [
+const SETUP: Step[] = [
   {
-    img: 's1-vscode.png',
-    title: 'Install the code editor',
+    img: 'm1-download.png',
+    title: 'Install Mobirise',
     body: [
-      'Open your browser and go to code.visualstudio.com',
-      'Click the big Download button, open the downloaded file, and follow the installer. This is Visual Studio Code (VS Code), the free app where you will write your website.',
+      'Open your browser and go to mobirise.com',
+      'Click Download, open the downloaded file, and follow the installer. Mobirise is a free app for building websites by dragging blocks. There is no coding.',
     ],
     tip: 'This is a one time install. After this you can build offline.',
   },
   {
-    img: 's2-folder.png',
-    title: 'Make your folder and get the images',
+    title: 'Get the image pack',
     body: [
-      'On your Desktop, make a new folder and name it bobabar.',
-      'Inside bobabar, make another folder named images.',
-      'Download the image pack below, unzip it, and put all the pictures inside your images folder. Every picture on the site comes from here.',
+      'Download the pictures below and unzip them somewhere easy to find, like your Desktop.',
+      'These are the logo, background, and drink pictures you will place into your website. Everyone uses the same pack, so all sites look complete.',
     ],
     download: true,
   },
   {
-    img: 's3-open.png',
-    title: 'Create your two files and open the page',
+    img: 'm2-editor.png',
+    title: 'Open Mobirise and start a new site',
     body: [
-      'Open VS Code. Choose File, then Open Folder, and pick your bobabar folder.',
-      'Make two new files: index.html (the page) and styles.css (the design).',
-      'Find index.html in your bobabar folder and double-click it to open it in your browser. Keep this browser tab open. Every time you paste new code and save, refresh this tab to see it appear.',
+      'Open Mobirise. Click "Create New Site" and pick any theme (the first one is fine).',
+      'You now see your building screen. The red + button adds new parts to your page. The orange Publish button (top right) puts it online later.',
     ],
-    tip: 'Save with Ctrl and S after every paste, then refresh the browser.',
   },
 ];
 
-const PUBLISH: SetupStep[] = [
+// The blocks students add, in order. Each maps to a Mobirise section, an
+// explanation of what that part of a webpage does, and what to type/upload.
+type Block = { title: string; section: string; what: string; how: string[] };
+const BLOCKS: Block[] = [
   {
-    img: 's4-netlify.png',
-    title: 'Publish your homepage online',
+    title: 'Menu (navigation bar)',
+    section: 'Menu',
+    what: 'The bar at the very top. It holds the logo and the links that let visitors jump around the page. Almost every website has one.',
+    how: [
+      'Click the red +, choose the Menu section, and click a menu block.',
+      'Click the logo area and upload logo.png from your image pack.',
+      'Leave the links (Home, Menu, About, Contact) as they are.',
+    ],
+  },
+  {
+    title: 'Hero',
+    section: 'Headers / Hero',
+    what: 'The big first screen. A background image, one strong headline, a short line, and a button. It is the first thing people see, so it has to make them want to stay.',
+    how: [
+      'Add a Header or Hero block with a big background.',
+      'Click the background image and upload hero-bg.png',
+      'Click the title and type: Handcrafted Milk Tea, Made Fresh Daily. Set the button text to: See our menu.',
+    ],
+  },
+  {
+    title: 'About',
+    section: 'About',
+    what: 'A short story of the company so visitors know who they are buying from. Trust makes people stay.',
+    how: [
+      'Add an About block that has text next to a picture.',
+      'Type a short "Our Story" paragraph (3 to 4 sentences).',
+      'Click the picture and upload about.png',
+    ],
+  },
+  {
+    title: 'Menu of drinks (cards)',
+    section: 'Features',
+    what: 'The products. Each drink is a card with a picture, a name, a short line, and a price. Cards keep many items neat and easy to scan.',
+    how: [
+      'Add a block that shows three cards in a row.',
+      'Upload menu-classic.png, menu-taro.png, and menu-matcha.png into the three cards.',
+      'Name them Classic, Taro, and Matcha, and add prices like P90, P110, P120.',
+    ],
+  },
+  {
+    title: 'Features (Why choose us)',
+    section: 'Features',
+    what: 'Three quick reasons to pick this shop over another. Short, scannable, and reassuring.',
+    how: [
+      'Add another three-item block.',
+      'Type three reasons, for example: Fresh Ingredients, Handcrafted, Loyalty Rewards, each with one short line.',
+    ],
+  },
+  {
+    title: 'Contact',
+    section: 'Contacts',
+    what: 'Where and when to find the shop, and a button that lets people reach you. The working button is what makes the page truly useful.',
+    how: [
+      'Add a Contacts block.',
+      'Type your address and opening hours.',
+      'Set the button to open an email: for the link, type mailto: then your email (like mailto:hello@bobabar.com).',
+    ],
+  },
+  {
+    title: 'Footer',
+    section: 'Footers',
+    what: 'The small print at the very bottom: the company name and social links. It signals the page is finished.',
+    how: [
+      'Add a Footer block.',
+      'Type the company name and the year, for example: BobaBar 2026.',
+    ],
+  },
+];
+
+const PUBLISH: Step[] = [
+  {
+    img: 'm5-publish.png',
+    title: 'Publish your site to a folder',
+    body: [
+      'When your page looks good, click the eye icon to preview it, then click the orange Publish button.',
+      'Choose Local Drive, pick a folder (for example a new folder on your Desktop), and click Publish. Mobirise saves your finished website into that folder.',
+    ],
+    tip: 'If a picture is missing, click it again and re-upload it, then publish once more.',
+  },
+  {
+    img: 'm6-netlify.png',
+    title: 'Put it online and get your link',
     body: [
       'Go to app.netlify.com/drop',
-      'Drag your whole bobabar folder onto the box on that page. In a few seconds your site is live on the internet.',
-      'Sign in for free (you can use your Gmail) to keep your link, then copy the live link it gives you. Open the link in a new tab to make sure everything shows.',
+      'Drag the folder Mobirise just made onto the box on that page. In a few seconds your site is live on the internet.',
+      'Sign in for free (your Gmail works) to keep your link, then copy the live link and open it in a new tab to check everything shows.',
     ],
-    tip: 'If a picture is missing, check that its name in the images folder matches the code exactly.',
   },
 ];
 
-function StepCard({ n, step }: { n: number; step: SetupStep }) {
+function StepCard({ n, step }: { n: number; step: Step }) {
   return (
     <li className="st-step">
       <div className="st-step-head">
         <span className="st-step-num">{n}</span>
         <h3>{step.title}</h3>
       </div>
-      <img className="st-img" src={IMG(step.img)} alt={`Step ${n}: ${step.title}`} loading="lazy" />
+      {step.img ? (
+        <img className="st-img" src={IMG(step.img)} alt={`Step ${n}: ${step.title}`} loading="lazy" />
+      ) : null}
       <ul className="st-step-body">
         {step.body.map((line, j) => (
           <li key={j}>{line}</li>
@@ -100,13 +179,9 @@ export default async function HomepageSideTaskPage() {
 
   const existing = await getSideTaskSubmission(session.sid, HOMEPAGE_TASK_ID);
 
-  // Continuous step numbering across setup, the two paste steps, the segments,
-  // and publishing.
   let n = 0;
   const setupNumbered = SETUP.map((s) => ({ n: ++n, step: s }));
-  const cssStepNo = ++n;
-  const skeletonStepNo = ++n;
-  const segNumbered = SEGMENTS.map((seg) => ({ n: ++n, seg }));
+  const blockNumbered = BLOCKS.map((b) => ({ n: ++n, block: b }));
   const publishNumbered = PUBLISH.map((s) => ({ n: ++n, step: s }));
 
   return (
@@ -121,10 +196,10 @@ export default async function HomepageSideTaskPage() {
           <span className="eyebrow st-badge">Side Task</span>
           <h1>Build a Company Homepage</h1>
           <p className="goal">
-            You are going to build a real, working homepage for a milk tea shop called BobaBar, then
-            publish it live on the internet. You will use the same tools real web designers use, and
-            you will learn what every part of a webpage is for. Follow the steps in order. Every line
-            of code is given to you, so you never have to guess.
+            You are going to build a real, working homepage for a milk tea shop called BobaBar using
+            Mobirise, a free app that builds websites by dragging blocks. There is no coding. By the
+            end you will know how to build and publish a webpage, so you can go on to make your own
+            for anything you like. Follow the steps in order.
           </p>
         </div>
 
@@ -136,69 +211,57 @@ export default async function HomepageSideTaskPage() {
             <li>🎨 About one class period</li>
           </ul>
           <p className="hint">
-            Setup and publishing steps have a picture. The building steps give you the exact code to
-            copy. Take your time and save often.
+            Every step has a picture that shows what your screen should look like. Take your time and
+            save often.
           </p>
         </section>
 
         <h2 className="st-part">Part 1 · Get set up</h2>
         <ol className="st-steps">
           {setupNumbered.map(({ n, step }) => (
-            <StepCard key={step.img} n={n} step={step} />
+            <StepCard key={step.title} n={n} step={step} />
           ))}
         </ol>
 
-        <h2 className="st-part">Part 2 · Add the design and page frame</h2>
-        <ol className="st-steps">
-          <li className="st-step">
-            <div className="st-step-head">
-              <span className="st-step-num">{cssStepNo}</span>
-              <h3>Paste the whole stylesheet</h3>
-            </div>
-            <p className="st-step-lead">
-              Open <code>styles.css</code>, paste all of this, and save. This is the paint and
-              layout for the whole site. You do not need to memorize it. The comments explain the
-              main parts.
-            </p>
-            <CodeBlock code={CSS_FULL} filename="styles.css" />
-          </li>
-          <li className="st-step">
-            <div className="st-step-head">
-              <span className="st-step-num">{skeletonStepNo}</span>
-              <h3>Paste the page frame</h3>
-            </div>
-            <p className="st-step-lead">
-              Open <code>index.html</code>, paste this, and save. This is the empty frame of the
-              page. It links to your stylesheet. Every part you build next goes inside the{' '}
-              <code>&lt;body&gt;</code>, where the comment is.
-            </p>
-            <CodeBlock code={SKELETON} filename="index.html" />
-          </li>
-        </ol>
-
-        <h2 className="st-part">Part 3 · Build the page, one part at a time</h2>
+        <h2 className="st-part">Part 2 · Build your homepage, block by block</h2>
         <p className="hint st-part-lead">
-          Paste each block inside the <code>&lt;body&gt;</code> of <code>index.html</code>, one after
-          another, in this order. Save and refresh your browser after each one to watch your homepage
-          grow.
+          You build a page by stacking blocks. Here is the whole idea, then the exact blocks to add.
+        </p>
+        <div className="st-howto">
+          <figure className="st-howto-card">
+            <img className="st-img" src={IMG('m3-blocks.png')} alt="Choosing a block in Mobirise" loading="lazy" />
+            <figcaption>Click the red +, pick a section, and click a block to drop it on your page.</figcaption>
+          </figure>
+          <figure className="st-howto-card">
+            <img className="st-img" src={IMG('m4-edit.png')} alt="Editing a block in Mobirise" loading="lazy" />
+            <figcaption>Click any text to type your own words. Click a picture to upload one from your image pack.</figcaption>
+          </figure>
+        </div>
+        <p className="hint st-part-lead">
+          Now add these blocks, in this order. After each one, your homepage grows.
         </p>
         <ol className="st-steps">
-          {segNumbered.map(({ n, seg }) => (
-            <li key={seg.id} className="st-step">
+          {blockNumbered.map(({ n, block }) => (
+            <li key={block.title} className="st-step">
               <div className="st-step-head">
                 <span className="st-step-num">{n}</span>
-                <h3>Add the {seg.title}</h3>
+                <h3>Add the {block.title}</h3>
               </div>
-              <p className="st-step-lead"><strong>What it does:</strong> {seg.what}</p>
-              <CodeBlock code={seg.html} filename="index.html · inside body" />
+              <p className="st-step-lead"><strong>What it does:</strong> {block.what}</p>
+              <p className="st-how-label">How to add it (section: <strong>{block.section}</strong>)</p>
+              <ul className="st-step-body">
+                {block.how.map((line, j) => (
+                  <li key={j}>{line}</li>
+                ))}
+              </ul>
             </li>
           ))}
         </ol>
 
-        <h2 className="st-part">Part 4 · Publish and submit</h2>
+        <h2 className="st-part">Part 3 · Publish and submit</h2>
         <ol className="st-steps">
           {publishNumbered.map(({ n, step }) => (
-            <StepCard key={step.img} n={n} step={step} />
+            <StepCard key={step.title} n={n} step={step} />
           ))}
         </ol>
 

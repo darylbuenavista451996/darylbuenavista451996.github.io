@@ -840,23 +840,13 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 }
 .st-download:hover { background: var(--navy-light); }
 
-.st-code {
-  border: 1px solid #2c3a55; border-radius: 10px; overflow: hidden;
-  margin: 6px 0 4px; background: #1e2536;
+.st-how-label { margin: 2px 0 6px; font-weight: 600; color: var(--navy); }
+.st-how-label strong { color: var(--mint-dark); }
+
+.st-howto { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 6px 0 8px; }
+.st-howto-card { margin: 0; }
+.st-howto-card .st-img { margin: 0 0 8px; }
+.st-howto-card figcaption { font-size: 14px; color: var(--muted); line-height: 1.45; }
+@media (max-width: 720px) {
+  .st-howto { grid-template-columns: 1fr; }
 }
-.st-code-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px; background: #172033; border-bottom: 1px solid #2c3a55;
-}
-.st-code-file { color: #8aa0c6; font-size: 12px; font-family: 'Consolas', monospace; }
-.st-copy {
-  background: var(--mint); color: #fff; border: none; border-radius: 6px;
-  padding: 5px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
-}
-.st-copy:hover { background: var(--mint-dark); }
-.st-code pre {
-  margin: 0; padding: 14px 16px; overflow-x: auto;
-  color: #d6deec; font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 12.5px; line-height: 1.6;
-}
-.st-code code { white-space: pre; }
