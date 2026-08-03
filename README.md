@@ -1,1 +1,1 @@
-I am a Forex trader and an IB under a Trading Brokerage Company,and a Math & Statistics teacher with strong experience in fundamental analysis, macroeconomic research, and exchange rate modeling. Currently finishing my MBA while expanding my skills in SQL and Tableau for data-driven financial insights.
+AI Automation and Agentic AI Specialist. I build AI-powered automations, agents, and API integrations using Python, Claude, and n8n. Background in quantitative analysis (Forex/macro trading, Math & Stats teaching) that informs how I approach data-driven decision systems.
