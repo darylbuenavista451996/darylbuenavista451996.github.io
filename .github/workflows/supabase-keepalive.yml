@@ -1,0 +1,47 @@
+name: Supabase keep-alive
+
+# Free-tier Supabase projects pause after about a week with no activity, which
+# takes the whole app (student + teacher login, the Math app, CSV export)
+# offline until someone resumes it by hand. This workflow sends one tiny,
+# harmless request to the project every day so it stays counted as active and
+# never idle-pauses.
+#
+# Setup (one time):
+#   1. Resume the project once in the Supabase dashboard.
+#   2. In this GitHub repo: Settings -> Secrets and variables -> Actions ->
+#      New repository secret, add these two (values from Supabase ->
+#      Project Settings -> API):
+#        - SUPABASE_URL        e.g. https://abcdxyz.supabase.co
+#        - SUPABASE_ANON_KEY   the public "anon" key
+#   3. This file must be on the default branch (main) for the daily schedule to
+#      run. You can also run it by hand from the Actions tab (Run workflow).
+
+on:
+  schedule:
+    # 01:30 UTC every day = about 9:30 AM in the Philippines (UTC+8),
+    # before the school day, so the project is awake when students arrive.
+    - cron: '30 1 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase so it does not idle-pause
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Missing SUPABASE_URL or SUPABASE_ANON_KEY repo secrets. See the setup notes at the top of this file."
+            exit 1
+          fi
+          base="${SUPABASE_URL%/}"
+          echo "Pinging auth health..."
+          curl -fsS -m 30 "$base/auth/v1/health" \
+            -H "apikey: $SUPABASE_ANON_KEY" >/dev/null && echo "auth OK"
+          echo "Pinging database (PostgREST root)..."
+          curl -fsS -m 30 "$base/rest/v1/" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" >/dev/null && echo "db OK"
+          echo "Keep-alive done."
