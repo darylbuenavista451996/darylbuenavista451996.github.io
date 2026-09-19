@@ -24,4 +24,11 @@ export const LESSONS: LessonMeta[] = [
     blurb:
       'Read slope and starting value, build the equation from a word problem, and solve real-life problems with linear functions.',
   },
+  {
+    id: 'triangle-similarity',
+    title: 'Triangle Similarities',
+    order: 3,
+    blurb:
+      'Learn when two triangles are similar (AA, SSS, SAS), find a scale factor, and use proportions to solve for missing sides.',
+  },
 ];
