@@ -205,7 +205,7 @@ const QUIZ: GradedGroup = {
 export default function TriangleLesson() {
   const content: LessonContent = {
     lessonId: 'triangle-similarity',
-    video: { title: 'Similar triangles (introduction)', youtubeId: 'REPLACE_WITH_YOUR_VIDEO_ID', channel: 'Khan Academy' },
+    video: { title: 'Similar triangles', youtubeId: 'BI-rtfZVXy0', channel: 'Khan Academy' },
     discussion: <Discussion />,
     explore: (
       <>
