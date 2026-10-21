@@ -22,10 +22,10 @@ export default function LandingPage() {
         </p>
 
         <div className="choice-grid">
-          <Link className="btn btn-primary" href="/signup?grade=G9">
+          <Link className="btn btn-primary" href="/terms?grade=G9">
             I&apos;m in Grade 9
           </Link>
-          <Link className="btn btn-navy" href="/signup?grade=G10">
+          <Link className="btn btn-navy" href="/terms?grade=G10">
             I&apos;m in Grade 10
           </Link>
         </div>

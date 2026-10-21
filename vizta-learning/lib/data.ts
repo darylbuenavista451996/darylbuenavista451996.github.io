@@ -574,3 +574,36 @@ export function submissionKind(t: string | null): 'text' | 'link' | 'image' {
   if (s.includes('image')) return 'image';
   return 'text';
 }
+
+// Which terms exist and are open for a grade, for the landing "pick your term"
+// page. A term is open when the teacher has unlocked a module for it (the
+// Modules switch in the teacher dashboard), so locking Term 1 keeps all of its
+// content intact but stops students from entering it.
+export type TermChoice = { term: string; order: number; exists: boolean; open: boolean };
+
+export async function getTermChoices(grade: ClassName): Promise<TermChoice[]> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase
+    .from('modules')
+    .select('term, "order", unlocked')
+    .eq('grade_class', grade)
+    .order('order', { ascending: true });
+  if (error) throw error;
+  const byTerm = new Map<string, TermChoice>();
+  for (const m of data ?? []) {
+    const cur = byTerm.get(m.term);
+    const open = !!m.unlocked;
+    byTerm.set(m.term, {
+      term: m.term,
+      order: m.order as number,
+      exists: true,
+      open: (cur?.open ?? false) || open,
+    });
+  }
+  // Always offer Term 1 and Term 2 buttons; a term with no content yet is
+  // shown as "coming soon".
+  for (const [i, t] of ['Term 1', 'Term 2'].entries()) {
+    if (!byTerm.has(t)) byTerm.set(t, { term: t, order: i + 1, exists: false, open: false });
+  }
+  return [...byTerm.values()].sort((a, b) => a.order - b.order);
+}

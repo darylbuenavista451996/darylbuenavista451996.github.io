@@ -756,3 +756,9 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 .task-done.pending .btn[disabled] {
   background: #c4ccd8; color: #fff; border-color: transparent; opacity: 1; cursor: not-allowed;
 }
+
+/* Locked term button (term picker). Looks disabled and cannot be clicked. */
+.btn-locked {
+  background: #e6e9ef; color: #7b8497; border: 1px solid var(--border);
+  cursor: not-allowed; user-select: none;
+}
