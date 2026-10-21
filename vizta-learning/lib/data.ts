@@ -154,10 +154,9 @@ async function getProgressMaps(studentId: string, activityIds: string[]) {
 }
 
 // Assemble the dashboard view for a student across all their class's modules.
-// Terms unlock in order: a module opens once the teacher has unlocked it AND the
-// previous term is fully complete. By default the view shows the student's
-// current term (the first open, unfinished module); pass `moduleId` to view a
-// specific term (e.g. to revisit a finished one).
+// A term is open when the teacher has unlocked it. By default the view shows the
+// student's current term (the first open, unfinished module); pass `moduleId` to
+// view a specific term (e.g. to revisit a finished one).
 export async function getDashboard(
   studentId: string,
   cls: ClassName,
@@ -196,15 +195,16 @@ export async function getDashboard(
   // Per-module totals + sequential term availability.
   type ModInfo = { module: Module; total: number; completeCount: number; complete: boolean; available: boolean };
   const info: ModInfo[] = [];
-  let chainOpen: boolean = true; // earlier terms all complete so far
   for (const m of modules) {
     const acts = actsByModule.get(m.module_id) ?? [];
     const total = acts.length;
     const completeCount = acts.filter(isComplete).length;
     const complete = total > 0 && completeCount === total;
-    const available: boolean = m.unlocked && chainOpen;
+    // A term is open exactly when the teacher has unlocked it. (It used to also
+    // require the earlier term to be finished, which would trap students with new
+    // accounts in Term 1. The teacher now controls which term is open.)
+    const available: boolean = m.unlocked;
     info.push({ module: m, total, completeCount, complete, available });
-    chainOpen = available && complete; // next term only opens when this one is done
   }
 
   // Current term: first available, unfinished module; else the last available;
@@ -268,7 +268,8 @@ export async function getDashboard(
     dueNext,
     moduleComplete: target.complete,
     moduleAvailable: target.available,
-    allComplete: info.every((i) => i.complete),
+    // Course complete = every term the teacher has opened is finished.
+    allComplete: info.some((i) => i.available) && info.filter((i) => i.available).every((i) => i.complete),
     modules: strip,
     nextModuleId,
   };

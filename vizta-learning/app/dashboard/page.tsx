@@ -170,8 +170,8 @@ export default async function DashboardPage({
           </div>
         ) : !moduleAvailable ? (
           <div className="banner" role="status">
-            <strong>This term isn&apos;t open yet.</strong> Finish the term before it, or
-            wait for your teacher to unlock it.
+            <strong>This term isn&apos;t open yet.</strong> Your teacher will open it when
+            it is time.
           </div>
         ) : dueNext ? (
           <div className="banner banner-cta" role="status">
