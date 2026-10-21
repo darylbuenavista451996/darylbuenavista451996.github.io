@@ -98,7 +98,8 @@ export default async function LessonPage({
           ) : null}
         </section>
 
-        {/* Video */}
+        {/* Video. A lesson with no video and no planned video slot skips this. */}
+        {embed || a.video_slot ? (
         <section className="lesson-section">
           <h2>Watch</h2>
           {embed ? (
@@ -123,6 +124,7 @@ export default async function LessonPage({
             </p>
           ) : null}
         </section>
+        ) : null}
 
         {/* After you watch */}
         {a.after_bridge ? (

@@ -1,0 +1,54 @@
+ANIMATIONKIT: TEACHER SETUP (do this once, then copy the folder to a USB drive)
+
+What this kit does
+Students put their 4 or 5 numbered JPG drawings in put_your_frames_here and double
+click MAKE_MY_ANIMATION. The script makes the in between pictures with a free AI tool
+(RIFE) and joins them into my_animation.mp4 at 12 frames per second. Students then
+finish the video in OpenShot (see Grade 9 Term 2, Lesson 5).
+
+IMPORTANT: I could not run this script on a Windows laptop. Test it on ONE school
+laptop with real student drawings before class.
+
+What you need to download (both free)
+1. rife-ncnn-vulkan, Windows release zip.
+   Page: https://github.com/nihui/rife-ncnn-vulkan  (click Releases)
+   Unzip it. Copy rife-ncnn-vulkan.exe AND the folder rife-v4.6 into this
+   AnimationKit folder, next to MAKE_MY_ANIMATION.bat.
+   (The release also has other model folders. Only rife-v4.6 is required.)
+2. ffmpeg for Windows. Any normal Windows build works (for example the "essentials"
+   build from gyan.dev). Open its bin folder and copy ffmpeg.exe into this folder.
+Keep the license files that come with each download.
+
+When it is ready, the AnimationKit folder should contain
+   MAKE_MY_ANIMATION.bat
+   rife-ncnn-vulkan.exe
+   rife-v4.6        (folder)
+   ffmpeg.exe
+   pop.wav          (a short pop sound, already included)
+   put_your_frames_here   (folder, empty except the README)
+
+Testing checklist
+ [ ] Copy the folder to the Desktop of a school laptop.
+ [ ] Put 4 real student JPGs in put_your_frames_here, named 01.jpg to 04.jpg.
+ [ ] Double click MAKE_MY_ANIMATION, type 4, press Enter.
+ [ ] Note how long Step 2 takes. (Students are told it can take a few minutes.)
+ [ ] Open my_animation.mp4. Look for ghosting, melting lines, and flicker.
+ [ ] If the first run fails, the script retries on the CPU automatically. That is
+     slower but works on laptops with no usable graphics driver.
+
+If the result looks poor on hand drawn line art
+ The kit also lets you try the other model made for drawings: in the .bat file
+ replace rife-v4.6 with rife-anime in the two lines that run rife-ncnn-vulkan, and
+ copy the rife-anime folder from the release next to the .exe. Test again. The
+ option that sets the exact frame count (-n) may only work with the v4 models. If it
+ fails with rife-anime, go back to rife-v4.6.
+
+OpenShot
+ Install OpenShot from the offline installer on openshot.org on each laptop from your
+ USB drive before Lesson 5. Menu names in the lesson were written from general
+ knowledge. Check them once against your version.
+
+Windows warning
+ Windows may say "Windows protected your PC" the first time. The lesson tells students
+ to click More info, then Run anyway. If your school blocks .bat files, ask the ICT
+ coordinator to allow this one.
