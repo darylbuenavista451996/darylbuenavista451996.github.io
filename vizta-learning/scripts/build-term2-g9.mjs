@@ -10,9 +10,6 @@ import { dirname, join } from 'node:path';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const P = (...paras) => paras.join('\n\n');
 
-const AI_LINE =
-  'Claude (Anthropic) - AI-assisted drafting of lesson structure and activity design; content verified against DepEd MATATAG BOW by the teacher.';
-
 const VIDEO_NOTE = 'Found by web search, not play tested from the build environment. Watch it once before class.';
 
 // ---- Quiz helper: place the correct answer at a chosen letter ------------------
@@ -151,8 +148,7 @@ const a1 = {
         'Answer these for yourself before you write your activity. You do not submit them.',
         '1. Which principle do you notice most easily now?',
         '2. Which one is still hard to spot?',
-        '3. In the cartoon moment you thought about at the start, can you now name the principle that made it work?',
-        AI_LINE
+        '3. In the cartoon moment you thought about at the start, can you now name the principle that made it work?'
       ),
     },
   ],
@@ -268,8 +264,7 @@ const a2 = {
         'Answer these for yourself before you write your activity. You do not submit them.',
         '1. Which of your frames is strongest, and which principle makes it strong?',
         '2. Which frame is weakest, and why?',
-        '3. Which principle surprised you the most today?',
-        AI_LINE
+        '3. Which principle surprised you the most today?'
       ),
     },
   ],
@@ -384,8 +379,7 @@ const a3 = {
         'Answer these for yourself before you write your activity. You do not submit them.',
         '1. Which of your gaps is the biggest?',
         '2. What do you expect the computer to do well, and what do you expect it to get wrong?',
-        '3. Is your animation going to be 3, 4, or 5 seconds? Why?',
-        AI_LINE
+        '3. Is your animation going to be 3, 4, or 5 seconds? Why?'
       ),
     },
   ],
@@ -490,8 +484,7 @@ const a4 = {
         'Answer these for yourself before you write your activity. You do not submit them.',
         '1. Which gap looked best? Which looked worst?',
         '2. Did the worst gap match the gap you were worried about in Lesson 3?',
-        '3. What would you want to change in your drawings if you could redraw one frame?',
-        AI_LINE
+        '3. What would you want to change in your drawings if you could redraw one frame?'
       ),
     },
   ],
@@ -614,8 +607,7 @@ const a5 = {
         'Answer these for yourself before you submit. You do not submit them separately.',
         '1. What did the fade do for your animation, and what did the hard cut do?',
         '2. Which principle from Lessons 1 and 2 does your finished animation show best?',
-        '3. If you could redraw one frame by hand, which one would you pick and why?',
-        AI_LINE
+        '3. If you could redraw one frame by hand, which one would you pick and why?'
       ),
     },
   ],
