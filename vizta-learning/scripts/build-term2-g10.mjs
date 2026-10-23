@@ -132,7 +132,7 @@ const q1 = quiz(a1.activity_id, MODULE, [
 // LESSON 2: Meet Kdenlive (interface)
 // =============================================================================
 const a2 = base({
-  activity_id: 'G10-A2.2', module_id: MODULE, order: 2, week: 'Week 2',
+  activity_id: 'G10-A2.2', module_id: MODULE, order: 3, week: 'Week 3',
   title: 'Meet Kdenlive: Learn the Interface',
   is_performance_task: false,
   lesson_goal: 'I want you to open Kdenlive, name every part of the screen, set up a project that works on our laptops, and make your first cuts.',
@@ -216,7 +216,7 @@ const q2 = quiz(a2.activity_id, MODULE, [
 // LESSON 3: Principles of editing
 // =============================================================================
 const a3 = base({
-  activity_id: 'G10-A2.3', module_id: MODULE, order: 3, week: 'Week 3',
+  activity_id: 'G10-A2.3', module_id: MODULE, order: 2, week: 'Week 2',
   title: 'Principles of Editing: Cuts That Make Sense',
   is_performance_task: false,
   lesson_goal: 'I want you to understand why editors cut where they cut, and to name and use the basic types of cuts and the rules of continuity.',
@@ -495,7 +495,7 @@ const a6 = base({
       'AMBIENCE. Background sounds that make a place feel real, such as traffic, birds, or a canteen crowd.',
       'SOUND EFFECTS. Specific sounds at specific moments, like a door closing or footsteps. Place them exactly on the action.',
       'MUSIC. It adds feeling. It should support the scene and stay below the voice. Silence is also a choice, and a quiet moment can be powerful.',
-      'SPLIT EDITS FOR SOUND. As you saw in Lesson 3, a J cut starts the next sound before its picture, and an L cut keeps the last sound after the picture changes. They make a film feel smooth and connected.') },
+      'SPLIT EDITS FOR SOUND. As you saw in Lesson 2, a J cut starts the next sound before its picture, and an L cut keeps the last sound after the picture changes. They make a film feel smooth and connected.') },
     { type: 'read', title: 'Levels, meters, and mixing in Kdenlive', minutes: 25, body: P(
       'The Audio Mixer panel shows a fader and a level meter for each track. Look for it in the View menu. Names can differ slightly in your version.',
       'KEEP IT OUT OF THE RED. The meter measures loudness in dB. If the meter reaches the top and turns red, the sound is clipping and it will crackle and distort. Keep the loudest peaks below 0 dB.',
@@ -545,10 +545,10 @@ const a7 = base({
   title: 'Edit and Grade Your Scene',
   is_performance_task: true,
   lesson_goal: 'I want you to edit a short scene from your own footage in Kdenlive, correct and grade its color, mix its sound, and share the finished film.',
-  before_hook: 'This is the lesson where everything comes together. You have the plan from Lesson 1, the screen from Lesson 2, the rules of cutting from Lesson 3, the color skills from Lessons 4 and 5, and the sound skills from Lesson 6. Now you build a real piece of film. It does not have to be long. It has to be clean.',
+  before_hook: 'This is the lesson where everything comes together. You have the plan from Lesson 1, the rules of cutting from Lesson 2, the screen from Lesson 3, the color skills from Lessons 4 and 5, and the sound skills from Lesson 6. Now you build a real piece of film. It does not have to be long. It has to be clean.',
   watch_for: [],
   after_bridge: 'So a finished edit is a chain of decisions. You chose the order of the shots, the rhythm, the correction, the look, and the sound. You can explain every one of them. That is what makes you an editor and not just someone who joins clips.',
-  activity_brief: 'Edit a scene of 60 to 90 seconds from your own footage in Kdenlive. It must have clean cuts that follow the principles from Lesson 3, corrected color that matches from shot to shot, a graded look that fits the mood, and a clear sound mix. Export it as an MP4 at 720p, upload it to Google Drive or YouTube (unlisted), and paste the link below. In your reflection, explain three choices you made and why.',
+  activity_brief: 'Edit a scene of 60 to 90 seconds from your own footage in Kdenlive. It must have clean cuts that follow the principles from Lesson 2, corrected color that matches from shot to shot, a graded look that fits the mood, and a clear sound mix. Export it as an MP4 at 720p, upload it to Google Drive or YouTube (unlisted), and paste the link below. In your reflection, explain three choices you made and why.',
   submission_type: 'Link',
   tool: 'Kdenlive, your own footage, and headphones if you have them.',
   rubric: [
