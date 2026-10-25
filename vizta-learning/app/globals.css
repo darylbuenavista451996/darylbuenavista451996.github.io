@@ -762,3 +762,42 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
   background: #e6e9ef; color: #7b8497; border: 1px solid var(--border);
   cursor: not-allowed; user-select: none;
 }
+
+/* ---- Teacher lesson viewer ------------------------------------------------- */
+.tl-module { margin: 14px 0 22px; }
+.tl-module-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 8px; color: var(--navy); }
+.tl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tl-item {
+  display: flex; align-items: center; gap: 14px; padding: 12px 14px;
+  border: 1px solid var(--border); border-radius: 12px; background: #fff;
+  text-decoration: none; color: var(--ink);
+}
+.tl-item:hover { border-color: var(--mint); box-shadow: 0 4px 14px rgba(62,180,137,.14); }
+.tl-num {
+  flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--mint-tint); color: var(--mint-dark); font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.tl-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.tl-title { font-weight: 700; color: var(--navy); }
+.tl-meta { font-size: 13px; color: var(--muted); }
+.tl-go { flex: 0 0 auto; font-weight: 700; color: var(--mint-dark); font-size: 14px; }
+
+.tl-key { background: #fbfcfe; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+.tl-keyline { font-size: 15px; background: var(--mint-tint); padding: 10px 12px; border-radius: 10px; line-height: 1.8; }
+.tl-quiz { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 14px; }
+.tl-q .quiz-q { margin-bottom: 6px; }
+.tl-opts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.tl-opt { display: flex; gap: 10px; align-items: baseline; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+.tl-letter { font-weight: 800; color: var(--muted); min-width: 16px; }
+.tl-correct { border-color: var(--mint); background: var(--mint-tint); }
+.tl-correct .tl-letter { color: var(--mint-dark); }
+.tl-tick { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--mint-dark); white-space: nowrap; }
+.tl-divider { margin: 30px 0 4px; font-size: 20px; color: var(--navy); border-top: 2px solid var(--border); padding-top: 18px; }
+.tl-pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+.tl-pager .btn { width: auto; }
+@media print {
+  .tl-key { break-inside: avoid-page; background: #fff; }
+  .tl-q { break-inside: avoid; }
+  .teacher-topbar { display: none !important; }
+}

@@ -618,3 +618,109 @@ export async function getMathResults(): Promise<MathResultRow[]> {
     };
   });
 }
+
+// ---- Teacher lesson viewer: every lesson plus its quiz answer key ------------------
+// Read-only. Lets the teacher see all Grade 9 and 10 lessons without making student
+// accounts or answering anything to unlock the next lesson.
+
+export type CatalogLesson = {
+  activity_id: string;
+  module_id: string;
+  order: number;
+  week: string | null;
+  title: string;
+  is_performance_task: boolean;
+  rubric_total: number | null;
+  quizCount: number;
+};
+export type CatalogModule = {
+  module_id: string;
+  title: string;
+  grade_class: string;
+  term: string;
+  order: number;
+  unlocked: boolean;
+  lessons: CatalogLesson[];
+};
+
+export async function getLessonCatalog(): Promise<CatalogModule[]> {
+  const supabase = supabaseServer();
+  const [mods, acts, quizzes] = await Promise.all([
+    supabase.from('modules').select('module_id, title, grade_class, term, "order", unlocked').order('grade_class').order('order'),
+    supabase.from('activities').select('activity_id, module_id, "order", week, title, is_performance_task, rubric_total').order('order'),
+    supabase.from('quizzes').select('activity_id'),
+  ]);
+  for (const r of [mods, acts, quizzes]) if (r.error) throw r.error;
+
+  const counts = new Map<string, number>();
+  for (const q of quizzes.data ?? []) counts.set(q.activity_id, (counts.get(q.activity_id) ?? 0) + 1);
+
+  const byModule = new Map<string, CatalogLesson[]>();
+  for (const a of acts.data ?? []) {
+    if (!byModule.has(a.module_id)) byModule.set(a.module_id, []);
+    byModule.get(a.module_id)!.push({
+      activity_id: a.activity_id,
+      module_id: a.module_id,
+      order: a.order as number,
+      week: a.week ?? null,
+      title: a.title,
+      is_performance_task: !!a.is_performance_task,
+      rubric_total: (a.rubric_total as number | null) ?? null,
+      quizCount: counts.get(a.activity_id) ?? 0,
+    });
+  }
+  return (mods.data ?? []).map((m) => ({
+    module_id: m.module_id,
+    title: m.title,
+    grade_class: m.grade_class,
+    term: m.term,
+    order: m.order as number,
+    unlocked: !!m.unlocked,
+    lessons: (byModule.get(m.module_id) ?? []).sort((x, y) => x.order - y.order),
+  }));
+}
+
+export type KeyQuizItem = {
+  quiz_id: string;
+  order: number;
+  question: string;
+  option_a: string | null;
+  option_b: string | null;
+  option_c: string | null;
+  option_d: string | null;
+  correct: string;
+};
+export type LessonWithKey = {
+  activity: import('./data').Activity;
+  module: { module_id: string; title: string; grade_class: string; term: string };
+  quiz: KeyQuizItem[];
+  prev: { activity_id: string; title: string } | null;
+  next: { activity_id: string; title: string } | null;
+};
+
+export async function getLessonWithKey(activityId: string): Promise<LessonWithKey | null> {
+  const supabase = supabaseServer();
+  const { data: a, error } = await supabase.from('activities').select('*').eq('activity_id', activityId).maybeSingle();
+  if (error) throw error;
+  if (!a) return null;
+  const [mod, quiz, siblings] = await Promise.all([
+    supabase.from('modules').select('module_id, title, grade_class, term').eq('module_id', a.module_id).maybeSingle(),
+    supabase
+      .from('quizzes')
+      .select('quiz_id, "order", question, option_a, option_b, option_c, option_d, correct')
+      .eq('activity_id', activityId)
+      .order('order', { ascending: true }),
+    supabase.from('activities').select('activity_id, title, "order"').eq('module_id', a.module_id).order('order'),
+  ]);
+  for (const r of [mod, quiz, siblings]) if (r.error) throw r.error;
+  if (!mod.data) return null;
+  const sibs = (siblings.data ?? []) as Array<{ activity_id: string; title: string; order: number }>;
+  const idx = sibs.findIndex((s) => s.activity_id === activityId);
+  return {
+    activity: a as import('./data').Activity,
+    module: mod.data as LessonWithKey['module'],
+    quiz: (quiz.data ?? []) as KeyQuizItem[],
+    prev: idx > 0 ? { activity_id: sibs[idx - 1].activity_id, title: sibs[idx - 1].title } : null,
+    next: idx >= 0 && idx < sibs.length - 1 ? { activity_id: sibs[idx + 1].activity_id, title: sibs[idx + 1].title } : null,
+  };
+}

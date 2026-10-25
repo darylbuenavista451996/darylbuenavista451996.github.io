@@ -29,6 +29,7 @@ export type Activity = {
   before_hook: string | null;
   watch_for: string[] | null;
   video_slot: string | null;
+  video_preview_note: string | null;
   video_title: string | null;
   video_channel: string | null;
   video_url: string | null;

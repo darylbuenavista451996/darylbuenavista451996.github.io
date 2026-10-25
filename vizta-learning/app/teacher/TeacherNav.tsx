@@ -11,6 +11,7 @@ export default function TeacherNav({ active }: { active: string }) {
     { href: '/teacher/grade', label: 'Grading', key: 'grade' },
     { href: '/teacher/scores', label: 'Scores', key: 'scores' },
     { href: '/teacher/modules', label: 'Modules', key: 'modules' },
+    { href: '/teacher/lessons', label: 'Lessons', key: 'lessons' },
     { href: '/teacher/content', label: 'Content', key: 'content' },
     { href: '/teacher/math', label: 'Mathematics', key: 'math' },
   ];
