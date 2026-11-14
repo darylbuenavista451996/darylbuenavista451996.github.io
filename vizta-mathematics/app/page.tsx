@@ -53,10 +53,6 @@ function TermPicker({ states }: { states: Record<number, boolean> }) {
           )}
         </div>
 
-        <div className="auth-links">
-          Already have an account? <Link href="/login">Sign in</Link>
-        </div>
-
         <p className="footer">
           {/* Teachers manage everything (including Mathematics) from the shared teacher
               dashboard, which lives in the Media Arts app. */}
