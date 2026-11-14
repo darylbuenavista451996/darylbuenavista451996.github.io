@@ -40,8 +40,9 @@ jobs:
           echo "Pinging auth health..."
           curl -fsS -m 30 "$base/auth/v1/health" \
             -H "apikey: $SUPABASE_ANON_KEY" >/dev/null && echo "auth OK"
-          echo "Pinging database (PostgREST root)..."
-          curl -fsS -m 30 "$base/rest/v1/" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY" >/dev/null && echo "db OK"
+          echo "Pinging database (a real query, so Postgres wakes up)..."
+          # Reads one row from a table. With row level security on and no policy, the
+          # anon key just gets an empty list back, which is fine: it still runs a query.
+          curl -fsS -m 30 "$base/rest/v1/modules?select=module_id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" >/dev/null && echo "db OK"
           echo "Keep-alive done."
