@@ -555,25 +555,36 @@ export async function getActivitiesBrief(): Promise<
 
 // ---- Mathematics platform (separate app, shared database) -----------------
 
-export type MathLessonRow = { lesson_id: string; title: string; order: number; unlocked: boolean };
+export type MathLessonRow = { lesson_id: string; title: string; order: number; unlocked: boolean; term: number | null };
 
 // All math lessons with their lock state. Error-tolerant: returns [] if the
 // table isn't there yet (migration 0010 not run), so the page stays usable.
 export async function getMathLessons(): Promise<MathLessonRow[]> {
   const supabase = supabaseServer();
-  const { data, error } = await supabase
+  // Try with the term column; fall back without it if migration 0012 has not been run.
+  let rows: Array<Record<string, unknown>> | null = null;
+  const withTerm = await supabase
     .from('math_lessons')
-    .select('lesson_id, title, "order", unlocked')
+    .select('lesson_id, title, "order", unlocked, term')
     .order('order', { ascending: true });
-  if (error) return [];
-  return (data ?? []).map((m) => ({
+  if (!withTerm.error) {
+    rows = withTerm.data as Array<Record<string, unknown>>;
+  } else {
+    const plain = await supabase
+      .from('math_lessons')
+      .select('lesson_id, title, "order", unlocked')
+      .order('order', { ascending: true });
+    if (plain.error) return [];
+    rows = plain.data as Array<Record<string, unknown>>;
+  }
+  return (rows ?? []).map((m) => ({
     lesson_id: m.lesson_id as string,
     title: m.title as string,
     order: (m.order as number) ?? 0,
     unlocked: Boolean(m.unlocked),
+    term: typeof m.term === 'number' ? (m.term as number) : null,
   }));
 }
-
 export async function setMathLessonUnlocked(lessonId: string, unlocked: boolean): Promise<void> {
   const supabase = supabaseServer();
   const { error } = await supabase.from('math_lessons').update({ unlocked }).eq('lesson_id', lessonId);
@@ -723,4 +734,20 @@ export async function getLessonWithKey(activityId: string): Promise<LessonWithKe
     prev: idx > 0 ? { activity_id: sibs[idx - 1].activity_id, title: sibs[idx - 1].title } : null,
     next: idx >= 0 && idx < sibs.length - 1 ? { activity_id: sibs[idx + 1].activity_id, title: sibs[idx + 1].title } : null,
   };
+}
+
+// ---- Mathematics terms: the Term 1 / Term 2 open-close switch -----------------------
+export type MathTermRow = { term: number; unlocked: boolean };
+
+export async function getMathTerms(): Promise<MathTermRow[] | null> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase.from('math_terms').select('term, unlocked').order('term', { ascending: true });
+  if (error) return null; // table missing: migration 0012 not run yet
+  return (data ?? []).map((r) => ({ term: r.term as number, unlocked: Boolean(r.unlocked) }));
+}
+
+export async function setMathTermUnlocked(term: number, unlocked: boolean): Promise<void> {
+  const supabase = supabaseServer();
+  const { error } = await supabase.from('math_terms').upsert({ term, unlocked }, { onConflict: 'term' });
+  if (error) throw error;
 }

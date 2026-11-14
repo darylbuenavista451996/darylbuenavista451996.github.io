@@ -16,6 +16,7 @@ import {
   removeStudent,
   saveAttendance,
   setMathLessonUnlocked,
+  setMathTermUnlocked,
   type AttendanceStatus,
 } from '@/lib/teacherData';
 import type { ClassName } from '@/lib/classCodes';
@@ -334,4 +335,23 @@ export async function updateLessonText(
   revalidatePath(`/teacher/content/${activityId}`);
   revalidatePath(`/lesson/${activityId}`);
   return { ok: true, message: 'Lesson text saved.' };
+}
+
+// Open or close a whole Mathematics term. A closed term cannot be entered by
+// students even if its lessons are unlocked, and nothing is deleted.
+export async function toggleMathTerm(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireTeacher();
+  const term = Number(formData.get('term'));
+  const unlocked = String(formData.get('unlocked') ?? '') === 'true';
+  if (!Number.isInteger(term) || term < 1 || term > 4) return { error: 'Missing term.' };
+  try {
+    await setMathTermUnlocked(term, unlocked);
+  } catch {
+    return { error: 'Could not update the term. Has the 0012 database step been run?' };
+  }
+  revalidatePath('/teacher/math');
+  return { ok: true, message: unlocked ? `Term ${term} opened.` : `Term ${term} closed.` };
 }

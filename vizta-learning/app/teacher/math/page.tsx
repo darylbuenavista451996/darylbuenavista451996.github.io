@@ -4,8 +4,9 @@
 import Link from 'next/link';
 import TeacherNav from '../TeacherNav';
 import MathLockToggle from './MathLockToggle';
+import MathTermToggle from './MathTermToggle';
 import { requireTeacher } from '@/lib/teacherAuth';
-import { getMathLessons, getMathResults } from '@/lib/teacherData';
+import { getMathLessons, getMathResults, getMathTerms } from '@/lib/teacherData';
 import { BASE_PATH } from '@/lib/basePath';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ function fmtDate(iso: string): string {
 
 export default async function TeacherMathPage() {
   await requireTeacher();
-  const [lessons, results] = await Promise.all([getMathLessons(), getMathResults()]);
+  const [lessons, results, terms] = await Promise.all([getMathLessons(), getMathResults(), getMathTerms()]);
 
   return (
     <main className="page page-wide">
@@ -36,6 +37,33 @@ export default async function TeacherMathPage() {
           <span className="eyebrow">Teacher panel</span>
           <h1>Mathematics</h1>
         </div>
+
+        <section className="lesson-section">
+          <h2>Terms</h2>
+          <p className="hint">
+            Open the term students are working in and close the one that is finished. Students
+            pick a term on the Mathematics front page, and only an open term lets them create an
+            account or enter its lessons. Closing a term deletes nothing, so its lessons and records
+            stay saved for next year. Lessons inside an open term still follow their own lock below.
+          </p>
+          {terms === null ? (
+            <p className="lede">
+              The term switch is not set up yet. Run the latest database step (0012_math_terms) in
+              Supabase, then refresh.
+            </p>
+          ) : (
+            <div className="math-lock-list">
+              {terms.map((t) => (
+                <div key={t.term} className={`math-lock-row ${t.unlocked ? 'open' : 'shut'}`}>
+                  <div className="math-lock-info">
+                    <span className="math-lock-title">Term {t.term}</span>
+                  </div>
+                  <MathTermToggle term={t.term} unlocked={t.unlocked} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         <section className="lesson-section">
           <h2>Lessons</h2>
@@ -56,6 +84,7 @@ export default async function TeacherMathPage() {
                     <span className={`math-lock-tag ${l.unlocked ? 'open' : 'shut'}`}>
                       {l.unlocked ? 'Unlocked' : 'Locked'}
                     </span>
+                    {l.term ? <span className="math-lock-tag shut">Term {l.term}</span> : null}
                     <span className="math-lock-title">{l.title}</span>
                   </div>
                   <MathLockToggle lessonId={l.lesson_id} unlocked={l.unlocked} />

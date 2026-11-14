@@ -5,6 +5,7 @@
 export type LessonMeta = {
   id: string; // also the route slug, e.g. /parallel-perpendicular
   title: string;
+  term: number; // 1 or 2: which term the lesson belongs to
   order: number;
   blurb: string;
 };
@@ -13,6 +14,7 @@ export const LESSONS: LessonMeta[] = [
   {
     id: 'parallel-perpendicular',
     title: 'Parallel & Perpendicular Lines',
+    term: 1,
     order: 1,
     blurb:
       'Check whether two lines are parallel, perpendicular, or neither, and find the equation of a line through a point.',
@@ -20,6 +22,7 @@ export const LESSONS: LessonMeta[] = [
   {
     id: 'linear-functions',
     title: 'Solving Problems with Linear Functions',
+    term: 1,
     order: 2,
     blurb:
       'Read slope and starting value, build the equation from a word problem, and solve real-life problems with linear functions.',
@@ -27,6 +30,7 @@ export const LESSONS: LessonMeta[] = [
   {
     id: 'triangle-similarity',
     title: 'Triangle Similarities',
+    term: 2,
     order: 3,
     blurb:
       'Learn when two triangles are similar (AA, SSS, SAS), find a scale factor, and use proportions to solve for missing sides.',

@@ -8,7 +8,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Brand from '../Brand';
 import { getSession } from '@/lib/session';
-import { getLessonUnlocked, getExistingResult } from '@/lib/mathData';
+import { getLessonUnlocked, getExistingResult, getTermStates } from '@/lib/mathData';
+import { LESSONS } from '@/lib/lessons';
 import PendingSync from './PendingSync';
 import { StudentKeyProvider } from './StudentKey';
 
@@ -26,10 +27,14 @@ export default async function LessonPage({
   const session = getSession();
   if (!session) redirect('/login');
 
-  const [unlocked, existing] = await Promise.all([
+  const [unlocked, existing, termStates] = await Promise.all([
     getLessonUnlocked(lessonId),
     getExistingResult(session.sid, lessonId),
+    getTermStates(),
   ]);
+  // A closed term cannot be entered, even if the lesson itself is unlocked.
+  const lessonTerm = LESSONS.find((l) => l.id === lessonId)?.term;
+  const termClosed = lessonTerm !== undefined && termStates[lessonTerm] === false;
 
   return (
     <StudentKeyProvider value={session.sid}>
@@ -47,6 +52,13 @@ export default async function LessonPage({
               Your recorded score is <strong>{existing.points} points</strong> (quiz {existing.quiz_score} / 10).
               This is final and has been sent to your teacher.
             </p>
+          </div>
+        ) : termClosed ? (
+          <div className="mlz-locked">
+            <span className="mlz-lock-icon" aria-hidden="true">🔒</span>
+            <h2>Term {lessonTerm} is closed.</h2>
+            <p>This lesson is saved for next year. Your teacher will tell you which term to use now.</p>
+            <PendingSync lessonId={lessonId} />
           </div>
         ) : !unlocked ? (
           <div className="mlz-locked">

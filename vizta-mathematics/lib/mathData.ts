@@ -11,14 +11,41 @@ import { LESSONS } from './lessons';
 export async function ensureLessonsRegistered(): Promise<void> {
   try {
     const supabase = supabaseServer();
-    await supabase
+    const withTerm = await supabase
       .from('math_lessons')
       .upsert(
-        LESSONS.map((l) => ({ lesson_id: l.id, title: l.title, order: l.order, unlocked: false })),
+        LESSONS.map((l) => ({ lesson_id: l.id, title: l.title, order: l.order, term: l.term, unlocked: false })),
         { onConflict: 'lesson_id', ignoreDuplicates: true }
       );
+    if (withTerm.error) {
+      // The term column is not there yet (migration 0012 not run): register without it.
+      await supabase
+        .from('math_lessons')
+        .upsert(
+          LESSONS.map((l) => ({ lesson_id: l.id, title: l.title, order: l.order, unlocked: false })),
+          { onConflict: 'lesson_id', ignoreDuplicates: true }
+        );
+    }
   } catch {
     /* table not there yet; nothing to do */
+  }
+}
+
+// Which terms are open to students (the teacher's switch on the Mathematics tab).
+// A closed term cannot be entered even if its lessons are unlocked. If the table is
+// not there yet or cannot be read, fall back to the intended setup: Term 1 closed,
+// Term 2 open.
+export async function getTermStates(): Promise<Record<number, boolean>> {
+  const fallback: Record<number, boolean> = { 1: false, 2: true };
+  try {
+    const supabase = supabaseServer();
+    const { data, error } = await supabase.from('math_terms').select('term, unlocked');
+    if (error || !data || data.length === 0) return fallback;
+    const out = { ...fallback };
+    for (const r of data) out[r.term as number] = Boolean(r.unlocked);
+    return out;
+  } catch {
+    return fallback;
   }
 }
 

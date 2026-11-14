@@ -830,3 +830,12 @@ a.math-lesson:hover { border-color: var(--mint); transform: translateY(-2px); }
 /* Grayed disabled buttons (e.g. Finish before everything is done) */
 .btn:disabled { background: #c4ccd8; color: #fff; border-color: transparent; cursor: not-allowed; }
 .btn-ghost:disabled { background: #eef1f5; color: #9aa3b2; }
+
+/* ---- Term picker and term sections (Mathematics) ----------------------------- */
+.btn-locked {
+  background: #e6e9ef; color: #7b8497; border: 1px solid var(--border);
+  cursor: not-allowed; user-select: none;
+}
+.math-term { margin-top: 26px; }
+.math-term-title { font-size: 19px; color: var(--navy); margin: 0 0 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.math-term-closed { font-size: 12px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); background: var(--navy-tint); padding: 3px 9px; border-radius: 999px; }
