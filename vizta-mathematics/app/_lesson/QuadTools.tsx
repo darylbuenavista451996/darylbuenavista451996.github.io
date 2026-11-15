@@ -5,10 +5,10 @@
 // working. All numbers are exact, so nothing is rounded by accident.
 
 import { useState } from 'react';
-import { Rat } from '@/lib/lineMath';
+import { Rat, parseNumToRat } from '@/lib/lineMath';
 import {
   parseQuadratic, discriminant, natureText, quadToString, nature,
-  solveByFormula, completeTheSquare, type Quad,
+  completeTheSquare, type Quad,
 } from '@/lib/quadMath';
 
 function useEq(initial: string) {
@@ -97,36 +97,79 @@ export function SquareTool() {
   );
 }
 
-export function FormulaTool() {
-  const { eq, setEq, err, setErr } = useEq('2x^2 + x - 6 = 0');
-  const [out, setOut] = useState<null | { answer: string; steps: string[] }>(null);
+// Sum and product of roots: from an equation, or build an equation from two roots.
+export function RootsTool() {
+  const { eq, setEq, err, setErr } = useEq('2x^2 - 3x - 2 = 0');
+  const [out, setOut] = useState<null | { sum: string; product: string; steps: string[] }>(null);
   function go() {
     setErr(''); setOut(null);
     try {
       const q = parseQuadratic(eq);
-      const D = discriminant(q);
-      const r = solveByFormula(q);
-      const answer = r.kind === 'none' ? 'No real solutions'
-        : r.kind === 'one' ? `x = ${r.text}`
-        : r.text.length === 2 ? `x = ${r.text[0]} or x = ${r.text[1]}`
-        : `x = ${r.text[0]}`;
-      const steps = [
-        `Standard form: ${quadToString(q)}`,
-        `a = ${q.a.toString()}, b = ${q.b.toString()}, c = ${q.c.toString()}`,
-        `D = b^2 - 4ac = ${D.toString()}`,
-        D.isNeg()
-          ? 'D is negative, so the square root is not a real number. There is no real solution.'
-          : `x = (-b ± √D) / 2a = (${q.b.neg().toString()} ± √${D.toString()}) / ${new Rat(2).mul(q.a).toString()}`,
-        answer,
-      ];
-      setOut({ answer, steps });
+      const sum = q.b.neg().div(q.a);
+      const product = q.c.div(q.a);
+      setOut({
+        sum: sum.toString(), product: product.toString(),
+        steps: [
+          `Standard form: ${quadToString(q)}`,
+          `a = ${q.a.toString()}, b = ${q.b.toString()}, c = ${q.c.toString()}`,
+          `Sum of roots = -b/a = ${q.b.neg().toString()} / ${q.a.toString()} = ${sum.toString()}`,
+          `Product of roots = c/a = ${q.c.toString()} / ${q.a.toString()} = ${product.toString()}`,
+          discriminant(q).isNeg() ? 'Note: this equation has no real roots, so these two numbers are not sums and products of real numbers.' : 'Check: solve the equation and add and multiply the two roots. You get the same numbers.',
+        ],
+      });
     } catch (e) { setErr(e instanceof Error ? e.message : 'Please check your equation.'); }
   }
   return (
     <div className="mlz-tool">
-      <h3 className="mlz-tool-title">Quadratic formula solver</h3>
-      <p className="mlz-tool-hint">Type a quadratic equation to see the formula used on it. Answers are exact, so a square root stays as a square root.</p>
-      <EqInput eq={eq} setEq={setEq} onGo={go} label="Solve with the formula" />
+      <h3 className="mlz-tool-title">Sum and product of roots</h3>
+      <p className="mlz-tool-hint">Type a quadratic equation. It gives the sum and product of its roots without solving it.</p>
+      <EqInput eq={eq} setEq={setEq} onGo={go} label="Find the sum and product" />
+      {err && <p className="mlz-err">{err}</p>}
+      {out && (
+        <div className="mlz-result mlz-answer">
+          <strong className="mlz-verdict">Sum = {out.sum}, product = {out.product}</strong>
+          <ol className="mlz-steps">{out.steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function BuildTool() {
+  const [r1, setR1] = useState('2');
+  const [r2, setR2] = useState('5');
+  const [err, setErr] = useState('');
+  const [out, setOut] = useState<null | { answer: string; steps: string[] }>(null);
+  function go() {
+    setErr(''); setOut(null);
+    try {
+      const a = parseNumToRat(r1), b = parseNumToRat(r2);
+      const sum = a.add(b), product = a.mul(b);
+      // Clear fractions so the equation has whole-number coefficients.
+      let l = 1;
+      const g = (x: number, y: number): number => (y ? g(y, x % y) : Math.abs(x));
+      for (const r of [sum, product]) l = (l / g(l, r.d)) * r.d;
+      const q: Quad = { a: new Rat(l), b: sum.neg().mul(new Rat(l)), c: product.mul(new Rat(l)) };
+      setOut({
+        answer: quadToString(q),
+        steps: [
+          `Sum of roots = ${a.toString()} + ${b.toString()} = ${sum.toString()}`,
+          `Product of roots = ${a.toString()} x ${b.toString()} = ${product.toString()}`,
+          `x^2 - (sum)x + (product) = 0, so x^2 - (${sum.toString()})x + (${product.toString()}) = 0`,
+          l > 1 ? `Multiply every term by ${l} to remove the fractions.` : 'No fractions, so this is the final equation.',
+        ],
+      });
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Please check your numbers.'); }
+  }
+  return (
+    <div className="mlz-tool">
+      <h3 className="mlz-tool-title">Build an equation from its roots</h3>
+      <p className="mlz-tool-hint">Type two roots (whole numbers, fractions or decimals). It builds the quadratic equation.</p>
+      <div className="mlz-point-row">
+        <label className="mlz-field mlz-field-sm"><span>Root 1</span><input className="mlz-input" value={r1} onChange={(e) => setR1(e.target.value)} spellCheck={false} /></label>
+        <label className="mlz-field mlz-field-sm"><span>Root 2</span><input className="mlz-input" value={r2} onChange={(e) => setR2(e.target.value)} spellCheck={false} /></label>
+      </div>
+      <button type="button" className="btn btn-primary mlz-go" onClick={go}>Build the equation</button>
       {err && <p className="mlz-err">{err}</p>}
       {out && (
         <div className="mlz-result mlz-answer">

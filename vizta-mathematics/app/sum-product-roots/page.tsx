@@ -1,18 +1,18 @@
 import LessonPage from '../_lesson/LessonPage';
-import FormulaLesson from './FormulaLesson';
+import RootsLesson from './RootsLesson';
 
 export const metadata = {
-  title: 'The Quadratic Formula',
+  title: 'Sum and Product of Roots',
 };
 
 export default function Page() {
   return (
     <LessonPage
-      lessonId="quadratic-formula"
+      lessonId="sum-product-roots"
       kicker="Mathematics · Grade 9 · Algebra"
-      title="The Quadratic Formula"
+      title="Sum and Product of Roots"
     >
-      <FormulaLesson />
+      <RootsLesson />
     </LessonPage>
   );
 }

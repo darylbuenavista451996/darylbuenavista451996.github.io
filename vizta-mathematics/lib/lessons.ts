@@ -90,12 +90,12 @@ export const LESSONS: LessonMeta[] = [
     window: { date: '2026-11-17', from: '09:30', to: '12:00' },
   },
   {
-    id: 'quadratic-formula',
-    title: 'The Quadratic Formula',
+    id: 'sum-product-roots',
+    title: 'Sum and Product of Roots',
     term: 2,
     order: 6,
     blurb:
-      'Solve any quadratic equation with x = (−b ± √(b² − 4ac)) / 2a, including answers that keep a square root.',
+      'Find the sum and product of the roots of a quadratic equation without solving it, and build an equation from its roots.',
     window: { date: '2026-11-18', from: '09:30', to: '12:00' },
   },
 ];
