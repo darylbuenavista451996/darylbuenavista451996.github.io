@@ -9,7 +9,7 @@ import Brand from './Brand';
 import Avatar from './Avatar';
 import { getSession } from '@/lib/session';
 import { BASE_PATH } from '@/lib/basePath';
-import { LESSONS, windowLabel } from '@/lib/lessons';
+import { LESSONS, windowLabel, windowDay, windowState } from '@/lib/lessons';
 import { ensureLessonsRegistered, getTermStates } from '@/lib/mathData';
 import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
 
@@ -107,23 +107,38 @@ export default async function MathHome() {
                 {!open ? <span className="math-term-closed">🔒 Closed</span> : null}
               </h2>
               <div className="math-lessons">
-                {lessons.map((l, i) =>
-                  open ? (
+                {lessons.map((l, i) => {
+                  const tag = l.window ? windowDay(l) : `Lesson ${i + 1}`;
+                  const ws = windowState(l);
+                  if (!open) {
+                    return (
+                      <div key={l.id} className="math-lesson soon" aria-disabled="true">
+                        <span className="math-lesson-tag soon">{tag}</span>
+                        <span className="math-lesson-title">{l.title}</span>
+                        <span className="math-lesson-blurb">This term is closed. Your teacher keeps these lessons for next year.</span>
+                      </div>
+                    );
+                  }
+                  if (l.window && ws !== 'open') {
+                    return (
+                      <div key={l.id} className="math-lesson soon" aria-disabled="true">
+                        <span className="math-lesson-tag soon">{tag}</span>
+                        <span className="math-lesson-title">{l.title}</span>
+                        <span className="math-lesson-blurb">{l.blurb}</span>
+                        <span className="math-lesson-blurb"><strong>{ws === 'after' ? 'Closed. Was open ' : '🔒 Opens '}{windowLabel(l)}</strong></span>
+                      </div>
+                    );
+                  }
+                  return (
                     <Link key={l.id} className="math-lesson" href={`/${l.id}`}>
-                      <span className="math-lesson-tag ready">Lesson {i + 1}</span>
+                      <span className="math-lesson-tag ready">{tag}</span>
                       <span className="math-lesson-title">{l.title}</span>
                       <span className="math-lesson-blurb">{l.blurb}</span>
-                      {l.window ? <span className="math-lesson-blurb"><strong>Open: {windowLabel(l)}</strong></span> : null}
+                      {l.window ? <span className="math-lesson-blurb"><strong>Open today until {windowLabel(l).split(' to ')[1]}</strong></span> : null}
                       <span className="math-lesson-go">Open lesson →</span>
                     </Link>
-                  ) : (
-                    <div key={l.id} className="math-lesson soon" aria-disabled="true">
-                      <span className="math-lesson-tag soon">Lesson {i + 1}</span>
-                      <span className="math-lesson-title">{l.title}</span>
-                      <span className="math-lesson-blurb">This term is closed. Your teacher keeps these lessons for next year.</span>
-                    </div>
-                  )
-                )}
+                  );
+                })}
               </div>
             </section>
           );

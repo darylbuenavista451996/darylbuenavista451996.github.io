@@ -37,6 +37,12 @@ function t12(hhmm: string): string {
   return `${h % 12 === 0 ? 12 : h % 12}:${String(m).padStart(2, '0')} ${ap}`;
 }
 
+export function windowDay(l: LessonMeta): string {
+  if (!l.window) return '';
+  const [y, m, d] = l.window.date.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+}
+
 export function windowLabel(l: LessonMeta): string {
   if (!l.window) return '';
   const [y, m, d] = l.window.date.split('-').map(Number);
@@ -62,14 +68,6 @@ export const LESSONS: LessonMeta[] = [
     order: 2,
     blurb:
       'Read slope and starting value, build the equation from a word problem, and solve real-life problems with linear functions.',
-  },
-  {
-    id: 'triangle-similarity',
-    title: 'Triangle Similarities',
-    term: 2,
-    order: 3,
-    blurb:
-      'Learn when two triangles are similar (AA, SSS, SAS), find a scale factor, and use proportions to solve for missing sides.',
   },
   {
     id: 'discriminant',

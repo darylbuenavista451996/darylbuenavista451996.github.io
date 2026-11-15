@@ -38,7 +38,8 @@ export default async function LessonPage({
 
   const meta = LESSONS.find((l) => l.id === lessonId);
   const ws = windowState(meta);
-  const isOpen = unlocked || ws === 'open';
+  // A scheduled lesson is open ONLY inside its window. Others follow the teacher's unlock.
+  const isOpen = meta?.window ? ws === 'open' : unlocked;
 
   return (
     <StudentKeyProvider value={session.sid}>
