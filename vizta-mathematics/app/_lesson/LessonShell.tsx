@@ -367,7 +367,7 @@ export default function LessonShell({ content }: { content: LessonContent }) {
       {/* Watch (no points) */}
       <section className="ls-sec">
         <div className="ls-tag"><span className="ls-step muted">▶</span><h2 className="ls-h2">Watch</h2></div>
-        <p className="ls-sub">Watch the video. It needs internet, so watch it while you are connected.</p>
+        <p className="ls-sub">The video helps, but it is optional. It uses mobile data, so set it to 360p or lower. No data or it won't play? Skip it and read the Learn section below. It has everything you need.</p>
         <div className="ls-video">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}`}
