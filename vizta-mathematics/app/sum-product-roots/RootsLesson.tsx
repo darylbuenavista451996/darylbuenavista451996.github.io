@@ -4,6 +4,7 @@
 // (1 pt each), 3 problems with 5 choices (2 pts each), and a 10-question
 // multiple-choice quiz (1 pt each). 23 points total, same as the other lessons.
 
+import LessonKey from '../_lesson/LessonKey';
 import LessonShell, { type LessonContent, type GradedGroup } from '../_lesson/LessonShell';
 import { RootsTool, BuildTool } from '../_lesson/QuadTools';
 
@@ -112,7 +113,7 @@ const QUIZ: GradedGroup = {
   ],
 };
 
-export default function RootsLesson() {
+export default function RootsLesson({ preview }: { preview?: boolean }) {
   const content: LessonContent = {
     lessonId: 'sum-product-roots',
     video: { title: 'Formulas for sum and product of roots of quadratic equations', youtubeId: 'cSToB0vpgIk', channel: 'Mr H Tutoring' },
@@ -127,5 +128,5 @@ export default function RootsLesson() {
     reflectionPrompt:
       'Pick any quadratic equation and find the sum and product of its roots without solving it. Then explain how you could use these two numbers to check your solutions from another method.',
   };
-  return <LessonShell content={content} />;
+  return preview ? <LessonKey content={content} /> : <LessonShell content={content} />;
 }

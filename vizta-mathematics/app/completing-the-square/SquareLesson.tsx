@@ -5,6 +5,7 @@
 // 10-question multiple-choice quiz (1 pt each). 23 points total, same as the
 // other math lessons.
 
+import LessonKey from '../_lesson/LessonKey';
 import LessonShell, { type LessonContent, type GradedGroup } from '../_lesson/LessonShell';
 import { SquareTool } from '../_lesson/QuadTools';
 
@@ -120,7 +121,7 @@ const QUIZ: GradedGroup = {
   ],
 };
 
-export default function SquareLesson() {
+export default function SquareLesson({ preview }: { preview?: boolean }) {
   const content: LessonContent = {
     lessonId: 'completing-the-square',
     video: { title: 'Completing the square', youtubeId: 'TV5kDqiJ1Os', channel: 'Khan Academy' },
@@ -130,5 +131,5 @@ export default function SquareLesson() {
     reflectionPrompt:
       'Explain in your own words why we add the same number to both sides when completing the square. Which step was hardest for you, and what helped you understand it?',
   };
-  return <LessonShell content={content} />;
+  return preview ? <LessonKey content={content} /> : <LessonShell content={content} />;
 }

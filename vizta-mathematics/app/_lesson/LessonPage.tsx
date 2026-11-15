@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation';
 import Brand from '../Brand';
 import { getSession } from '@/lib/session';
 import { getLessonUnlocked, getExistingResult, getTermStates } from '@/lib/mathData';
-import { LESSONS, windowState, windowLabel } from '@/lib/lessons';
+import { LESSONS, windowState, windowDay } from '@/lib/lessons';
 import PendingSync from './PendingSync';
 import { StudentKeyProvider } from './StudentKey';
 
@@ -71,7 +71,7 @@ export default async function LessonPage({
             <h2>{ws === 'before' ? 'This lesson is not open yet.' : ws === 'after' ? 'This lesson is closed.' : 'This lesson is locked.'}</h2>
             <p>
               {meta && ws !== 'none'
-                ? <>This lesson is open only on <strong>{windowLabel(meta)}</strong>.{ws === 'after' ? ' Ask your teacher if you missed it.' : ' Come back then.'}</>
+                ? <>This lesson is open only on <strong>{windowDay(meta)}</strong>.{ws === 'after' ? ' Ask your teacher if you missed it.' : ' Come back then.'}</>
                 : 'Your teacher will open it when it is time. Check back then.'}
             </p>
             <PendingSync lessonId={lessonId} />

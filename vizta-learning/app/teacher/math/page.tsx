@@ -8,6 +8,7 @@ import MathTermToggle from './MathTermToggle';
 import { requireTeacher } from '@/lib/teacherAuth';
 import { getMathLessons, getMathResults, getMathTerms } from '@/lib/teacherData';
 import { BASE_PATH } from '@/lib/basePath';
+import { mathPreviewUrl } from '@/lib/mathPreview';
 
 export const dynamic = 'force-dynamic';
 
@@ -87,6 +88,11 @@ export default async function TeacherMathPage() {
                     {l.term ? <span className="math-lock-tag shut">Term {l.term}</span> : null}
                     <span className="math-lock-title">{l.title}</span>
                   </div>
+                  {mathPreviewUrl(l.lesson_id) ? (
+                    <a className="btn btn-ghost btn-sm" href={mathPreviewUrl(l.lesson_id) as string} target="_blank" rel="noreferrer">
+                      View lesson + answers
+                    </a>
+                  ) : null}
                   <MathLockToggle lessonId={l.lesson_id} unlocked={l.unlocked} />
                 </div>
               ))}

@@ -9,7 +9,7 @@ import Brand from './Brand';
 import Avatar from './Avatar';
 import { getSession } from '@/lib/session';
 import { BASE_PATH } from '@/lib/basePath';
-import { LESSONS, windowLabel, windowDay, windowState } from '@/lib/lessons';
+import { LESSONS, windowDay, windowState } from '@/lib/lessons';
 import { ensureLessonsRegistered, getTermStates } from '@/lib/mathData';
 import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
 
@@ -125,7 +125,7 @@ export default async function MathHome() {
                         <span className="math-lesson-tag soon">{tag}</span>
                         <span className="math-lesson-title">{l.title}</span>
                         <span className="math-lesson-blurb">{l.blurb}</span>
-                        <span className="math-lesson-blurb"><strong>{ws === 'after' ? 'Closed. Was open ' : '🔒 Opens '}{windowLabel(l)}</strong></span>
+                        <span className="math-lesson-blurb"><strong>{ws === 'after' ? 'Closed. It was open on ' : '🔒 Opens on '}{windowDay(l)}</strong></span>
                       </div>
                     );
                   }
@@ -134,7 +134,6 @@ export default async function MathHome() {
                       <span className="math-lesson-tag ready">{tag}</span>
                       <span className="math-lesson-title">{l.title}</span>
                       <span className="math-lesson-blurb">{l.blurb}</span>
-                      {l.window ? <span className="math-lesson-blurb"><strong>Open today until {windowLabel(l).split(' to ')[1]}</strong></span> : null}
                       <span className="math-lesson-go">Open lesson →</span>
                     </Link>
                   );

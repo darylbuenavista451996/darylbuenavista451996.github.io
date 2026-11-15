@@ -5,6 +5,7 @@
 // multiple-choice quiz (1 pt each). Same structure and points (23 total) as the
 // other math lessons.
 
+import LessonKey from '../_lesson/LessonKey';
 import LessonShell, { type LessonContent, type GradedGroup } from '../_lesson/LessonShell';
 import { DiscriminantTool } from '../_lesson/QuadTools';
 
@@ -110,7 +111,7 @@ const QUIZ: GradedGroup = {
   ],
 };
 
-export default function DiscriminantLesson() {
+export default function DiscriminantLesson({ preview }: { preview?: boolean }) {
   const content: LessonContent = {
     lessonId: 'discriminant',
     video: { title: 'Discriminant for types of solutions for a quadratic', youtubeId: '1213qW5k55I', channel: 'Khan Academy' },
@@ -120,5 +121,5 @@ export default function DiscriminantLesson() {
     reflectionPrompt:
       'In your own words, explain what the discriminant tells you and why it is useful. Then give one equation of your own and say, using its discriminant, how many real solutions it has.',
   };
-  return <LessonShell content={content} />;
+  return preview ? <LessonKey content={content} /> : <LessonShell content={content} />;
 }
