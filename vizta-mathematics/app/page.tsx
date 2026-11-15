@@ -9,7 +9,7 @@ import Brand from './Brand';
 import Avatar from './Avatar';
 import { getSession } from '@/lib/session';
 import { BASE_PATH } from '@/lib/basePath';
-import { LESSONS } from '@/lib/lessons';
+import { LESSONS, windowLabel } from '@/lib/lessons';
 import { ensureLessonsRegistered, getTermStates } from '@/lib/mathData';
 import { getAvatarPath, signedAvatarUrl } from '@/lib/avatarStore';
 
@@ -113,6 +113,7 @@ export default async function MathHome() {
                       <span className="math-lesson-tag ready">Lesson {i + 1}</span>
                       <span className="math-lesson-title">{l.title}</span>
                       <span className="math-lesson-blurb">{l.blurb}</span>
+                      {l.window ? <span className="math-lesson-blurb"><strong>Open: {windowLabel(l)}</strong></span> : null}
                       <span className="math-lesson-go">Open lesson →</span>
                     </Link>
                   ) : (

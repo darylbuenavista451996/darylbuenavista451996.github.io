@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation';
 import Brand from '../Brand';
 import { getSession } from '@/lib/session';
 import { getLessonUnlocked, getExistingResult, getTermStates } from '@/lib/mathData';
-import { LESSONS } from '@/lib/lessons';
+import { LESSONS, windowState, windowLabel } from '@/lib/lessons';
 import PendingSync from './PendingSync';
 import { StudentKeyProvider } from './StudentKey';
 
@@ -36,6 +36,10 @@ export default async function LessonPage({
   const lessonTerm = LESSONS.find((l) => l.id === lessonId)?.term;
   const termClosed = lessonTerm !== undefined && termStates[lessonTerm] === false;
 
+  const meta = LESSONS.find((l) => l.id === lessonId);
+  const ws = windowState(meta);
+  const isOpen = unlocked || ws === 'open';
+
   return (
     <StudentKeyProvider value={session.sid}>
     <main className="page">
@@ -60,11 +64,15 @@ export default async function LessonPage({
             <p>This lesson is saved for next year. Your teacher will tell you which term to use now.</p>
             <PendingSync lessonId={lessonId} />
           </div>
-        ) : !unlocked ? (
+        ) : !isOpen ? (
           <div className="mlz-locked">
             <span className="mlz-lock-icon" aria-hidden="true">🔒</span>
-            <h2>This lesson is locked.</h2>
-            <p>Your teacher will open it when it is time. Check back then.</p>
+            <h2>{ws === 'before' ? 'This lesson is not open yet.' : ws === 'after' ? 'This lesson is closed.' : 'This lesson is locked.'}</h2>
+            <p>
+              {meta && ws !== 'none'
+                ? <>This lesson is open only on <strong>{windowLabel(meta)}</strong>.{ws === 'after' ? ' Ask your teacher if you missed it.' : ' Come back then.'}</>
+                : 'Your teacher will open it when it is time. Check back then.'}
+            </p>
             <PendingSync lessonId={lessonId} />
           </div>
         ) : (
