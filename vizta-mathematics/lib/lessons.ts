@@ -27,7 +27,7 @@ export type WindowState = 'none' | 'before' | 'open' | 'after';
 export function windowState(l: LessonMeta | undefined, now = Date.now()): WindowState {
   if (!l?.window) return 'none';
   if (now < phMs(l.window.date, l.window.from)) return 'before';
-  if (now >= phMs(l.window.date, l.window.to)) return 'after';
+  // No closing time: once a lesson's day has started it stays open.
   return 'open';
 }
 
